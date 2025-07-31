@@ -23,7 +23,7 @@ class DashboardController extends Controller{
         return view('admin.users.index', compact('users'));
     }
 
-public function createUser(){
+    public function createUser(){
         return view('admin.users.create');
     }
 
@@ -48,4 +48,12 @@ public function createUser(){
 
         return redirect()->route('admin.users.index')->with('status', 'Usuario creado exitosamente.');
     }
+
+    public function showAuditLog(){
+
+        $activities = Activity::latest()->get(); // Obtiene todos los registros de actividad, ordenados por los más recientes.
+        return view('admin.audit_log', compact('activities'));
+    }
+
+
 }

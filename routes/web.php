@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->group(func
     Route::get('/users', [DashboardController::class, 'listUsers'])->name('admin.users.index');
     Route::get('/users/create', [DashboardController::class, 'createUser'])->name('admin.users.create');
     Route::post('/users', [DashboardController::class, 'storeUser'])->name('admin.users.store');
+    Route::get('/audit', [DashboardController::class, 'showAuditLog'])->name('admin.audit');
 });
 
 // Esta línea es la que importa las rutas de autenticación
