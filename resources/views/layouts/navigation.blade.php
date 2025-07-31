@@ -16,11 +16,11 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    {{-- Enlace para la lista de usuarios, visible solo para administradores --}}
-                    @if(auth()->user()->role === 'administrador')
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
-                            {{ __('Usuarios') }}
-                        </x-nav-link>
+                    {{-- Este enlace solo se mostrará para los administradores --}}
+                    @if (auth()->check() && auth()->user()->role === 'administrador')
+                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
+                        {{ __('Usuarios') }}
+                    </x-nav-link>
                     @endif
                 </div>
             </div>
