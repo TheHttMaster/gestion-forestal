@@ -27,6 +27,11 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->group(func
 
     Route::get('/users/{user}/edit', [DashboardController::class, 'editUser'])->name('admin.users.edit');
     Route::patch('/users/{user}', [DashboardController::class, 'updateUser'])->name('admin.users.update');
+
+    Route::delete('/users/{user}', [DashboardController::class, 'destroyUser'])->name('admin.users.destroy');
+
+    // Ruta para actualizar el rol de un usuario
+    Route::patch('/users/{user}/update-role', [DashboardController::class, 'updateUserRole'])->name('admin.users.update-role');
 });
 
 // Esta línea es la que importa las rutas de autenticación

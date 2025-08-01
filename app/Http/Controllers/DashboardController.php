@@ -76,4 +76,27 @@ class DashboardController extends Controller{
 
         return redirect()->route('admin.users.index')->with('status', 'Usuario actualizado exitosamente.');
     }
+
+    public function destroyUser(User $user)
+    {
+        // No permitimos que un usuario se elimine a sí mismo
+        if (auth()->user()->id === $user->id) {
+            return redirect()->route('admin.users.index')->with('error', 'No puedes eliminar tu propia cuenta.');
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('status', 'Usuario eliminado exitosamente.');
+    }
+
+    public function updateUserRole(Request $request, User $user)
+    {
+        $request->validate([
+            'role' => ['required', 'string', 'in:basico,administrador'],
+        ]);
+
+        $user->update(['role' => $request->role]);
+
+        return back()->with('status', 'Rol de usuario actualizado exitosamente.');
+    }
 }
