@@ -55,5 +55,25 @@ class DashboardController extends Controller{
         return view('admin.audit_log', compact('activities'));
     }
 
+    public function editUser(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
 
+    public function updateUser(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'role' => ['required', 'string', 'in:basico,administrador'],
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+        ]);
+
+        return redirect()->route('admin.users.index')->with('status', 'Usuario actualizado exitosamente.');
+    }
 }
