@@ -23,7 +23,7 @@
                         <li>
                             <a href="#" class="nav-item">
                                 <i data-lucide="bar-chart-3"></i>
-                                <span class="sidebar-text">Analytics. X</span>
+                                <span class="sidebar-text">Analytics.X</span>
                             </a>
                         </li>
 
@@ -46,13 +46,13 @@
                         <li>
                             <a href="#" class="nav-item">
                                 <i data-lucide="calendar"></i>
-                                <span class="sidebar-text">Calendario. X</span>
+                                <span class="sidebar-text">Calendario.X</span>
                             </a>
                         </li>
                         <li>
                             <a href="#" class="nav-item">
                                 <i data-lucide="inbox"></i>
-                                <span class="sidebar-text">Mensajes. X</span>
+                                <span class="sidebar-text">Mensajes.X</span>
                             </a>
                         </li>
                     </ul>
@@ -62,7 +62,7 @@
             <div class="sidebar-header" style="padding-bottom:2rem;">
                 <a href="#" class="nav-item">
                     <i data-lucide="settings"></i>
-                    <span class="sidebar-text">Configuración. X</span>
+                    <span class="sidebar-text">Configuración.X</span>
                 </a>
             </div>
         </aside>
