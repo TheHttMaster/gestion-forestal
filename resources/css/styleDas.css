@@ -1,7 +1,7 @@
 /* Sidebar base */
 .sidebar {
     width: 16rem;
-    transition: width 0.35s cubic-bezier(.4, 0, .2, 1), background-color 0.3s, color 0.3s;
+    transition: width 0.15s cubic-bezier(.4, 0, .2, 1), background-color 0.2s, color 0.2s linear;
     background: #fff;
     display: flex;
     flex-direction: column;
