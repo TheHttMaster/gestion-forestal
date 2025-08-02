@@ -48,11 +48,13 @@
 </x-app-layout>
 
 <script>
-    $(document).ready(function() {
-        $('#audit-table').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
-            }
-        });
+    // Asegúrate de que esta URL sea la correcta para tu proyecto
+    var i18n_url = "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json";
+
+    // Inicialización de DataTables
+    $('#audit-table').DataTable({
+        "language": {
+            "url": i18n_url
+        }
     });
 </script>
