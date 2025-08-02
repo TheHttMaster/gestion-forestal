@@ -6,7 +6,7 @@ use App\Http\Controllers\DashboardController;
 
 // Rutas públicas
 Route::get('/', function () {
-    return view('auth.login');
+    return view('welcome');
 });
 
 // Rutas accesibles para cualquier usuario autenticado (básico o administrador)
