@@ -14,6 +14,9 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        @vite(['resources/css/styleDas.css', 'resources/js/DashFunctions.js'])
+        
+
         <!-- esto se debe de mudar luego a local para la platilla -->
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -30,11 +33,14 @@
         </button>
 
          <div class="flex h-screen">
-            <div class="flex-1 flex flex-col overflow-hidden">
+            
         
                 @include('layouts.navigation')
 
-            
+            <a href="http://127.0.0.1:8000/dashboard" class="nav-item active" >
+                                <i data-lucide="home"></i>
+                                <span class="sidebar-text">Dashboard</span>
+                            </a>
                 <main>
                     {{ $slot }}
                 </main>
@@ -46,7 +52,7 @@
 
 
 
-    <script src="resources/js/DashFunctions.js"></script>
+    <script src="{{ asset('js/DashFunctions.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
     
