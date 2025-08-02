@@ -37,10 +37,7 @@
         
                 @include('layouts.navigation')
 
-            <a href="http://127.0.0.1:8000/dashboard" class="nav-item active" >
-                                <i data-lucide="home"></i>
-                                <span class="sidebar-text">Dashboard</span>
-                            </a>
+            
                 <main>
                     {{ $slot }}
                 </main>
