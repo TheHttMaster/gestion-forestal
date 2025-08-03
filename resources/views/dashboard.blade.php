@@ -73,63 +73,8 @@
                 </div>
 
                 <!-- Charts and Activity -->
-                <div class="main-grid grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-                    <!-- Charts Section -->
-                    <div class="lg:col-span-2 space-y-4 md:space-y-6 lg:space-y-8">
-                        <!-- Revenue Chart -->
-                        <div class="bg-white rounded-xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
-                            <div class="mb-4 md:mb-6 lg:mb-8">
-                                <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">Resumen de Ingresos</h3>
-                                <p class="text-xs md:text-sm text-gray-500">Ingresos mensuales de los últimos 6 meses</p>
-                            </div>
-                            <div class="h-48 md:h-56 lg:h-64 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center">
-                                <div class="text-center">
-                                    <div class="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-gradient-blue rounded-xl flex items-center justify-center mx-auto mb-3 md:mb-4">
-                                        <i data-lucide="bar-chart-3" class="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-white"></i>
-                                    </div>
-                                    <div class="text-base md:text-lg font-semibold text-gray-600">Gráfico de Ingresos</div>
-                                    <p class="text-xs md:text-sm text-gray-500">Visualización de datos de ingresos</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Goals Progress -->
-                        <div class="bg-white rounded-xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
-                            <div class="mb-4 md:mb-6 lg:mb-8">
-                                <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">Progreso de Objetivos</h3>
-                                <p class="text-xs md:text-sm text-gray-500">Progreso actual hacia los objetivos mensuales</p>
-                            </div>
-                            <div class="space-y-4 md:space-y-6 lg:space-y-8">
-                                <div>
-                                    <div class="flex items-center justify-between mb-2 md:mb-3">
-                                        <span class="text-xs md:text-sm font-semibold text-gray-700">Objetivo de Ingresos</span>
-                                        <span class="text-xs md:text-sm text-gray-500 bg-gray-100 px-2 md:px-3 py-1 rounded-full">$32,000 / $50,000</span>
-                                    </div>
-                                    <div class="progress-bar w-full bg-gray-200 h-2 md:h-3">
-                                        <div class="progress-fill bg-gradient-blue h-2 md:h-3" style="width: 64%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex items-center justify-between mb-2 md:mb-3">
-                                        <span class="text-xs md:text-sm font-semibold text-gray-700">Adquisición de Usuarios</span>
-                                        <span class="text-xs md:text-sm text-gray-500 bg-gray-100 px-2 md:px-3 py-1 rounded-full">1,847 / 2,500</span>
-                                    </div>
-                                    <div class="progress-bar w-full bg-gray-200 h-2 md:h-3">
-                                        <div class="progress-fill bg-gradient-green h-2 md:h-3" style="width: 74%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex items-center justify-between mb-2 md:mb-3">
-                                        <span class="text-xs md:text-sm font-semibold text-gray-700">Satisfacción del Cliente</span>
-                                        <span class="text-xs md:text-sm text-gray-500 bg-gray-100 px-2 md:px-3 py-1 rounded-full">4.2 / 5.0</span>
-                                    </div>
-                                    <div class="progress-bar w-full bg-gray-200 h-2 md:h-3">
-                                        <div class="progress-fill bg-gradient-orange h-2 md:h-3" style="width: 84%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="main-grid grid grid-cols-1 lg:grid-cols-1 gap-4 md:gap-6 lg:gap-8">
+                    
 
                     <!-- Recent Activity -->
                     <div class="bg-white rounded-xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">

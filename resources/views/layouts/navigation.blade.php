@@ -17,13 +17,13 @@
                         <li>
                             <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                                 <i data-lucide="home"></i>
-                                <span class="sidebar-text">Dashboard</span>
+                                <span class="sidebar-text">Inicio</span>
                             </a>
                         </li>
                         <li>
                             <a href="#" class="nav-item">
                                 <i data-lucide="bar-chart-3"></i>
-                                <span class="sidebar-text">Analytics.X</span>
+                                <span class="sidebar-text">Analisis.X</span>
                             </a>
                         </li>
 
@@ -69,8 +69,8 @@
     <div class="flex-1 flex flex-col overflow-hidden">
         @php
             $routeNames = [
-                'dashboard' => 'Dashboard',
-                'admin.user.*' => 'Usuarios',
+                'dashboard' => 'Inicio',
+                'admin.users.*' => 'Usuarios',
                 'admin.audit' => 'Historial', // Aplica a cualquier ruta que empiece con "posts."
             ];
             
