@@ -94,7 +94,7 @@ class DashboardController extends Controller{
     {
         $user->restore(); // Esto quita la marca de tiempo de `deleted_at`
 
-        return redirect()->route('admin.users.index')->with('status', 'Usuario habilitado exitosamente.');
+        return back()->with('status', 'Usuario habilitado exitosamente.');
     }
 
     public function updateUserRole(Request $request, User $user)

@@ -10,8 +10,8 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="flex justify-end mb-4">
-                        <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-                            {{ __('Crear Nuevo Usuario') }}
+                        <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                            {{ __('Ver Habilitados') }}
                         </a>
                     </div>
 
@@ -48,9 +48,9 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900">Editar</a>
                                 
-                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a este usuario?');">
+                                        <form action="{{ route('admin.users.enable', $user) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres habilitar a este usuario?');">
                                             @csrf
-                                            @method('DELETE')
+                                            @method('PATCH')
                                             <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>
                                         </form>
                                     </td>
