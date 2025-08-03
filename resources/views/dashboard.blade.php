@@ -27,7 +27,7 @@
                                 <i data-lucide="users" class="w-4 h-4 md:w-5 lg:w-6 md:h-5 lg:h-6 text-white"></i>
                             </div>
                         </div>
-                        <div class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 md:mb-3">2,350</div>
+                        <div class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 md:mb-3">{{ $userCount }}</div>
                         <div class="flex items-center text-xs md:text-sm">
                             <div class="flex items-center bg-blue-100 text-blue-700 px-2 md:px-3 py-1 rounded-full">
                                 <i data-lucide="arrow-up" class="w-2 h-2 md:w-3 md:h-3 mr-1"></i>
@@ -61,7 +61,7 @@
                                 <i data-lucide="activity" class="w-4 h-4 md:w-5 lg:w-6 md:h-5 lg:h-6 text-white"></i>
                             </div>
                         </div>
-                        <div class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 md:mb-3">573</div>
+                        <div class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 md:mb-3">{{ $activityCount }}</div>
                         <div class="flex items-center text-xs md:text-sm">
                             <div class="flex items-center bg-red-100 text-red-700 px-2 md:px-3 py-1 rounded-full">
                                 <i data-lucide="arrow-down" class="w-2 h-2 md:w-3 md:h-3 mr-1"></i>
