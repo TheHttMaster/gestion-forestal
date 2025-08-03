@@ -11,20 +11,21 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-        @vite(['resources/css/styleDas.css', 'resources/js/DashFunctions.js'])
+        <!-- DataTables CSS (CDN) -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
         
+        <!-- Styles -->
+        @vite(['resources/css/app.css', 'resources/css/styleDas.css', 'resources/css/DataTableCss.css'])
 
-        <!-- esto se debe de mudar luego a local para la platilla -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+        <!-- Lucide Icons (mejor práctica) -->
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <script>
+            lucide.createIcons(); // Inicializa los íconos
+        </script>
     </head>
-   <body class="bg-gray-50">
-         <!-- Mobile sidebar overlay -->
+    
+    <body class="bg-gray-50">
+        <!-- Mobile sidebar overlay -->
         <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
         <!-- Mobile dark mode toggle button -->
@@ -33,25 +34,22 @@
         </button>
 
         <div class="flex h-screen">
-            
             @include('layouts.navigation')
-
-                 <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-                    {{ $slot }}
-                </main>
             
-            </div>   
-
-            </div>
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+                {{ $slot }}
+            </main>
         </div>
 
-
-
-
-
-    <script src="{{ asset('js/DashFunctions.js') }}"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-    
+        <!-- jQuery (CDN) -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        
+        <!-- DataTables JS (CDN) -->
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        
+        <!-- Scripts locales (optimizado) -->
+        @vite(['resources/js/app.js', 'resources/js/DashFunctions.js', 'resources/js/DataTableJs.js'])
+        
+       
     </body>
 </html>
