@@ -90,6 +90,13 @@ class DashboardController extends Controller{
         return redirect()->route('admin.users.index')->with('status', 'Usuario eliminado exitosamente.');
     }
 
+    public function enableUser(User $user)
+    {
+        $user->restore(); // Esto quita la marca de tiempo de `deleted_at`
+
+        return redirect()->route('admin.users.index')->with('status', 'Usuario habilitado exitosamente.');
+    }
+
     public function updateUserRole(Request $request, User $user)
     {
         $request->validate([
@@ -100,4 +107,12 @@ class DashboardController extends Controller{
 
         return back()->with('status', 'Rol de usuario actualizado exitosamente.');
     }
+
+    public function listDisabledUsers()
+    {
+        $users = User::onlyTrashed()->paginate(15); // Obtiene solo los usuarios deshabilitados
+        return view('admin.users.disabled', compact('users'));
+    }
+
+
 }

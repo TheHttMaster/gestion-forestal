@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Lista de Usuarios') }}
+            {{ __('Usuarios Deshabilitados') }}
         </h2>
     </x-slot>
 
@@ -13,14 +13,6 @@
                         <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                             {{ __('Crear Nuevo Usuario') }}
                         </a>
-                        <a href="{{ route('admin.users.disabled') }}" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-                            {{ __('Ver Deshabilitados') }}
-                        </a>
-                        @if (session('status'))
-                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                                {{ session('status') }}
-                            </div>
-                        @endif
                     </div>
 
 
