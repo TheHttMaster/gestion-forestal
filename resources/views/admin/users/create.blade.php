@@ -40,6 +40,7 @@
                             <x-primary-button class="ms-4">
                                 {{ __('Crear Usuario') }}
                             </x-primary-button>
+                            <x-go-back-button />
                         </div>
                     </form>
                 </div>

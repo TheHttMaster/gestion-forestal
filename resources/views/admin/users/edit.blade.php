@@ -38,6 +38,7 @@
                             <x-primary-button class="ms-4">
                                 {{ __('Actualizar Usuario') }}
                             </x-primary-button>
+                            <x-go-back-button />
                         </div>
                     </form>
                 </div>
