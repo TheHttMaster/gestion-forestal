@@ -160,11 +160,11 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
         }
     }
 });
-htmlElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-            setTimeout(() => lucide.createIcons(), 100);
+            setTimeout(() => lucide.createIcons(), 999);
         }
     });
 });
