@@ -10,6 +10,7 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes; 
 
+
 class User extends Authenticatable{
 
     /** @use HasFactory<\Database\Factories\UserFactory> */

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Sistema de Gestion Geografica') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -32,15 +32,15 @@
             <i id="mobileDarkIcon" data-lucide="sun" class="w-6 h-6 text-white"></i>
         </button>
 
-         <div class="flex h-screen">
+        <div class="flex h-screen">
             
-        
-                @include('layouts.navigation')
+            @include('layouts.navigation')
 
-            
-                <main>
+                 <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
                     {{ $slot }}
                 </main>
+            
+            </div>   
 
             </div>
         </div>
