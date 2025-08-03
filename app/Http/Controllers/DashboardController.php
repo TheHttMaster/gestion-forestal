@@ -10,12 +10,12 @@ use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller{
     
-    public function index(){
-        $totalUsers = User::count();
-        // Por ahora, el total de acciones es 0. Lo implementaremos más adelante.
-        $totalActions = 0;
+    public function index()
+    {
+        $userCount = User::count();
+        $activityCount = Activity::count();
 
-        return view('dashboard', compact('totalUsers', 'totalActions'));
+        return view('dashboard', compact('userCount', 'activityCount'));
     }
 
     public function listUsers(){
