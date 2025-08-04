@@ -1,6 +1,6 @@
 <x-app-layout>
-   <!-- Stats Cards -->
-
+   
+    @if (auth()->check() && auth()->user()->role === 'administrador')
          <!-- Stats Cards -->
                 <div class="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 mb-6 md:mb-8">
                    
@@ -71,9 +71,13 @@
                 @endforeach
             </tbody>
         </table>
-        
-        
     </div>
+    @else
+    <h2 class="!text-3xl !font-extrabold !text-black dark:text-white !mb-4">
+    Bienvenido Usuario {{ Auth::user()->name }}
+</h2>
+    @endif
+    
 </div>
 </x-app-layout>
 
