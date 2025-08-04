@@ -37,10 +37,10 @@
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
+                            <x-go-back-button />
                             <x-primary-button class="ms-4">
                                 {{ __('Crear Usuario') }}
                             </x-primary-button>
-                            <x-go-back-button />
                         </div>
                     </form>
                 </div>
