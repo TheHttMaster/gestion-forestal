@@ -117,7 +117,11 @@
                     </div>
                     <div class="relative">
                         <button id="userMenuToggle" class="flex items-center space-x-2 md:space-x-3 p-1 md:p-2 rounded-lg hover:bg-gray-200 hover-lift">
-                            <img src="" alt="Usuario" class="w-8 h-8 md:w-10 md:h-10 rounded-lg">
+                            <img 
+                                src="{{ Vite::asset('resources/img/01db27489ea9a74e7cfdcfb4220832ae.jpg') }}" 
+                                alt="Foto de perfil"
+                                class="w-10 h-10 rounded-full"
+                            >
                             <div class="hidden lg:block text-left">
                                 <p class="text-sm font-medium text-gray-700">{{ Auth::user()->name }}</p>
                                 <p class="text-xs text-gray-500">{{ Auth::user()->role }}</p>

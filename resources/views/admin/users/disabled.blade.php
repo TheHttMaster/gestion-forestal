@@ -49,7 +49,11 @@
                                         <form action="{{ route('admin.users.enable', $user) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que desea habilitar a este usuario?');">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-red-600 hover:text-red-900">Habilitar</button>
+                                             <button type="submit" 
+                                                        class="inline-flex items-center text-green-600 hover:text-green-900 transition-colors"
+                                                        title="Habilitar">
+                                                    <i data-lucide="user" class="w-7 h-7"></i>
+                                                </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -63,14 +67,21 @@
 
 </x-app-layout>
 
+<script src="https://unpkg.com/lucide@latest"></script>
 <script>
-    // Asegúrate de que esta URL sea la correcta para tu proyecto
-    var i18n_url = "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json";
-
-    // Inicialización de DataTables
+    lucide.createIcons();
+    
+    // Configuración de DataTables
     $('#users-table').DataTable({
         "language": {
-            "url": i18n_url
-        }
+            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+        },
+        "columnDefs": [
+            { "width": "5%", "targets": 0 },  // ID
+            { "width": "25%", "targets": 1 }, // Nombre
+            { "width": "25%", "targets": 2 }, // Email
+            { "width": "20%", "targets": 3 }, // Rol
+            { "width": "10%", "targets": 4 }  // Acción
+        ]
     });
 </script>
