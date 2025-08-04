@@ -27,18 +27,19 @@
 
                         <div class="mt-4">
                             <x-input-label for="role" :value="__('Rol')" />
-                            <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <select id="role" name="role" class="block mt-1 w-full bg-gray-200  border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option value="basico" @if ($user->role === 'basico') selected @endif>{{ __('Básico') }}</option>
                                 <option value="administrador" @if ($user->role === 'administrador') selected @endif>{{ __('Administrador') }}</option>
                             </select>
                             <x-input-error :messages="$errors->get('role')" class="mt-2" />
                         </div>
 
-                        <div class="flex items-center justify-end mt-4">
+                        <div class="flex items-center justify-end mt-4 space-x-4">
+                            <x-go-back-button />
                             <x-primary-button class="ms-4">
                                 {{ __('Actualizar Usuario') }}
                             </x-primary-button>
-                            <x-go-back-button />
+                            
                         </div>
                     </form>
                 </div>
