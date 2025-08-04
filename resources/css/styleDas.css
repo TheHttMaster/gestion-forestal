@@ -350,6 +350,10 @@ input:checked+.toggle-slider:before {
     overflow: hidden;
 }
 
+.dark .bg-gray-200{
+    background-color: #1b2027;
+}
+
 .progress-fill {
     border-radius: 8px;
     transition: width 0.5s ease;
