@@ -48,7 +48,7 @@
     </div>
     
     <div class="overflow-x-auto">
-        <table class="w-full">
+        <table id="auditoria-table" class="w-full">
             <thead>
                 <tr class="text-left border-b border-gray-200">
                     <th class="pb-2 text-xs md:text-sm font-semibold text-gray-900">Usuario</th>
@@ -58,77 +58,33 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-                <tr class="hover:bg-gray-50">
-                    <td class="py-3">
-                        <div class="flex items-center space-x-3 md:space-x-4">
-                            <img src="" alt="Alice" class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 rounded-lg">
-                            <span class="text-xs md:text-sm font-semibold text-gray-900">Alice Johnson</span>
-                        </div>
-                    </td>
-                    <td class="py-3 text-xs md:text-sm text-gray-500">Creó nuevo proyecto</td>
-                    <td class="py-3 text-right">
-                        <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Éxito</span>
-                    </td>
-                    <td class="py-3 text-xs text-gray-500 text-right">hace 2 min</td>
-                </tr>
-                
-                <tr class="hover:bg-gray-50">
-                    <td class="py-3">
-                        <div class="flex items-center space-x-3 md:space-x-4">
-                            <img src="" alt="Bob" class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 rounded-lg">
-                            <span class="text-xs md:text-sm font-semibold text-gray-900">Bob Smith</span>
-                        </div>
-                    </td>
-                    <td class="py-3 text-xs md:text-sm text-gray-500">Actualizó perfil de usuario</td>
-                    <td class="py-3 text-right">
-                        <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Info</span>
-                    </td>
-                    <td class="py-3 text-xs text-gray-500 text-right">hace 5 min</td>
-                </tr>
-                
-                <tr class="hover:bg-gray-50">
-                    <td class="py-3">
-                        <div class="flex items-center space-x-3 md:space-x-4">
-                            <img src="" alt="Carol" class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 rounded-lg">
-                            <span class="text-xs md:text-sm font-semibold text-gray-900">Carol Davis</span>
-                        </div>
-                    </td>
-                    <td class="py-3 text-xs md:text-sm text-gray-500">Eliminó archivos antiguos</td>
-                    <td class="py-3 text-right">
-                        <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Aviso</span>
-                    </td>
-                    <td class="py-3 text-xs text-gray-500 text-right">hace 10 min</td>
-                </tr>
-                
-                <tr class="hover:bg-gray-50">
-                    <td class="py-3">
-                        <div class="flex items-center space-x-3 md:space-x-4">
-                            <img src="" alt="David" class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 rounded-lg">
-                            <span class="text-xs md:text-sm font-semibold text-gray-900">David Wilson</span>
-                        </div>
-                    </td>
-                    <td class="py-3 text-xs md:text-sm text-gray-500">Completó revisión de tarea</td>
-                    <td class="py-3 text-right">
-                        <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Éxito</span>
-                    </td>
-                    <td class="py-3 text-xs text-gray-500 text-right">hace 15 min</td>
-                </tr>
-                
-                <tr class="hover:bg-gray-50">
-                    <td class="py-3">
-                        <div class="flex items-center space-x-3 md:space-x-4">
-                            <img src="" alt="Eva" class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 rounded-lg">
-                            <span class="text-xs md:text-sm font-semibold text-gray-900">Eva Brown</span>
-                        </div>
-                    </td>
-                    <td class="py-3 text-xs md:text-sm text-gray-500">Falló respaldo del sistema</td>
-                    <td class="py-3 text-right">
-                        <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Error</span>
-                    </td>
-                    <td class="py-3 text-xs text-gray-500 text-right">hace 20 min</td>
-                </tr>
+                @foreach($activities as $activity)
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-3">
+                            <div class="flex items-center space-x-3 md:space-x-4">
+                                {{-- <img src="resources\img\01db27489ea9a74e7cfdcfb4220832ae.jpg" alt="{{ $activity->causer->name }}" class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 rounded-lg"> --}}
+                                <span class="text-xs md:text-sm font-semibold text-gray-900">{{ $activity->causer ? $activity->causer->name : 'N/A' }}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 text-xs md:text-sm text-gray-500">{{ $activity->description }}</td>
+                        <{{-- td class="py-3 text-right">
+                            @if ($activity->status == 'Éxito')
+                                <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Éxito</span>
+                            @elseif ($activity->status == 'Info')
+                                <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Info</span>
+                            @elseif ($activity->status == 'Aviso')
+                                <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Aviso</span>
+                            @elseif ($activity->status == 'Error')
+                                <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Error</span>
+                            @endif
+                        </td> --}}
+                        <td class="py-3 text-xs text-gray-500 text-right">{{ $activity->created_at->format('d/m/Y H:i:s') }}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
+        
+        
     </div>
 </div>
 </x-app-layout>
@@ -136,4 +92,14 @@
 
   <!-- Main Content Area -->
            
+        <script>
+            $(document).ready(function() {
+                $('#auditoria-table').DataTable({
+                    // Opciones de configuración
+                    "language": {
+                        "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                    }
+                });
+            });
+        </script>
     

@@ -14,8 +14,9 @@ class DashboardController extends Controller{
     {
         $userCount = User::count();
         $activityCount = Activity::count();
+        $activities = Activity::latest()->get();
 
-        return view('dashboard', compact('userCount', 'activityCount'));
+        return view('dashboard', compact('userCount', 'activityCount', 'activities'));
     }
 
     public function listUsers(){
