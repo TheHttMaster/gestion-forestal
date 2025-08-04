@@ -53,7 +53,6 @@
                 <tr class="text-left border-b border-gray-200">
                     <th class="pb-2 text-xs md:text-sm font-semibold text-gray-900">Usuario</th>
                     <th class="pb-2 text-xs md:text-sm font-semibold text-gray-900">Acción</th>
-                    <th class="pb-2 text-xs md:text-sm font-semibold text-gray-900 text-right">Estado</th>
                     <th class="pb-2 text-xs md:text-sm font-semibold text-gray-900 text-right">Tiempo</th>
                 </tr>
             </thead>
@@ -67,18 +66,7 @@
                             </div>
                         </td>
                         <td class="py-3 text-xs md:text-sm text-gray-500">{{ $activity->description }}</td>
-                        <{{-- td class="py-3 text-right">
-                            @if ($activity->status == 'Éxito')
-                                <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Éxito</span>
-                            @elseif ($activity->status == 'Info')
-                                <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Info</span>
-                            @elseif ($activity->status == 'Aviso')
-                                <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Aviso</span>
-                            @elseif ($activity->status == 'Error')
-                                <span class="inline-flex items-center px-2 md:px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Error</span>
-                            @endif
-                        </td> --}}
-                        <td class="py-3 text-xs text-gray-500 text-right">{{ $activity->created_at->format('d/m/Y H:i:s') }}</td>
+                        <td class="py-3 text-xs text-gray-500 text-left">{{ $activity->created_at->format('d/m/Y H:i:s') }}</td>
                     </tr>
                 @endforeach
             </tbody>
