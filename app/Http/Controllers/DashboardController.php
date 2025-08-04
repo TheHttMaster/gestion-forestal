@@ -82,12 +82,12 @@ class DashboardController extends Controller{
     {
         // No permitimos que un usuario se elimine a sí mismo
         if (auth()->user()->id === $user->id) {
-            return redirect()->route('admin.users.index')->with('error', 'No puedes eliminar tu propia cuenta.');
+            return redirect()->route('admin.users.index')->with('error', 'No puedes deshabilitar tu propia cuenta.');
         }
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('status', 'Usuario eliminado exitosamente.');
+        return redirect()->route('admin.users.index')->with('status', 'Usuario deshabilitado exitosamente.');
     }
 
     public function enableUser(User $user)

@@ -17,9 +17,9 @@
                             {{ __('Ver Deshabilitados') }}
                         </a>
                         @if (session('status'))
-                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                                {{ session('status') }}
-                            </div>
+                            <script>
+                                alert("{{ session('status') }}");
+                            </script>
                         @endif
                     </div>
 

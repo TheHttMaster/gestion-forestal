@@ -13,6 +13,11 @@
                         <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                             {{ __('Ver Habilitados') }}
                         </a>
+                        @if (session('status'))
+                            <script>
+                                alert("{{ session('status') }}");
+                            </script>
+                        @endif
                     </div>
 
 

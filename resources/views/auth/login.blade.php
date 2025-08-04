@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CacaoTech - Portal Empresarial</title>
+    <title>{{ config('app.name') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
    <script>
     tailwind.config = {
@@ -63,7 +63,7 @@
                     </svg>
                 </div>
                 <h1 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-amber-900 dark:text-amber-100 mb-1 transition-colors">Cacao San José</h1>
-                <p class="text-xs sm:text-sm md:text-base text-amber-700 dark:text-amber-300 transition-colors">Portal Empresarial</p>
+                <p class="text-xs sm:text-sm md:text-base text-amber-700 dark:text-amber-300 transition-colors">Gestion Forestal</p>
             </div>
 
             <!-- Card de login -->
@@ -71,7 +71,7 @@
                 <!-- Header del card -->
                 <div class="px-3 sm:px-4 md:px-5 py-3 sm:py-4 pb-3 sm:pb-4">
                     <h2 class="text-base sm:text-lg md:text-xl lg:text-2xl text-center text-amber-900 dark:text-amber-100 font-semibold transition-colors">Iniciar Sesión</h2>
-                    <p class="text-center text-amber-700 dark:text-amber-300 mt-1 text-xs sm:text-sm transition-colors">Accede a tu cuenta empresarial</p>
+                    <p class="text-center text-amber-700 dark:text-amber-300 mt-1 text-xs sm:text-sm transition-colors">Accede a tu cuenta</p>
                 </div>
 
                 <!-- Contenido del card -->
@@ -178,7 +178,7 @@
 
             <!-- Footer -->
             <div class="text-center mt-3 sm:mt-4 md:mt-5 text-xs text-amber-600 dark:text-amber-400 transition-colors px-2">
-                <p>© 2024 CacaoTech. Todos los derechos reservados.</p>
+                <p>© 2024 Todos los derechos reservados.</p>
             </div>
         </div>
     </div>
