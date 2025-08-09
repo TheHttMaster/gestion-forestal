@@ -12,19 +12,30 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- DataTables CSS (CDN) -->
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+       
         
         <!-- Styles -->
-        @vite(['resources/css/app.css', 'resources/css/styleDas.css', 'resources/css/DataTableCss.css'])
+        @vite(['resources/css/app.css', 'resources/css/styleDas.css'])
+
+         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
         <!-- Lucide Icons (mejor práctica) -->
         <script src="https://unpkg.com/lucide@latest"></script>
         <script>
             lucide.createIcons(); // Inicializa los íconos
         </script>
+        <script>
+        // Verifica el tema guardado o el preferido del sistema ANTES de renderizar
+        const storedTheme = localStorage.getItem('theme') || 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+            if (storedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        </script>
     </head>
     
-    <body class="bg-gray-50">
+    <body class="bg-gray-200">
         <!-- Mobile sidebar overlay -->
         <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
@@ -48,7 +59,7 @@
         <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
         
         <!-- Scripts locales (optimizado) -->
-        @vite(['resources/js/app.js', 'resources/js/DashFunctions.js', 'resources/js/DataTableJs.js'])
+        @vite(['resources/js/app.js', 'resources/js/DashFunctions.js'])
         
        
     </body>

@@ -86,7 +86,7 @@
 
 
 
-        <header class="bg-white px-4 md:px-6 lg:px-8 py-1 md:py-1 rounded-b-xl shadow-soft">
+        <header class="bg-white px-4 md:px-6 lg:px-8 py-1 md:py-1  shadow-soft">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 md:space-x-6">
                     <button id="sidebarToggle" class="p-2 md:p-3 rounded-lg hover:bg-gray-200 hover-lift">
