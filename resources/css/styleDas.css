@@ -2,7 +2,7 @@
 .sidebar {
     width: 16rem;
     transition: width 0.35s cubic-bezier(.4, 0, .2, 1);
-    background: #fff;
+   
     display: flex;
     flex-direction: column;
     border-radius: 0 0 1rem 0;
@@ -16,7 +16,7 @@
 }
 
 .dark .sidebar {
-    background: #07080c;
+   
     color: #f1f5f9;
 }
 
@@ -163,53 +163,12 @@
     color-scheme: dark;
 }
 
-.dark body {
-    background-color: #040507;
-}
-
-.dark .bg-white {
-    background-color: #07080c;
-}
-
-.dark .bg-gray-50 {
-    background-color: #040507;
-}
-
-.dark .bg-gray-100 {
-    background-color: #362b22;
-}
-
-.dark .bg-stone-200 {
-    background-color: #312d2a;
-}
-
-.dark .text-gray-900 {
-    color: #f1f5f9;
-}
-
-.dark .text-gray-700 {
-    color: #cbd5e1;
-}
-
-.dark .text-gray-600 {
-    color: #94a3b8;
-}
-
-.dark .text-gray-500 {
-    color: #64748b;
-}
-
-.dark .text-gray-400 {
-    color: #475569;
-}
 
 .dark .border-gray-200 {
     border-color: #334155;
 }
 
-.dark .hover\:bg-gray-200:hover {
-    background-color: #35281cb7;
-}
+
 
 /* Toggle switch styles - moderately rounded */
 .toggle-switch {
@@ -376,18 +335,54 @@ input:checked+.toggle-slider:before {
     }
 }
 
-/* Agranda y mueve a la derecha el icono y el texto al hacer hover */
 
-
-/* Efecto cuando el sidebar está abierto */
-.sidebar:not(.collapsed) .nav-item:hover svg,
-.sidebar:not(.collapsed) .nav-item:hover .sidebar-text {
-    transform: scale(1.1) translateX(14%);
-    transition: transform 0.4s cubic-bezier(.4, 0, .2, 1) !important;
+/* Añade esto a tu styleDas.css */
+.sidebar {
+    position: relative; /* Necesario para el pseudo-elemento */
+    overflow: visible; /* Permite que el pseudo-elemento se vea fuera del sidebar */
 }
 
-/* Efecto cuando el sidebar está cerrado: solo el icono se agranda */
-.sidebar.collapsed .nav-item:hover svg {
-    transform: scale(1.15);
-    transition: transform 0.4s cubic-bezier(.4, 0, .2, 1) !important;
+.headi {
+    position: relative; /* Contexto para z-index */
+    z-index: 20; /* Menor que el sidebar */
 }
+
+.headi::before {
+    content: '';
+    position: absolute;
+    top: 64px;
+    left: 0;
+    box-shadow: -20px -20px 0 rgb(245 245 244 / 0.9); /* Tu sombra personalizada */
+    z-index: 30;
+    width: 40px;
+    height: 40px;
+    border-radius: 45%;
+    transition: right 0.35s cubic-bezier(.4, 0, .2, 1); /* Misma transición que el sidebar */
+}
+
+/* Ajuste para modo oscuro */
+.dark .headi::before {
+    box-shadow: -20px -20px 0 #0d0f16ff; /* Color del sidebar oscuro */
+}
+
+/* Cuando el sidebar está colapsado */
+.sidebar.collapsed ~ .flex-1 .headi::before {
+    right: calc(-10px + (4.6rem - 16rem)); /* Ajuste matemático para la nueva posición */
+}
+
+/* Restaura los estilos nativos SOLO para elementos de DataTables */
+.dataTables_wrapper input,
+.dataTables_wrapper select {
+    -webkit-appearance: auto !important;
+    -moz-appearance: auto !important;
+    appearance: auto !important;
+}
+
+/* Específicamente para el input de búsqueda */
+.dataTables_filter input {
+    -webkit-appearance: none !important; /* Mantiene tu estilo pero solo para este input */
+    -moz-appearance: none !important;
+    appearance: none !important;
+    /* Resto de tus estilos... */
+}
+

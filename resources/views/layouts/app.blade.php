@@ -16,6 +16,7 @@
         
         <!-- Styles -->
         @vite(['resources/css/app.css', 'resources/css/styleDas.css'])
+        
 
          <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
@@ -33,9 +34,10 @@
                 document.documentElement.classList.add('dark');
             }
         </script>
+       
     </head>
     
-    <body class="bg-gray-200">
+    <body class="bg-neutral-200 dark:bg-custom-dark ">
         <!-- Mobile sidebar overlay -->
         <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
@@ -44,7 +46,7 @@
             <i id="mobileDarkIcon" data-lucide="sun" class="w-6 h-6 text-white"></i>
         </button>
 
-        <div class="flex h-screen">
+        <div class="flex h-screen ">
             @include('layouts.navigation')
             
             <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
