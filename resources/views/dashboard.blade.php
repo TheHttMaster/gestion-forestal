@@ -5,7 +5,7 @@
      
         <div class="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 mb-6 md:mb-8">
         
-            <div class="bg-stone-100/90 dark:bg-custom-gray  rounded-xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
+            <div class="bg-stone-100/90 dark:bg-custom-gray  rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
                 <div class="flex items-center justify-between mb-4 md:mb-6">
                     <h3 class="text-xs md:text-sm font-medium text-gray-500">Usuarios Activos</h3>
                     <div class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 bg-gradient-blue rounded-lg flex items-center justify-center">
@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <div class="bg-stone-100/90 dark:bg-custom-gray  rounded-xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
+            <div class="bg-stone-100/90 dark:bg-custom-gray  rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
                 <div class="flex items-center justify-between mb-4 md:mb-6">
                     <h3 class="text-xs md:text-sm font-medium text-gray-500">Actividades realizadas</h3>
                     <div class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 bg-gradient-orange rounded-lg flex items-center justify-center">
@@ -41,7 +41,7 @@
         </div>
 
         <!-- Charts and Activity -->
-        <div class="bg-stone-100/90 dark:bg-custom-gray rounded-xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
+        <div class="bg-stone-100/90 dark:bg-custom-gray rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
             <div class="mb-4 md:mb-6 lg:mb-8">
                 <h3 class="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-200 mb-1 md:mb-2">Actividad Reciente</h3>
                 <p class="text-xs md:text-sm text-gray-500 ">Últimas acciones de tu equipo</p>
@@ -58,7 +58,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         @foreach($activities as $activity)
-                            <tr class="hover:bg-gray-200 dark:bg-custom-gray dark:hover:bg-gray-800 ">
+                            <tr class="hover:bg-gray-200 dark:bg-custom-gray dark:hover:bg-gray-700 ">
                                 <td class="py-3">
                                     <div class="flex items-center space-x-3 md:space-x-4">
                                         {{-- <img src="resources\img\01db27489ea9a74e7cfdcfb4220832ae.jpg" alt="{{ $activity->causer->name }}" class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 rounded-lg"> --}}

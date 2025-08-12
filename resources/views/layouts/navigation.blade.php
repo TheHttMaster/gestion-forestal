@@ -73,6 +73,7 @@
             $routeNames = [
                 'dashboard' => 'Inicio',
                 'admin.users.*' => 'Usuarios',
+                'profile.*' => 'Pefil de Usuario',
                 'admin.audit' => 'Historial', // Aplica a cualquier ruta que empiece con "posts."
             ];
             
@@ -97,29 +98,24 @@
                         </svg>
                     </button>
                     <nav class="hidden sm:flex items-center space-x-2 md:space-x-3 text-sm">
-                        <a href="#" class="text-gray-800 dark:text-gray-300 hover:text-gray-950  px-2 md:px-3 py-1 md:py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700/50">{{ $currentRouteName }}</a>
+                        <a href="#" class="text-gray-800 dark:text-custom-gold-medium hover:text-gray-950  px-2 md:px-3 py-1 md:py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700/50">{{ $currentRouteName }}</a>
                         <i data-lucide="chevron-right" class="w-3 h-3 md:w-4 md:h-4 text-gray-400"></i>
                         <span class="text-gray-900 px-2 md:px-3 py-1 md:py-2 bg-stone-200 dark:bg-stone-400 rounded-lg font-medium">Resumen</span>
                     </nav>
                 </div>
                 <div class="flex items-center space-x-2 md:space-x-4">
                     
-                    <button class="p-1 md:p-1 rounded-lg hover:bg-gray-200 relative hover-lift">
-                        <i data-lucide="bell" class="w-4 h-4 md:w-5 md:h-5"></i>
-                        <span class="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 bg-red-500 rounded-full flex items-center justify-center">
-                            <span class="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full"></span>
-                        </span>
-                    </button>
+                   
                     <!-- Desktop dark mode toggle -->
-                    <div class="hidden sm:flex items-center space-x-2 md:space-x-3 bg-gray-200 dark:bg-custom-dark rounded-lg px-3 md:px-4 py-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun w-3 h-3 md:w-4 md:h-4 text-gray-600 dark:text-gray-300">
+                    <div class="hidden sm:flex items-center space-x-2 md:space-x-3 bg-gray-200 dark:text-custom-gold-medium rounded-lg px-3 md:px-4 py-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun w-3 h-3 md:w-4 md:h-4 text-gray-600 dark:text-custom-gold-medium">
                             <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
                         </svg>
                         <label class="toggle-switch">
                             <input type="checkbox" id="darkModeToggle">
                             <span class="toggle-slider"></span>
                         </label>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon w-3 h-3 md:w-4 md:h-4 text-gray-600 dark:text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon w-3 h-3 md:w-4 md:h-4 text-gray-600 dark:text-custom-gold-medium">
                             <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
                         </svg>
                     </div>
@@ -132,7 +128,7 @@
                             >
                             <div class="hidden lg:block text-left">
                                 <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ Auth::user()->name }}</p>
-                                <p class="text-xs text-gray-500">{{ Auth::user()->role }}</p>
+                                <p class="text-xs text-gray-500 dark:text-custom-gold-medium">{{ Auth::user()->role }}</p>
                             </div>
                             <i data-lucide="chevron-down" class="hidden md:block w-3 h-3 md:w-4 md:h-4 text-gray-400"></i>
                         </button>

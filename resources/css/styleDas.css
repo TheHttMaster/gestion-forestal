@@ -74,11 +74,11 @@
     transition: background 0.2s, color 0.2s;
 }
 
-.sidebar .nav-item.active {
+ .sidebar .nav-item.active {
     background: linear-gradient(135deg, #502d1398 0%, #36290e94 100%);
     color: #fff;
     box-shadow: 0 4px 15px rgba(92, 63, 30, 0.219);
-}
+} 
 
 .sidebar .nav-item.active i {
     color: #fff !important;
@@ -104,9 +104,9 @@
 }
 
 .dark .sidebar .nav-item.active {
-    background: linear-gradient(135deg, #312a25dc 0%, #201713 100%);
+    background: linear-gradient(135deg, #3a3029dc 0%, #5c3518 100%);
     color: #fff;
-}
+} 
 
 .dark .dropdown-menu .hover\:bg-red-100:hover {
     background: #da171763;
@@ -223,7 +223,7 @@ input:checked+.toggle-slider:before {
 }
 
 .dark input:checked+.toggle-slider {
-    background-color: #72412063;
+    background-color: #58504bbd;
 }
 
 /* Mobile dark mode button */
@@ -337,6 +337,7 @@ input:checked+.toggle-slider:before {
 
 
 /* Añade esto a tu styleDas.css */
+/* recuesda corregir esto para la responsibidad en modo movil  */
 .sidebar {
     position: relative; /* Necesario para el pseudo-elemento */
     overflow: visible; /* Permite que el pseudo-elemento se vea fuera del sidebar */
@@ -384,5 +385,20 @@ input:checked+.toggle-slider:before {
     -moz-appearance: none !important;
     appearance: none !important;
     /* Resto de tus estilos... */
+}
+
+/* Estilos del SVG de fondo */
+.svg-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.09;
+    pointer-events: none;
+}
+.dark .svg-background {
+    opacity: 0.04;
 }
 
