@@ -6,14 +6,21 @@
     <div class="">
         <div class="max-w-7xl mx-auto ">
             <div class="bg-stone-100/90 dark:bg-custom-gray overflow-hidden shadow-sm sm:rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 ">
-                <div class="p-6 text-gray-900 dark:text-gray-100 ">
-                    <h2 class="font-semibold text-xl leading-tight">
+                <div class="text-gray-900 dark:text-gray-100 ">
+                    <h2 class="font-semibold text-xl leading-tight ">
                         {{ __('Lista de Usuarios') }}
                     </h2>
                     <div class="flex justify-end mb-4 space-x-4">
                         <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
                             {{ __('Crear Nuevo Usuario') }}
                         </a>
+
+                        <!-- boton del modal que se podria llegar a usar
+                        <x-primary-button
+                            x-data=""
+                            x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+                        >{{ __('Eliminar Cuenta') }}</x-primary-button> -->
+
                         <a href="{{ route('admin.users.disabled') }}" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
                             {{ __('Ver Deshabilitados') }}
                         </a>
@@ -86,45 +93,54 @@
         </div>
     </div>
    
+<!-- 
+        modal para posibilidad de usarlo
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6 ">
+       
+       
+        <form method="POST" action="{{ route('admin.users.store') }}" class="p-6 rounded-2xl shadow-soft">
             @csrf
-            @method('delete')
-
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('Are you sure you want to delete your account?') }}
+             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Crear Usuario') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
-            </p>
-
-            <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
-
-                <x-text-input
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
-
-                <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
+            <div>
+                <x-input-label for="name" :value="__('Nombre')" />
+                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+                <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
 
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
+            <div class="mt-4">
+                <x-input-label for="email" :value="__('Email')" />
+                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
+            <div class="mt-4">
+                <x-input-label for="password" :value="__('Contraseña')" />
+                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            </div>
+
+            <div class="mt-4">
+                <x-input-label for="password_confirmation" :value="__('Confirmar Contraseña')" />
+                <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            </div>
+
+            <div class="flex items-center justify-end mt-4 space-x-4">
+                 <x-secondary-button x-on:click="$dispatch('close')">
                     {{ __('Cancel') }}
                 </x-secondary-button>
-
-                <x-danger-button class="ms-3">
-                    {{ __('Eliminar Cuenta') }}
-                </x-danger-button>
+                <x-primary-button class="ms-4">
+                    {{ __('Crear Usuario') }}
+                </x-primary-button>
             </div>
         </form>
-    </x-modal>
+
+    </x-modal> -->
+
 </x-app-layout>
 
 <script src="https://unpkg.com/lucide@latest"></script>

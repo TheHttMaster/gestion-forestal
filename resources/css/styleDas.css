@@ -375,6 +375,7 @@ input:checked+.toggle-slider:before {
 .dataTables_wrapper input,
 .dataTables_wrapper select {
     -webkit-appearance: auto !important;
+     background-image: none !important; /* Elimina SVG personalizado */
     -moz-appearance: auto !important;
     appearance: auto !important;
 }

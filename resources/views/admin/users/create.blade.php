@@ -1,14 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Crear Usuario') }}
-        </h2>
+        
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="">
+        <div class="max-w-7xl mx-auto">
             <div class="bg-stone-100/90 dark:bg-custom-gray overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                
+                <div class="p-6 ">
+
+                <h2 class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight md:mb-6">
+                    {{ __('Crear Usuario') }}
+                </h2>
                     <form method="POST" action="{{ route('admin.users.store') }}">
                         @csrf
 
