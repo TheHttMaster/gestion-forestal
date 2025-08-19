@@ -2,7 +2,7 @@
 .sidebar {
     width: 16rem;
     transition: width 0.35s cubic-bezier(.4, 0, .2, 1);
-   
+
     display: flex;
     flex-direction: column;
     border-radius: 0 0 1rem 0;
@@ -402,4 +402,5 @@ input:checked+.toggle-slider:before {
 .dark .svg-background {
     opacity: 0.04;
 }
+
 

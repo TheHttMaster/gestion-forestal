@@ -146,18 +146,5 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
     lucide.createIcons();
-    
-    // Configuración de DataTables
-    $('#users-table').DataTable({
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
-        },
-        "columnDefs": [
-            { "width": "5%", "targets": 0 },  // ID
-            { "width": "25%", "targets": 1 }, // Nombre
-            { "width": "25%", "targets": 2 }, // Email
-            { "width": "20%", "targets": 3 }, // Rol
-            { "width": "10%", "targets": 4 }  // Acción
-        ]
-    });
+   
 </script>

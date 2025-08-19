@@ -79,19 +79,11 @@
             @endif
 
         </div>
+     
 </x-app-layout>
 
-
+   
+       
   <!-- Main Content Area -->
-           
-        <script>
-            $(document).ready(function() {
-                $('#auditoria-table').DataTable({
-                    // Opciones de configuración
-                    "language": {
-                        "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
-                    }
-                });
-            });
-        </script>
-    
+
+

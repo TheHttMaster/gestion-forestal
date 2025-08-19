@@ -11,14 +11,12 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- DataTables CSS (CDN) -->
-       
-        
         <!-- Styles -->
-        @vite(['resources/css/app.css', 'resources/css/styleDas.css'])
-        
-
-         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+        @vite([
+            'resources/css/app.css', 
+            'resources/css/styleDas.css', 
+            'resources/css/DataTableCss.css'
+        ])
 
         <!-- Lucide Icons (mejor práctica) -->
         <script src="https://unpkg.com/lucide@latest"></script>
@@ -32,6 +30,26 @@
         
             if (storedTheme === 'dark') {
                 document.documentElement.classList.add('dark');
+            }
+
+            // Aplica sidebar colapsado antes de pintar (solo escritorio)
+            if (window.innerWidth > 768 && localStorage.getItem('sidebarCollapsed') === '1') {
+                // Espera a que el sidebar esté en el DOM y aplica la clase lo antes posible
+                const applySidebarCollapsed = () => {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar && !sidebar.classList.contains('collapsed')) {
+                        sidebar.classList.add('collapsed');
+                        return true;
+                    }
+                    return false;
+                };
+                if (!applySidebarCollapsed()) {
+                    // Si aún no existe, observa el DOM hasta que aparezca
+                    const observer = new MutationObserver(() => {
+                        if (applySidebarCollapsed()) observer.disconnect();
+                    });
+                    observer.observe(document.documentElement, { childList: true, subtree: true });
+                }
             }
         </script>
        
@@ -61,14 +79,16 @@
         </div>
 
         <!-- jQuery (CDN) -->
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         
-        <!-- DataTables JS (CDN) -->
-        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        
+       
         <!-- Scripts locales (optimizado) -->
-        @vite(['resources/js/app.js', 'resources/js/DashFunctions.js'])
-        
+        @vite([
+            'resources/js/jquery-3.7.1.min.js',
+            'resources/js/app.js', 
+            'resources/js/DataTableJs.js',
+            'resources/js/DashFunctions.js',
+            'resources/js/DashFunctions.js'
+        ])
        
     </body>
 </html>
