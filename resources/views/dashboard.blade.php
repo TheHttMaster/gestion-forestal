@@ -9,34 +9,26 @@
                 <div class="flex items-center justify-between mb-4 md:mb-6">
                     <h3 class="text-xs md:text-sm font-medium text-gray-500">Usuarios Activos</h3>
                     <div class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 bg-gradient-blue rounded-lg flex items-center justify-center">
-                        <i data-lucide="users" class="w-4 h-4 md:w-5 lg:w-6 md:h-5 lg:h-6 text-white"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-icon w-4 h-4 md:w-5 lg:w-6 md:h-5 lg:h-6 text-white lucide-users">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/>
+                    </svg>
                     </div>
                 </div>
                 <div class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-200 mb-2 md:mb-3">{{ $userCount }}</div>
-                <div class="flex items-center text-xs md:text-sm">
-                    <div class="flex items-center bg-blue-100 text-blue-700 px-2 md:px-3 py-1 rounded-full">
-                        <i data-lucide="arrow-up" class="w-2 h-2 md:w-3 md:h-3 mr-1"></i>
-                        <span class="font-medium">+1.%</span>
-                    </div>
-                    <span class="text-gray-500 ml-2">del mes pasado</span>
-                </div>
+                
             </div>
 
             <div class="bg-stone-100/90 dark:bg-custom-gray  rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 hover-lift">
                 <div class="flex items-center justify-between mb-4 md:mb-6">
                     <h3 class="text-xs md:text-sm font-medium text-gray-500">Actividades realizadas</h3>
                     <div class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 bg-gradient-orange rounded-lg flex items-center justify-center">
-                        <i data-lucide="activity" class="w-4 h-4 md:w-5 lg:w-6 md:h-5 lg:h-6 text-white"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity-icon w-4 h-4 md:w-5 lg:w-6 md:h-5 lg:h-6 text-white lucide-activity">
+                            <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
+                    </svg>
                     </div>
                 </div>
                 <div class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-200  mb-2 md:mb-3">{{ $activityCount }}</div>
-                <div class="flex items-center text-xs md:text-sm">
-                    <div class="flex items-center bg-red-100 text-red-700 px-2 md:px-3 py-1 rounded-full">
-                        <i data-lucide="arrow-down" class="w-2 h-2 md:w-3 md:h-3 mr-1"></i>
-                        <span class="font-medium">-2%</span>
-                    </div>
-                    <span class="text-gray-500 ml-2">de la última hora</span>
-                </div>
+              
             </div>
         </div>
 

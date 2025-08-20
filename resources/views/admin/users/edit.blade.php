@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="">
+        <div class="max-w-7xl mx-auto ">
             <div class="bg-stone-100/90 dark:bg-custom-gray overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <form method="POST" action="{{ route('admin.users.update', $user) }}">
@@ -25,7 +25,7 @@
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
 
-                        <div class="mt-4">
+                        <div class="mt-4 text-gray-900 dark:text-gray-300">
                             <x-input-label for="role" :value="__('Rol')" />
                             <select id="role" name="role" class="block mt-1 w-full bg-gray-200  border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option value="basico" @if ($user->role === 'basico') selected @endif>{{ __('Básico') }}</option>
@@ -39,7 +39,7 @@
                             <x-primary-button class="ms-4">
                                 {{ __('Actualizar Usuario') }}
                             </x-primary-button>
-                            <x-go-back-button />
+                            
                         </div>
                     </form>
                 </div>

@@ -99,7 +99,9 @@
                     </button>
                     <nav class="hidden sm:flex items-center space-x-2 md:space-x-3 text-sm">
                         <a href="#" class="text-gray-800 dark:text-custom-gold-medium hover:text-gray-950  px-2 md:px-3 py-1 md:py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700/50">{{ $currentRouteName }}</a>
-                        <i data-lucide="chevron-right" class="w-3 h-3 md:w-4 md:h-4 text-gray-400"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon w-3 h-3 md:w-4 md:h-4 text-gray-400 lucide-chevron-right">
+                            <path d="m9 18 6-6-6-6"/>
+                        </svg>
                         <span class="text-gray-900 px-2 md:px-3 py-1 md:py-2 bg-stone-200 dark:bg-stone-400 rounded-lg font-medium">Resumen</span>
                     </nav>
                 </div>
@@ -130,7 +132,9 @@
                                 <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ Auth::user()->name }}</p>
                                 <p class="text-xs text-gray-500 dark:text-custom-gold-medium">{{ Auth::user()->role }}</p>
                             </div>
-                            <i data-lucide="chevron-down" class="hidden md:block w-3 h-3 md:w-4 md:h-4 text-gray-400"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon hidden md:block w-3 h-3 md:w-4 md:h-4 text-gray-400 lucide-chevron-down">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
                         </button>
                         <div id="userMenu" class="dropdown-menu absolute right-0 mt-2 w-48 md:w-64 bg-stone-100 dark:bg-custom-gray rounded-xl shadow-soft py-2 z-50">
                             <div class="px-4 md:px-6 py-3 md:py-4">

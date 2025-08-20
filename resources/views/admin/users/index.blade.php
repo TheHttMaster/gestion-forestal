@@ -1,8 +1,5 @@
 <x-app-layout>
     
-      
-    
-
     <div class="">
         <div class="max-w-7xl mx-auto ">
             <div class="bg-stone-100/90 dark:bg-custom-gray overflow-hidden shadow-sm sm:rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 ">
@@ -14,12 +11,6 @@
                         <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
                             {{ __('Crear Nuevo Usuario') }}
                         </a>
-
-                        <!-- boton del modal que se podria llegar a usar
-                        <x-primary-button
-                            x-data=""
-                            x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-                        >{{ __('Eliminar Cuenta') }}</x-primary-button> -->
 
                         <a href="{{ route('admin.users.disabled') }}" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
                             {{ __('Ver Deshabilitados') }}
@@ -64,22 +55,26 @@
                                         <div class="flex items-center gap-4">
                                             <!-- Botón Editar -->
                                             <a href="{{ route('admin.users.edit', $user) }}" 
-                                               class="inline-flex items-center text-indigo-600 hover:text-indigo-900 transition-colors"
+                                               class="inline-flex items-center text-indigo-600 hover:text-indigo-900 dark:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
                                                title="Editar">
-                                                <i data-lucide="pencil" class="w-7 h-7"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-line-icon w-7 h-7 lucide-pencil-line">
+                                                    <path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                                            </svg>
                                             </a>
                                             
                                             <!-- Botón Deshabilitar -->
                                             <form action="{{ route('admin.users.destroy', $user) }}" 
                                                   method="POST" 
-                                                  onsubmit="return confirm('¿Estás seguro de deshabilitar este usuario?')"
-                                                  class="inline">
+                                                  class="inline sweet-confirm-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
-                                                        class="inline-flex items-center text-red-600 hover:text-red-900 transition-colors"
+                                                        class="inline-flex items-center text-red-600 hover:text-red-900 dark:text-red-500 dark:hover:text-red-300 transition-colors"
                                                         title="Deshabilitar">
-                                                    <i data-lucide="user-x" class="w-7 h-7"></i>
+                                                    
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-x-icon w-7 h-7 lucide-user-x">
+                                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/>
+                                                </svg>
                                                 </button>
                                             </form>
                                         </div>
@@ -93,58 +88,8 @@
         </div>
     </div>
    
-<!-- 
-        modal para posibilidad de usarlo
 
-    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-       
-       
-        <form method="POST" action="{{ route('admin.users.store') }}" class="p-6 rounded-2xl shadow-soft">
-            @csrf
-             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Crear Usuario') }}
-            </h2>
 
-            <div>
-                <x-input-label for="name" :value="__('Nombre')" />
-                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-                <x-input-error :messages="$errors->get('name')" class="mt-2" />
-            </div>
-
-            <div class="mt-4">
-                <x-input-label for="email" :value="__('Email')" />
-                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
-            </div>
-
-            <div class="mt-4">
-                <x-input-label for="password" :value="__('Contraseña')" />
-                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
-            </div>
-
-            <div class="mt-4">
-                <x-input-label for="password_confirmation" :value="__('Confirmar Contraseña')" />
-                <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4 space-x-4">
-                 <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
-                <x-primary-button class="ms-4">
-                    {{ __('Crear Usuario') }}
-                </x-primary-button>
-            </div>
-        </form>
-
-    </x-modal> -->
 
 </x-app-layout>
 
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-    lucide.createIcons();
-   
-</script>

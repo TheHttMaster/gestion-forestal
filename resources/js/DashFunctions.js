@@ -1,5 +1,3 @@
-// Inicializa los iconos Lucide en el DOM
-lucide.createIcons();
 
 // --- SIDEBAR TOGGLE ---
 const sidebarToggle = document.getElementById('sidebarToggle');
@@ -142,17 +140,7 @@ const htmlElement = document.documentElement;
 const savedTheme = localStorage.getItem('theme');
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-// Inicializa el tema según preferencia o localStorage
-function initializeTheme() {
-    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-    if (isDark) {
-        htmlElement.classList.add('dark');
-        if (darkModeToggle) darkModeToggle.checked = true;
-        updateMobileIcon(true);
-    } else {
-        updateMobileIcon(false);
-    }
-}
+
 
 // Cambia el icono del botón móvil según el modo
 function updateMobileIcon(isDark) {
@@ -182,8 +170,6 @@ function toggleDarkMode() {
 if (darkModeToggle) darkModeToggle.addEventListener('change', toggleDarkMode);
 if (mobileDarkToggle) mobileDarkToggle.addEventListener('click', toggleDarkMode);
 
-// Aplica el tema al cargar
-initializeTheme();
 
 // Detecta cambios en la preferencia del sistema
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -229,10 +215,22 @@ $(document).ready(function() {
     $('#auditoria-table').DataTable({
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
-        }
+        },
+        "columnDefs": [
+            { "width": "20%", "targets": 0 },  // ID
+            { "width": "40%", "targets": 1 }, // Nombre
+            { "width": "40%", "targets": 2 }  // Acción
+        ]
     });
 });
 
+$(document).ready(function() {
+    $('#audit-table').DataTable({
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+        }
+    }); 
+});
     
 $(document).ready(function() {
     $('#users-table').DataTable({
