@@ -363,7 +363,7 @@ input:checked+.toggle-slider:before {
 
 /* Ajuste para modo oscuro */
 .dark .headi::before {
-    box-shadow: -20px -20px 0 #0d0f16ff; /* Color del sidebar oscuro */
+    box-shadow: -20px -20px 0 #15171dff; /* Color del sidebar oscuro */
 }
 
 /* Cuando el sidebar está colapsado */

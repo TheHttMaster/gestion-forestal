@@ -52,17 +52,20 @@
                                         </form>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <form action="{{ route('admin.users.enable', $user) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que desea habilitar a este usuario?');">
+                                        <!-- Botón Habilitar -->
+                                        <form action="{{ route('admin.users.enable', $user) }}" 
+                                            method="POST" 
+                                            class="inline sweet-confirm-form"
+                                            data-action="habilitar">
                                             @csrf
                                             @method('PATCH')
-                                             <button type="submit" 
+                                            <button type="submit" 
                                                     class="inline-flex items-center text-green-600 hover:text-green-900 dark:text-green-500 dark:hover:text-green-300 transition-colors"
                                                     title="Habilitar">
-                                                    
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-check-icon w-7 h-7 lucide-user-check">
-                                                        <path d="m16 11 2 2 4-4"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                                                    </svg>
-                                                </button>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-check-icon w-7 h-7 lucide-user-check">
+                                                    <path d="m16 11 2 2 4-4"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                                                </svg>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -75,22 +78,3 @@
     </div>
 
 </x-app-layout>
-
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>
-    lucide.createIcons();
-    
-    // Configuración de DataTables
-    $('#users-table').DataTable({
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
-        },
-        "columnDefs": [
-            { "width": "5%", "targets": 0 },  // ID
-            { "width": "25%", "targets": 1 }, // Nombre
-            { "width": "25%", "targets": 2 }, // Email
-            { "width": "20%", "targets": 3 }, // Rol
-            { "width": "10%", "targets": 4 }  // Acción
-        ]
-    });
-</script>

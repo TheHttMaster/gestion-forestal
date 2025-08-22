@@ -234,6 +234,8 @@ $(document).ready(function() {
     
 $(document).ready(function() {
     $('#users-table').DataTable({
+        "autoWidth": false,       // Importante: desactiva el ajuste automático de width
+        
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
         },

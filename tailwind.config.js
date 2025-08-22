@@ -17,9 +17,9 @@ export default {
             },
             colors: { // Añade tus colores personalizados aquí
                 custom: {
-                    dark: '#07090c',
+                    dark: '#0e1013ff',
                     light: '#e7e5db',
-                    gray: '#0d0f16', 
+                    gray: '#15171dff', 
                     gray2:'#040507',
                     gold: {
                         light: '#e2ad39',

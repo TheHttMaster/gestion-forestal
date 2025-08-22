@@ -83,19 +83,34 @@ class DashboardController extends Controller{
     {
         // No permitimos que un usuario se elimine a sí mismo
         if (auth()->user()->id === $user->id) {
-            return redirect()->route('admin.users.index')->with('error', 'No puedes deshabilitar tu propia cuenta.');
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'No puedes deshabilitar tu propia cuenta.'
+            ]);
+            return redirect()->route('admin.users.index');
         }
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('status', 'Usuario deshabilitado exitosamente.');
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => 'Éxito',
+            'text' => 'Usuario deshabilitado exitosamente.'
+        ]);
+        return redirect()->route('admin.users.index');
     }
 
     public function enableUser(User $user)
     {
-        $user->restore(); // Esto quita la marca de tiempo de `deleted_at`
+        $user->restore();
 
-        return back()->with('status', 'Usuario habilitado exitosamente.');
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => 'Éxito',
+            'text' => 'Usuario habilitado exitosamente.'
+        ]);
+        return redirect()->route('admin.users.disabled');
     }
 
     public function updateUserRole(Request $request, User $user)

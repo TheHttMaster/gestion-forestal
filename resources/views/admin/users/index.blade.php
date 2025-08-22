@@ -65,7 +65,8 @@
                                             <!-- Botón Deshabilitar -->
                                             <form action="{{ route('admin.users.destroy', $user) }}" 
                                                   method="POST" 
-                                                  class="inline sweet-confirm-form">
+                                                  class="inline sweet-confirm-form"
+                                                  data-action="deshabilitar">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
@@ -92,4 +93,5 @@
 
 
 </x-app-layout>
+
 
