@@ -186,16 +186,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
     }
 });
 
-// --- OBSERVADOR PARA RE-RENDER DE ICONOS LUCIDE AL CAMBIAR DE MODO ---
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-            // Espera a que termine la transición antes de recrear los iconos
-            setTimeout(() => lucide.createIcons(), 999);
-        }
-    });
-});
-observer.observe(htmlElement, { attributes: true, attributeFilter: ['class'] });
+
 
 /*
 NOTA:
@@ -232,8 +223,15 @@ $(document).ready(function() {
     }); 
 });
     
+
+
+/* prueva para la carga del datatable a ver si carga mejor */
 $(document).ready(function() {
-    $('#users-table').DataTable({
+    // Ocultar la tabla al inicio
+    $('#users-table').hide();
+    
+    // Inicializar DataTable
+    var table = $('#users-table').DataTable({
         "autoWidth": false,       // Importante: desactiva el ajuste automático de width
         
         "language": {
@@ -246,7 +244,12 @@ $(document).ready(function() {
             { "width": "20%", "targets": 3 }, // Rol
             { "width": "6%", "targets": 4 }  // Acción
         ]
-    });        
+    }); 
+    
+    // Mostrar cuando esté lista
+    table.on('init', function() {
+        $('#users-table').show();
+    });
 });
 
     // Configuración de DataTables

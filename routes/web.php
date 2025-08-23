@@ -3,10 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProviderController;
 
 // Rutas públicas
 Route::get('/', function () {
-
     return view('auth.login');
 });
 
@@ -17,6 +17,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // RUTAS DE PROVEEDORES - PARA USUARIOS AUTENTICADOS
+    Route::resource('providers', ProviderController::class);
+
+    // Rutas adicionales para funcionalidades extra de proveedores
+    Route::prefix('providers')->group(function () {
+        Route::post('{provider}/toggle-status', [ProviderController::class, 'toggleStatus'])
+            ->name('providers.toggle-status');
+        Route::post('{id}/restore', [ProviderController::class, 'restore'])
+            ->name('providers.restore');
+        Route::delete('{id}/force-delete', [ProviderController::class, 'forceDelete'])
+            ->name('providers.force-delete');
+    });
 });
 
 // Rutas exclusivas para ADMINISTRADORES
@@ -29,7 +42,6 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->group(func
     Route::get('/users/{user}/edit', [DashboardController::class, 'editUser'])->name('admin.users.edit');
     Route::patch('/users/{user}', [DashboardController::class, 'updateUser'])->name('admin.users.update');
 
-     // CAMBIAR ESTA RUTA DE PATCH A POST
     Route::post('/users/{user}/enable', [DashboardController::class, 'enableUser'])->name('admin.users.enable')->withTrashed();
     Route::delete('/users/{user}', [DashboardController::class, 'destroyUser'])->name('admin.users.destroy');
     Route::get('/users/disabled', [DashboardController::class, 'listDisabledUsers'])->name('admin.users.disabled');
