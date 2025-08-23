@@ -48,7 +48,12 @@ class DashboardController extends Controller{
             ->performedOn($user) // Sobre qué modelo se realizó la acción
             ->log('creó un nuevo usuario'); // Descripción de la acción
 
-        return redirect()->route('admin.users.index')->with('status', 'Usuario creado exitosamente.');
+        return redirect()->route('admin.users.index')
+            ->with('swal', [
+                'icon' => 'success',
+                'title' => 'Éxito',
+                'text' => 'Usuario creado exitosamente.'
+            ]);
     }
 
     public function showAuditLog(){
@@ -76,13 +81,26 @@ class DashboardController extends Controller{
             'role' => $request->role,
         ]);
 
-        return redirect()->route('admin.users.index')->with('status', 'Usuario actualizado exitosamente.');
+        // Usar with() en lugar de session()->flash()
+        return redirect()->route('admin.users.index')
+            ->with('swal', [
+                'icon' => 'success',
+                'title' => 'Éxito',
+                'text' => 'Usuario actualizado exitosamente.'
+            ]);
     }
 
-    public function destroyUser(User $user)
+   public function destroyUser(Request $request, User $user)
     {
         // No permitimos que un usuario se elimine a sí mismo
         if (auth()->user()->id === $user->id) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No puedes deshabilitar tu propia cuenta.'
+                ], 422);
+            }
+            
             session()->flash('swal', [
                 'icon' => 'error',
                 'title' => 'Error',
@@ -93,6 +111,14 @@ class DashboardController extends Controller{
 
         $user->delete();
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario deshabilitado exitosamente.',
+                'user_id' => $user->id
+            ]);
+        }
+
         session()->flash('swal', [
             'icon' => 'success',
             'title' => 'Éxito',
@@ -101,9 +127,17 @@ class DashboardController extends Controller{
         return redirect()->route('admin.users.index');
     }
 
-    public function enableUser(User $user)
+    public function enableUser(Request $request, User $user)
     {
         $user->restore();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario habilitado exitosamente.',
+                'user_id' => $user->id
+            ]);
+        }
 
         session()->flash('swal', [
             'icon' => 'success',
@@ -121,7 +155,11 @@ class DashboardController extends Controller{
 
         $user->update(['role' => $request->role]);
 
-        return back()->with('status', 'Rol de usuario actualizado exitosamente.');
+        return back()->with('swal', [
+            'icon' => 'success',
+            'title' => 'Éxito',
+            'text' => 'Rol de usuario actualizado exitosamente.'
+        ]);
     }
 
     public function listDisabledUsers()

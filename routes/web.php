@@ -29,8 +29,9 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->group(func
     Route::get('/users/{user}/edit', [DashboardController::class, 'editUser'])->name('admin.users.edit');
     Route::patch('/users/{user}', [DashboardController::class, 'updateUser'])->name('admin.users.update');
 
+     // CAMBIAR ESTA RUTA DE PATCH A POST
+    Route::post('/users/{user}/enable', [DashboardController::class, 'enableUser'])->name('admin.users.enable')->withTrashed();
     Route::delete('/users/{user}', [DashboardController::class, 'destroyUser'])->name('admin.users.destroy');
-    Route::patch('/users/{user}/enable', [DashboardController::class, 'enableUser'])->name('admin.users.enable')->withTrashed();
     Route::get('/users/disabled', [DashboardController::class, 'listDisabledUsers'])->name('admin.users.disabled');
 
     // Ruta para actualizar el rol de un usuario

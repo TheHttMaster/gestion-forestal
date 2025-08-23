@@ -14,13 +14,7 @@
                         <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-gray-500  text-white rounded-md hover:bg-gray-600">
                             {{ __('Ver Habilitados') }}
                         </a>
-                        @if (session('status'))
-                            <script>
-                                alert("{{ session('status') }}");
-                            </script>
-                        @endif
                     </div>
-
 
                     <table id="users-table" class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-stone-100/90 dark:bg-custom-gray ">
@@ -37,7 +31,41 @@
                                 $i = 1;
                             @endphp
                             @foreach($users as $user)
-                                <tr>
+                                <tr id="disabled-user-row-{{ $user->id }}" 
+                                  x-data="{
+                                    loading: false,
+                                    async enableUser() {
+                                        this.loading = true;
+                                        try {
+                                            const response = await fetch('{{ route('admin.users.enable', $user) }}', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                    'X-Requested-With': 'XMLHttpRequest',
+                                                    'Accept': 'application/json'
+                                                }
+                                            });
+                                            
+                                            const data = await response.json();
+                                            
+                                            if (data.success) {
+                                                const table = $('#users-table').DataTable();
+                                                const row = $('#disabled-user-row-{{ $user->id }}');
+                                                table.row(row).remove().draw();
+                                                
+                                                showCustomAlert('success', '¡Éxito!', data.message);
+                                            } else {
+                                                showCustomAlert('error', 'Error', data.message);
+                                            }
+                                        } catch (error) {
+                                            console.error('Error:', error);
+                                            showCustomAlert('error', 'Error', 'Ocurrió un error al habilitar el usuario.');
+                                        } finally {
+                                            this.loading = false;
+                                        }
+                                    }
+                                }">
+                               
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-400">{{ $i++ }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-400">{{ $user->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-400">{{ $user->email }}</td>
@@ -53,20 +81,24 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <!-- Botón Habilitar -->
-                                        <form action="{{ route('admin.users.enable', $user) }}" 
-                                            method="POST" 
-                                            class="inline sweet-confirm-form"
-                                            data-action="habilitar">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" 
-                                                    class="inline-flex items-center text-green-600 hover:text-green-900 dark:text-green-500 dark:hover:text-green-300 transition-colors"
-                                                    title="Habilitar">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-check-icon w-7 h-7 lucide-user-check">
-                                                    <path d="m16 11 2 2 4-4"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                                                </svg>
-                                            </button>
-                                        </form>
+                                        <!-- Botón Habilitar -->
+                                        <button x-on:click="
+                                            const result = await showCustomConfirmation(true, 'Vas a habilitar al usuario: {{ $user->name }}');
+                                            if (result.isConfirmed) {
+                                                enableUser();
+                                            }
+                                        " 
+                                        :disabled="loading"
+                                        class="inline-flex items-center text-green-600 hover:text-green-900 dark:text-green-500 dark:hover:text-green-300 transition-colors disabled:opacity-50"
+                                        title="Habilitar">
+                                            <svg x-show="!loading" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-check-icon w-7 h-7 lucide-user-check">
+                                                <path d="m16 11 2 2 4-4"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                                            </svg>
+                                            <svg x-show="loading" class="animate-spin h-7 w-7 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -76,5 +108,4 @@
             </div>
         </div>
     </div>
-
 </x-app-layout>
