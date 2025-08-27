@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProviderController;
+use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\AuditLogController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -33,22 +35,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Rutas exclusivas para ADMINISTRADORES
-Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->group(function () {
-    Route::get('/users', [DashboardController::class, 'listUsers'])->name('admin.users.index');
-    Route::get('/users/create', [DashboardController::class, 'createUser'])->name('admin.users.create');
-    Route::post('/users', [DashboardController::class, 'storeUser'])->name('admin.users.store');
-    Route::get('/audit', [DashboardController::class, 'showAuditLog'])->name('admin.audit');
-
-    Route::get('/users/{user}/edit', [DashboardController::class, 'editUser'])->name('admin.users.edit');
-    Route::patch('/users/{user}', [DashboardController::class, 'updateUser'])->name('admin.users.update');
-
-    Route::post('/users/{user}/enable', [DashboardController::class, 'enableUser'])->name('admin.users.enable')->withTrashed();
-    Route::delete('/users/{user}', [DashboardController::class, 'destroyUser'])->name('admin.users.destroy');
-    Route::get('/users/disabled', [DashboardController::class, 'listDisabledUsers'])->name('admin.users.disabled');
-
-    // Ruta para actualizar el rol de un usuario
-    Route::patch('/users/{user}/update-role', [DashboardController::class, 'updateUserRole'])->name('admin.users.update-role');
+// Rutas del panel de administración (solo para administradores)
+Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Usuarios: Rutas de recurso y adicionales
+    Route::resource('users', UserController::class)->names([
+        'index' => 'users.index',
+        'create' => 'users.create',
+        'store' => 'users.store',
+        'edit' => 'users.edit',
+        'update' => 'users.update',
+        'destroy' => 'users.destroy',
+    ]);
 });
 
+// Rutas personalizadas para el controlador de usuarios
+Route::controller(UserController::class)->group(function () {
+    Route::get('users/disabled', 'listDisabledUsers')->name('admin.users.disabled');
+    Route::patch('users/{user}/update-role', 'updateUserRole')->name('admin.users.update-role');
+    Route::post('users/{user}/enable', 'enableUser')->name('admin.users.enable');
+});
+
+Route::get('/audit', [AuditLogController::class, 'showAuditLog'])->name('admin.audit');
 // Esta línea es la que importa las rutas de autenticación
 require __DIR__.'/auth.php';
