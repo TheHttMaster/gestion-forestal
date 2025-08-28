@@ -26,13 +26,29 @@
                             </tr>
                         </thead>
                         <tbody class="bg-stone-100/90 dark:bg-custom-gray divide-y divide-gray-200">
-                            @foreach ($activities as $activity)
+                          @foreach ($activities as $activity)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $activity->causer ? $activity->causer->name : 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $activity->description }}
+                                        <!-- traduccion para las descriciones -->
+                                        @php
+                                            $translations = [
+                                                
+                                                // Usuarios
+                                                'El usuario ha sido updated' => 'El usuario ha sido actualizado',
+                                                'El usuario ha sido restored' => 'El usuario ha sido restaurado',
+                                                'El usuario ha sido created' => 'El usuario ha sido creado',
+                                                'El usuario ha sido deleted' => 'El usuario ha sido eliminado',
+                                                
+                                            ];
+                                            
+                                            // Buscar traducción exacta primero
+                                            $translated = $translations[$activity->description] ?? null;
+                                            
+                                            echo $translated ?? $activity->description;
+                                        @endphp
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $activity->created_at->format('d/m/Y H:i:s') }}

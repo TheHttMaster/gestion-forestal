@@ -17,7 +17,7 @@ class ProviderController extends Controller
         $search = $request->input('search');
         $status = $request->input('status', 'all');
 
-        $providers = Provider::withTrashed()
+        $providers = Provider::query() // ← Cambia aquí: quita withTrashed()
             ->when($search, function ($query, $search) {
                 return $query->search($search);
             })
@@ -27,8 +27,11 @@ class ProviderController extends Controller
                 } elseif ($status === 'inactive') {
                     return $query->where('is_active', false);
                 } elseif ($status === 'deleted') {
-                    return $query->onlyTrashed();
+                    return $query->onlyTrashed(); // ← Solo aquí se ven eliminados
                 }
+            }, function ($query) use ($status) {
+                // Para el caso 'all', incluir todos (activos, inactivos y eliminados)
+                return $query->withTrashed();
             })
             ->orderBy('name')
             ->paginate(10)

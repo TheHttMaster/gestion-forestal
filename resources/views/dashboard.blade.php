@@ -57,7 +57,25 @@
                                         <span class="text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-400 ">{{ $activity->causer ? $activity->causer->name : 'N/A' }}</span>
                                     </div>
                                 </td>
-                                <td class="py-3 text-xs md:text-sm text-gray-500">{{ $activity->description }}</td>
+                                <td class="py-3 text-xs md:text-sm text-gray-500">
+                                     <!-- traduccion para las descriciones -->
+                                    @php
+                                        $translations = [
+                                            
+                                            // Usuarios
+                                            'El usuario ha sido updated' => 'El usuario ha sido actualizado',
+                                            'El usuario ha sido restored' => 'El usuario ha sido restaurado',
+                                            'El usuario ha sido created' => 'El usuario ha sido creado',
+                                            'El usuario ha sido deleted' => 'El usuario ha sido eliminado',
+                                            
+                                        ];
+                                        
+                                        // Buscar traducción exacta primero
+                                        $translated = $translations[$activity->description] ?? null;
+                                        
+                                        echo $translated ?? $activity->description;
+                                    @endphp
+                                </td>
                                 <td class="py-3 text-xs text-gray-500 text-left">{{ $activity->created_at->format('d/m/Y H:i:s') }}</td>
                             </tr>
                         @endforeach

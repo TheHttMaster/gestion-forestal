@@ -4,8 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProviderController;
-use App\Http\Controllers\admin\UserController;
-use App\Http\Controllers\admin\AuditLogController;
+use App\Http\Controllers\AreaController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -31,6 +30,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('providers.restore');
         Route::delete('{id}/force-delete', [ProviderController::class, 'forceDelete'])
             ->name('providers.force-delete');
+    });
+
+    // Rutas para gestión de áreas
+    Route::resource('areas', AreaController::class)->except(['show']);
+
+    // Rutas adicionales
+    Route::prefix('areas')->group(function () {
+        Route::get('/{area}/toggle-status', [AreaController::class, 'toggleStatus'])
+            ->name('areas.toggle-status');
+        
+        Route::get('/search/{search}', [AreaController::class, 'search'])
+            ->name('areas.search');
+        
+        Route::get('/{area}', [AreaController::class, 'show'])
+            ->name('areas.show');
     });
 });
 

@@ -72,8 +72,26 @@
                                             
                                                     <form action="{{ route('providers.toggle-status', $provider) }}" method="POST" class="inline">
                                                         @csrf
-                                                        <button type="submit" class="inline-flex items-center text-yellow-600 hover:text-yellow-900 dark:text-yellow-500 dark:hover:text-yellow-300 transition-colors" title="Cambiar estado">
-                                                            <i class="fas {{ $provider->is_active ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i>
+                                                        <button type="submit" class="inline-flex items-center p-2 rounded-lg transition-all duration-300 hover:bg-opacity-10 hover:scale-105" 
+                                                                title="Cambiar estado"
+                                                                :class="$provider->is_active ? 'hover:bg-green-600' : 'hover:bg-yellow-600'">
+                                                            
+                                                            <!-- Estado activo - Verde -->
+                                                            @if($provider->is_active)
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-500 w-7 h-7">
+                                                                    <circle cx="12" cy="12" r="10" class="fill-yellow-100"/>
+                                                                    <line x1="15" y1="9" x2="9" y2="15" class="stroke-yellow-600"/>
+                                                                    <line x1="9" y1="9" x2="15" y2="15" class="stroke-yellow-600"/>
+                                                                </svg>
+                                                            
+                                                            <!-- Estado inactivo - Amarillo -->
+                                                            @else
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500 w-7 h-7">
+                                                                    <circle cx="12" cy="12" r="10" class="fill-green-100"/>
+                                                                    <path d="m8 12 2.5 2.5L16 9" class="stroke-green-600"/>
+                                                                </svg>
+                                                                
+                                                            @endif
                                                         </button>
                                                     </form>
 
