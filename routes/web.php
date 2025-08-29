@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AuditLogController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -19,18 +21,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // RUTAS DE PROVEEDORES - PARA USUARIOS AUTENTICADOS
-    Route::resource('providers', ProviderController::class);
+   // RUTAS DE PROVEEDORES 
+    Route::resource('providers', ProviderController::class)->names([
+        'index' => 'providers.index',
+        'create' => 'providers.create', 
+        'edit' => 'providers.edit',
+        'update' => 'providers.update',
+    ]);
 
     // Rutas adicionales para funcionalidades extra de proveedores
     Route::prefix('providers')->group(function () {
         Route::post('{provider}/toggle-status', [ProviderController::class, 'toggleStatus'])
             ->name('providers.toggle-status');
-        Route::post('{id}/restore', [ProviderController::class, 'restore'])
+        Route::post('{provider}/restore', [ProviderController::class, 'restore'])
             ->name('providers.restore');
-        Route::delete('{id}/force-delete', [ProviderController::class, 'forceDelete'])
+        Route::delete('{provider}/force-delete', [ProviderController::class, 'forceDelete'])
             ->name('providers.force-delete');
     });
+
 
     // Rutas para gestión de áreas
     Route::resource('areas', AreaController::class)->except(['show']);
