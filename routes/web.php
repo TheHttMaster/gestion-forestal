@@ -55,12 +55,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('areas.show');
     });
 });
-
 // Rutas exclusivas para ADMINISTRADORES
 // Rutas del panel de administración (solo para administradores)
 Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admin.')->group(function () {
     // Usuarios: Rutas de recurso y adicionales
-    Route::resource('users', UserController::class)->names([
+    Route::resource('users', UserController::class)->except(['show'])->names([
         'index' => 'users.index',
         'create' => 'users.create',
         'store' => 'users.store',
@@ -68,14 +67,16 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admi
         'update' => 'users.update',
         'destroy' => 'users.destroy',
     ]);
+
+    // 🔥 MOVER AQUÍ las rutas personalizadas de usuarios
+    Route::get('users/disabled', [UserController::class, 'listDisabledUsers'])->name('users.disabled');
+    Route::patch('users/{user}/update-role', [UserController::class, 'updateUserRole'])->name('users.update-role');
+    Route::post('users/{user}/enable', [UserController::class, 'enableUser'])->name('users.enable');
+    
+    // 🔥 MOVER también la ruta de auditoría aquí
+    Route::get('/audit', [AuditLogController::class, 'showAuditLog'])->name('audit');
 });
 
-// Rutas personalizadas para el controlador de usuarios
-Route::controller(UserController::class)->group(function () {
-    Route::get('users/disabled', 'listDisabledUsers')->name('admin.users.disabled');
-    Route::patch('users/{user}/update-role', 'updateUserRole')->name('admin.users.update-role');
-    Route::post('users/{user}/enable', 'enableUser')->name('admin.users.enable');
-});
 
 Route::get('/audit', [AuditLogController::class, 'showAuditLog'])->name('admin.audit');
 // Esta línea es la que importa las rutas de autenticación

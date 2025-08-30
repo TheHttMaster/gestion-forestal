@@ -227,12 +227,8 @@ $(document).ready(function() {
 
 /* prueva para la carga del datatable a ver si carga mejor */
 $(document).ready(function() {
-    // Ocultar la tabla al inicio
-    $('#users-table').hide();
-    
-    // Inicializar DataTable
-    var table = $('#users-table').DataTable({
-        "autoWidth": false,       // Importante: desactiva el ajuste automático de width
+    $('#users-table').DataTable({
+
         
         "language": {
             "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
@@ -245,11 +241,7 @@ $(document).ready(function() {
             { "width": "6%", "targets": 4 }  // Acción
         ]
     }); 
-    
-    // Mostrar cuando esté lista
-    table.on('init', function() {
-        $('#users-table').show();
-    });
+
 });
 
     // Configuración de DataTables

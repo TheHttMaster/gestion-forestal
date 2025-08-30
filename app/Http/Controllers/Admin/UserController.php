@@ -58,6 +58,11 @@ class UserController extends Controller
             ]);
     }
 
+    public function edit(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
+
     public function update(Request $request, User $user)
     {
         $request->validate([
@@ -118,8 +123,11 @@ class UserController extends Controller
         return redirect()->route('admin.users.index');
     }
 
-    public function enableUser(Request $request, User $user)
+   public function enableUser(Request $request, $userId)
     {
+        // 🔥 USAR withTrashed() para buscar usuarios deshabilitados
+        $user = User::withTrashed()->findOrFail($userId);
+        
         $user->restore();
 
         if ($request->ajax()) {
@@ -130,20 +138,23 @@ class UserController extends Controller
             ]);
         }
 
-        session()->flash('swal', [
-            'icon' => 'success',
-            'title' => 'Éxito',
-            'text' => 'Usuario habilitado exitosamente.'
-        ]);
-        return redirect()->route('admin.users.disabled');
+        return redirect()->route('admin.users.disabled')
+            ->with('swal', [
+                'icon' => 'success',
+                'title' => 'Éxito',
+                'text' => 'Usuario habilitado exitosamente.'
+            ]);
     }
 
-    public function updateUserRole(Request $request, User $user)
+    public function updateUserRole(Request $request, $userId)
     {
         $request->validate([
             'role' => ['required', 'string', 'in:basico,administrador'],
         ]);
 
+        // Buscar el usuario incluyendo deshabilitados
+        $user = User::withTrashed()->findOrFail($userId);
+        
         $user->update(['role' => $request->role]);
 
         return back()->with('swal', [
