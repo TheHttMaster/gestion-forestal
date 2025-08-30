@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::paginate(15);
         return view('admin.users.index', compact('users'));
     }
 
@@ -48,7 +48,7 @@ class UserController extends Controller
         activity()
             ->causedBy(auth()->user()) // Quién causó la acción (el administrador)
             ->performedOn($user) // Sobre qué modelo se realizó la acción
-            ->log('creó un nuevo usuario'); // Descripción de la acción
+            /* ->log('creó un nuevo usuario') */; // Descripción de la acción
 
         return redirect()->route('admin.users.index')
             ->with('swal', [
@@ -65,18 +65,37 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'role' => ['required', 'string', 'in:basico,administrador'],
-        ]);
+        ];
+    
+        // Agregar validación condicional para password
+        if ($request->filled('password')) {
+            $rules['password'] = ['confirmed', Rules\Password::defaults()];
+        }
 
-        $user->update([
+        $request->validate($rules);
+
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
-        ]);
+        ];
 
+        // Actualizar password solo si se proporciona
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
+
+       /*  activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->log('actualizó el usuario');
+ */
         // Usar with() en lugar de session()->flash()
         return redirect()->route('admin.users.index')
             ->with('swal', [
