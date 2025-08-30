@@ -4,8 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProviderController;
-use App\Http\Controllers\admin\UserController;
-use App\Http\Controllers\admin\AuditLogController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AuditLogController;
 
 // Rutas públicas
 Route::get('/', function () {
