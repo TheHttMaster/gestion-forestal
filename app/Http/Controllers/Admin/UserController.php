@@ -26,43 +26,11 @@ class UserController extends Controller
     {
         return view('admin.users.create');
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request){
-        
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'basico', // Por defecto, creamos usuarios con el rol 'basico'
-        ]);
-
-        activity()
-            ->causedBy(auth()->user()) // Quién causó la acción (el administrador)
-            ->performedOn($user) // Sobre qué modelo se realizó la acción
-            /* ->log('creó un nuevo usuario') */; // Descripción de la acción
-
-        return redirect()->route('admin.users.index')
-            ->with('swal', [
-                'icon' => 'success',
-                'title' => 'Éxito',
-                'text' => 'Usuario creado exitosamente.'
-            ]);
-    }
-
     public function edit(User $user)
     {
         return view('admin.users.edit', compact('user'));
     }
-
+    
     public function update(Request $request, User $user)
     {
         $rules = [
