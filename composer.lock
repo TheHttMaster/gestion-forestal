@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
     "content-hash": "8def6fca920de726811e29a40c607827",
-=======
-    "content-hash": "b4be64b14a2212eec07b72b170bd5191",
->>>>>>> 0402cf9 (cambions con el modulo de areas de cultivo y las traducciones de laravel)
     "packages": [
         {
             "name": "archtechx/enums",

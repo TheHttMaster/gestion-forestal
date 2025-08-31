@@ -7,6 +7,7 @@ use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\DeforestationController;
 
 // Rutas públicas
 Route::get('/', function () {
@@ -53,6 +54,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::get('/{area}', [AreaController::class, 'show'])
             ->name('areas.show');
+    });
+
+    // Grupo de rutas para deforestación
+    Route::prefix('deforestation')->name('deforestation.')->group(function () {
+        
+        // Mostrar formulario de análisis
+        Route::get('/deforestation/create', [DeforestationController::class, 'create'])
+            ->name('create');
+        
+        // Procesar análisis (AJAX)
+        Route::post('/analyze', [DeforestationController::class, 'analyze'])
+            ->name('analyze');
+        
+        // Mostrar resultados
+        Route::get('/results/{polygon}', [DeforestationController::class, 'results'])
+            ->name('results');
+        
+        // Exportar datos
+        Route::get('/export/{polygon}', [DeforestationController::class, 'export'])
+            ->name('export');
+        
+        // Generar reporte PDF
+        Route::get('/report/{polygon}', [DeforestationController::class, 'report'])
+            ->name('report');
+        
+        // API para obtener datos del análisis (para gráficos)
+        Route::get('/api/analysis-data/{polygon}', [DeforestationController::class, 'getAnalysisData'])
+            ->name('api.analysis-data');
     });
 });
 // Rutas exclusivas para ADMINISTRADORES

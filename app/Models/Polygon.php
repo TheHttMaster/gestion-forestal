@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB; // ← AÑADE ESTA LÍNEA
 
 class Polygon extends Model
 {
@@ -20,15 +21,16 @@ class Polygon extends Model
     /**
      * Accesor para obtener el área total en hectáreas
      */
+    // Polygon.php - REEMPLAZAR el método getAreaHaAttribute
     public function getAreaHaAttribute(): float
     {
-        // Calcula el área usando PostGIS (en metros cuadrados) y convierte a hectáreas
-        $areaSqM = \DB::table('polygons')
+        // Usar una consulta más confiable con PostGIS
+        $area = DB::table('polygons')
             ->where('id', $this->id)
-            ->selectRaw('ST_Area(geometry) as area')
+            ->selectRaw('ST_Area(ST_Transform(geometry, 4326)::geography) / 10000 as area_ha')
             ->first()
-            ->area;
-            
-        return round($areaSqM / 10000, 2); // 1 hectárea = 10,000 m²
+            ->area_ha;
+        
+        return round($area, 2);
     }
 }

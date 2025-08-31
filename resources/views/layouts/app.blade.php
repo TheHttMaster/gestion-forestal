@@ -20,6 +20,8 @@
             'resources/css/DataTableCss.css'
         ])
 
+        <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
+
          <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
