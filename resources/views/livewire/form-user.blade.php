@@ -4,14 +4,14 @@
 
         <div class="mt-4">
             <x-input-label for="name" :value="__('Nombre')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" wire:model.live.debounce.250ms="name" autofocus />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" wire:model.live.debounce.250ms="name" autofocus onkeypress="return evitarNumeros(event)" />
+            <x-input-error :messages="$errors->first('name')" class="mt-2" />
         </div>
     
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" wire:model.live.debounce.250ms="email" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-error :messages="$errors->first('email')" class="mt-2" />
         </div>
 
         <div class="mt-4">
@@ -34,3 +34,24 @@
         </div>
     </form>
 </div>
+
+<script>
+   /*  function evitarNumeros(event) {
+        const charCode = event.which ? event.which : event.keyCode;
+        
+        // Permitir teclas de control (backspace, delete, tab, etc.)
+        if (charCode === 8 || charCode === 0 || charCode === 9) {
+            return true;
+        }
+        
+        // Permitir letras, espacios y caracteres especiales en español
+        const esLetra = (charCode >= 65 && charCode <= 90) || // A-Z
+                       (charCode >= 97 && charCode <= 122) || // a-z
+                       charCode === 32 || // espacio
+                       charCode === 209 || charCode === 241 || // Ñ, ñ
+                       (charCode >= 192 && charCode <= 255); // caracteres acentuados
+        
+        return esLetra;
+    }
+ */
+</script>

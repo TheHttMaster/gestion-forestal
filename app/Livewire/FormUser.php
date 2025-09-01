@@ -4,38 +4,113 @@ namespace App\Livewire;
 
 use App\Models\User;
 use Livewire\Component;
-use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
 
 class FormUser extends Component
 {
-    #[Validate('required|min:3', onUpdate: true)]
     public $name = '';
-
-    #[Validate('required|email|unique:users,email', onUpdate: true)]
     public $email = '';
-
-    #[Validate('required|min:8', onUpdate: true)]
     public $password = '';
-
-    #[Validate('required|min:8', onUpdate: true)]
     public $password_confirmation = '';
+    public $showPasswordErrors = false;
 
-    public function updated($propertyName)
+    protected function rules()
     {
-        $this->validateOnly($propertyName);
+        $rules = [
+            'name' => [
+                'required',
+                'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\']+$/',
+                'min:3' 
+            ],
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->whereNull('deleted_at')
+            ],
+            'password' => [
+                'required',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
+            ],
+            'password_confirmation' => 'required'
+        ];
+
+        // Solo agregar 'confirmed' cuando ambas contraseñas tienen valor
+        if ($this->password && $this->password_confirmation) {
+            $rules['password'][] = 'confirmed';
+        }
+
+        return $rules;
     }
 
-    // Este es el método que se ejecutará al enviar el formulario 
+    protected function validationAttributes()
+    {
+        return [
+            'name' => 'nombre',
+            'email' => 'correo electrónico',
+            'password' => 'contraseña',
+        ];
+    }
+
+    protected function messages()
+{
+    return [
+        // Mensajes para el campo 'name'
+        'name.required' => 'El nombre es obligatorio.',
+        'name.regex' => 'El nombre solo puede contener letras, espacios y apóstrofes.',
+        'name.min' => 'El nombre debe tener al menos 3 caracteres.',
+
+        // Mensajes para el campo 'email'
+        'email.required' => 'El correo electrónico es obligatorio.',
+        'email.email' => 'El formato del correo electrónico no es válido.',
+        'email.unique' => 'Este correo electrónico ya está registrado.',
+        
+        // Mensajes para el campo 'password'
+        'password.required' => 'La contraseña es obligatoria.',
+        'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+        'password.mixed' => 'La contraseña debe contener letras mayúsculas y minúsculas.',
+        'password.numbers' => 'La contraseña debe contener al menos un número.',
+        'password.symbols' => 'La contraseña debe contener al menos un símbolo.',
+        'password.uncompromised' => 'Esta contraseña ha sido expuesta en una filtración de datos. Por favor, elige una diferente.',
+        'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+
+        // Mensajes para el campo 'password_confirmation'
+        'password_confirmation.required' => 'La confirmación de la contraseña es obligatoria.'
+    ];
+}
+    
+    public function updated($propertyName)
+    {
+        /* // Para email
+        if ($propertyName === 'email') {
+            $this->validateOnly('email', [
+                'email' => ['required', 'email', Rule::unique('users')->whereNull('deleted_at')]
+            ]);
+        }
+        // Para password fields, mostrar errores después de interactuar
+        elseif (in_array($propertyName, ['password', 'password_confirmation'])) {
+            $this->showPasswordErrors = true;
+            $this->validateOnly($propertyName);
+        }
+        // Para otros campos
+        else {
+        } */
+            $this->validateOnly($propertyName);
+    }
+
     public function store()
     {
-        
-        // Guardar el usuario en la base de datos
+        $validatedData = $this->validate();
+
         $user = User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => Hash::make($this->password),
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
             'role' => 'basico',
         ]);
 
@@ -44,15 +119,8 @@ class FormUser extends Component
             ->performedOn($user)
             ->log('creó un nuevo usuario');
 
-         // Limpia los campos del formulario
-        $this->reset([
-            'name', 
-            'email', 
-            'password', 
-            'password_confirmation'
-        ]);
-        
-        // 3. Redireccionar con un mensaje de éxito a la vista de usuarios
+        $this->reset();
+
         return redirect()->route('admin.users.index')
             ->with('swal', [
                 'icon' => 'success',
