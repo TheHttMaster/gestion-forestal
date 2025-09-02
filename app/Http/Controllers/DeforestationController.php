@@ -1,4 +1,3 @@
-// app/Http/Controllers/DeforestationController.php
 <?php
 
 namespace App\Http\Controllers;
@@ -8,6 +7,7 @@ use App\Services\DeforestationService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB; // ← AÑADE ESTA LÍNEA
 
 class DeforestationController extends Controller
 {

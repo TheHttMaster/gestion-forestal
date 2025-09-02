@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Polygon;
 use Illuminate\Support\Facades\DB;
+use App\Models\DeforestationAnalysis; // ← AÑADE ESTA LÍNEA
 use Illuminate\Support\Facades\Log;
 
 class DeforestationService
@@ -33,23 +34,29 @@ class DeforestationService
      * Analiza un año específico usando datos de ejemplo (simulado)
      * EN LA PRÁCTICA: Conectarías con APIs gratuitas o procesarías imágenes
      */
+    // DeforestationService.php - MODIFICAR el método analyzeYear
     private function analyzeYear(Polygon $polygon, int $year): ?array
     {
         try {
-            // SIMULACIÓN: En un caso real, aquí conectarías con:
-            // - Google Earth Engine (gratuito con límites)
-            // - APIs de satélites abiertos (Landsat, Sentinel)
-            // - Datos pre-procesados de Global Forest Watch
-            
+            // Obtener el área REAL del polígono
             $polygonArea = $polygon->area_ha;
             
-            // Datos de ejemplo (simulados)
-            $baseForest = 1000; // hectáreas base de bosque
-            $annualLoss = rand(5, 15); // pérdida anual aleatoria entre 5-15%
+            if ($polygonArea <= 0) {
+                throw new \Exception("Área del polígono no válida: {$polygonArea} ha");
+            }
             
-            $forestArea = $baseForest * (1 - ($annualLoss / 100 * ($year - 2018)));
-            $deforestedArea = $baseForest - $forestArea;
-            $percentageLoss = ($deforestedArea / $baseForest) * 100;
+            // EN UN SISTEMA REAL: Aquí conectarías con APIs de satélite
+            // Para esta demo, usaremos datos más realistas basados en el área real
+            
+            // Simular pérdida forestal (5-15% del área total acumulada por año)
+            $yearsFromStart = $year - 2018;
+            $annualLossPercentage = rand(5, 15) / 100; // 5-15% de pérdida anual
+            
+            // Calcular áreas basadas en el tamaño REAL del polígono
+            $remainingPercentage = max(0, 1 - ($annualLossPercentage * $yearsFromStart));
+            $forestArea = $polygonArea * $remainingPercentage;
+            $deforestedArea = $polygonArea - $forestArea;
+            $percentageLoss = ($deforestedArea / $polygonArea) * 100;
             
             return [
                 'forest_area_ha' => round($forestArea, 2),
@@ -57,8 +64,10 @@ class DeforestationService
                 'percentage_loss' => round($percentageLoss, 2),
                 'year' => $year,
                 'metadata' => [
-                    'source' => 'simulated_data',
-                    'notes' => 'Datos de ejemplo para demostración'
+                    'source' => 'simulated_based_on_real_area',
+                    'polygon_area_ha' => $polygonArea,
+                    'annual_loss_percentage' => $annualLossPercentage * 100,
+                    'notes' => 'Datos simulados basados en el área real del polígono'
                 ]
             ];
             
