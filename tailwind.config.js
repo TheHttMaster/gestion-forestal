@@ -21,6 +21,7 @@ export default {
                     light: '#e7e5db',
                     gray: '#15171dff', 
                     gray2:'#040507',
+                    gray3:'#0f131bff',
                     gold: {
                         light: '#e2ad39',
                         medium: '#cf7f17',
