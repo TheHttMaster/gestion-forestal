@@ -146,7 +146,7 @@ const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 function updateMobileIcon(isDark) {
     if (mobileDarkIcon) {
         mobileDarkIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-        lucide.createIcons();
+       
     }
 }
 

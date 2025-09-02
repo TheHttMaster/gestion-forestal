@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Polygon;
 use Illuminate\Support\Facades\DB;
-use App\Models\DeforestationAnalysis; // ← AÑADE ESTA LÍNEA
+use App\Models\DeforestationAnalysis;
 use Illuminate\Support\Facades\Log;
 
 class DeforestationService
@@ -32,9 +32,7 @@ class DeforestationService
     
     /**
      * Analiza un año específico usando datos de ejemplo (simulado)
-     * EN LA PRÁCTICA: Conectarías con APIs gratuitas o procesarías imágenes
      */
-    // DeforestationService.php - MODIFICAR el método analyzeYear
     private function analyzeYear(Polygon $polygon, int $year): ?array
     {
         try {
@@ -44,9 +42,6 @@ class DeforestationService
             if ($polygonArea <= 0) {
                 throw new \Exception("Área del polígono no válida: {$polygonArea} ha");
             }
-            
-            // EN UN SISTEMA REAL: Aquí conectarías con APIs de satélite
-            // Para esta demo, usaremos datos más realistas basados en el área real
             
             // Simular pérdida forestal (5-15% del área total acumulada por año)
             $yearsFromStart = $year - 2018;
@@ -106,5 +101,71 @@ class DeforestationService
             ->get()
             ->keyBy('year')
             ->toArray();
+    }
+    
+    /**
+     * Procesa un GeoJSON con múltiples polígonos y devuelve información de cada uno
+     */
+    public function processMultiPolygonGeoJSON($geojson): array
+    {
+        $data = json_decode($geojson, true);
+        $results = [];
+        
+        if (isset($data['type']) && $data['type'] === 'FeatureCollection') {
+            foreach ($data['features'] as $feature) {
+                if (!isset($feature['geometry']) || $feature['geometry']['type'] !== 'Polygon') {
+                    continue;
+                }
+                
+                // Extraer propiedades
+                $properties = $feature['properties'] ?? [];
+                $productor = $properties['Productor'] ?? $properties['productor'] ?? 'Desconocido';
+                $localidad = $properties['Localidad'] ?? $properties['localidad'] ?? 'No especificada';
+                
+                // Calcular área (simulación - en producción usarías PostGIS)
+                $area = $this->calculateAreaFromGeoJSON($feature['geometry']);
+                
+                $results[] = [
+                    'productor' => $productor,
+                    'localidad' => $localidad,
+                    'area_ha' => round($area, 2),
+                    'geometry' => $feature['geometry']
+                ];
+            }
+        }
+        
+        return $results;
+    }
+    
+    /**
+     * Calcula el área aproximada desde GeoJSON (simulación)
+     * EN PRODUCCIÓN: Usarías funciones PostGIS como ST_Area
+     */
+    private function calculateAreaFromGeoJSON($geometry): float
+    {
+        // Esta es una simulación simple - en producción usarías PostGIS
+        // Para polígonos simples, podemos hacer un cálculo aproximado
+        if ($geometry['type'] === 'Polygon' && isset($geometry['coordinates'][0])) {
+            $coordinates = $geometry['coordinates'][0];
+            if (count($coordinates) > 2) {
+                // Algoritmo simple para cálculo de área (fórmula del shoelace)
+                $area = 0;
+                $n = count($coordinates);
+                
+                for ($i = 0; $i < $n; $i++) {
+                    $j = ($i + 1) % $n;
+                    $area += $coordinates[$i][0] * $coordinates[$j][1];
+                    $area -= $coordinates[$j][0] * $coordinates[$i][1];
+                }
+                
+                $area = abs($area) / 2;
+                
+                // Convertir grados² a hectáreas (aproximación muy básica)
+                // EN PRODUCCIÓN: Usar funciones PostGIS para conversión precisa
+                return $area * 10000; // Aproximación
+            }
+        }
+        
+        return 0;
     }
 }

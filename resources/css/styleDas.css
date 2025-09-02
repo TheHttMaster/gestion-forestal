@@ -75,7 +75,7 @@
 }
 
  .sidebar .nav-item.active {
-    background: linear-gradient(135deg, #502d1398 0%, #36290e94 100%);
+    background: linear-gradient(135deg, #9b5932e8 0%, #1d0e04d2 100%);
     color: #fff;
     box-shadow: 0 4px 15px rgba(92, 63, 30, 0.219);
 } 
@@ -90,8 +90,8 @@
 }
 
 .sidebar .nav-item:hover {
-    background: #e4dccd;
-    color: #1e293b;
+    background: linear-gradient(135deg, #a5633069 0%, #27160b94 100%);
+    color: #fafafa;
 }
 
 .dark .sidebar .nav-item {
@@ -261,6 +261,10 @@ input:checked+.toggle-slider:before {
     .mobile-dark-toggle {
         display: flex;
     }
+    .sidebar {
+    position: relative; /* Necesario para el pseudo-elemento */
+    overflow: visible; /* Permite que el pseudo-elemento se vea fuera del sidebar */
+}
 }
 
 /* Soft shadows */
@@ -332,16 +336,16 @@ input:checked+.toggle-slider:before {
 @media (min-width: 641px) and (max-width: 1024px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+
     }
+
+
 }
 
 
 /* Añade esto a tu styleDas.css */
 /* recuesda corregir esto para la responsibidad en modo movil  */
-.sidebar {
-    position: relative; /* Necesario para el pseudo-elemento */
-    overflow: visible; /* Permite que el pseudo-elemento se vea fuera del sidebar */
-}
+
 
 .headi {
     position: relative; /* Contexto para z-index */
