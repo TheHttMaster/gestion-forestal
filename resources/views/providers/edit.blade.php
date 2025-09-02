@@ -30,12 +30,14 @@
                             :value="old('email', $provider->email)" autocomplete="email" />
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
+
                     <div>
                         <x-input-label for="address" :value="__('Dirección')" />
                         <textarea id="address" name="address" rows="2"
                             class="block mt-1 w-full rounded-md border-gray-300 dark:bg-custom-gray dark:text-gray-100 focus:border-indigo-500 focus:ring-indigo-500 @error('address') border-red-500 @enderror">{{ old('address', $provider->address) }}</textarea>
                         <x-input-error :messages="$errors->get('address')" class="mt-2" />
                     </div>
+                    
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
