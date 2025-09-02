@@ -56,18 +56,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('areas.show');
     });
 
-    // Grupo de rutas para deforestación
+       // Grupo de rutas para deforestación - CORREGIDO
     Route::prefix('deforestation')->name('deforestation.')->group(function () {
         
-        // Mostrar formulario de análisis
-        Route::get('/deforestation/create', [DeforestationController::class, 'create'])
+        // Mostrar formulario de análisis - RUTA CORREGIDA
+        Route::get('/create', [DeforestationController::class, 'create'])
             ->name('create');
         
         // Procesar análisis (AJAX)
         Route::post('/analyze', [DeforestationController::class, 'analyze'])
             ->name('analyze');
         
-        // Mostrar resultados
+        // Mostrar resultados para múltiples polígonos
+        Route::get('/multiple-results', [DeforestationController::class, 'multipleResults'])
+            ->name('multiple-results');
+        
+        // Mostrar resultados para un solo polígono
         Route::get('/results/{polygon}', [DeforestationController::class, 'results'])
             ->name('results');
         
@@ -83,6 +87,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/api/analysis-data/{polygon}', [DeforestationController::class, 'getAnalysisData'])
             ->name('api.analysis-data');
     });
+
+
 });
 // Rutas exclusivas para ADMINISTRADORES
 // Rutas del panel de administración (solo para administradores)

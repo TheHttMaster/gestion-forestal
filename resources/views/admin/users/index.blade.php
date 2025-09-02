@@ -7,10 +7,10 @@
                         {{ __('Lista de Usuarios') }}
                     </h2>
                     <div class="flex justify-end mb-4 space-x-4">
-                        <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                        <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-lime-600/90 text-white rounded-md hover:bg-lime-600">
                             {{ __('Crear Nuevo Usuario') }}
                         </a>
-                        <a href="{{ route('admin.users.disabled') }}" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+                        <a href="{{ route('admin.users.disabled') }}" class="px-4 py-2 bg-orange-500/90 text-white rounded-md hover:bg-amber-600">
                             {{ __('Ver Deshabilitados') }}
                         </a>
                     </div>

@@ -11,7 +11,7 @@
                         {{ __('Usuarios Deshabilitados') }}
                     </h2>
                     <div class="flex justify-end mb-4">
-                        <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-gray-500  text-white rounded-md hover:bg-gray-600">
+                        <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-blue-600/90 dark:bg-blue-600  text-white rounded-md hover:bg-blue-700/90 dark:hover:bg-blue-700">
                             {{ __('Ver Habilitados') }}
                         </a>
                     </div>

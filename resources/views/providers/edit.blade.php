@@ -68,10 +68,7 @@
                 </div>
 
                 <div class="flex items-center justify-end mt-6 space-x-4">
-                    <a href="{{ route('providers.index') }}"
-                        class="inline-flex items-center px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
-                         Cancelar
-                    </a>
+                    <x-go-back-button />
                     <x-primary-button>
                         Actualizar Proveedor
                     </x-primary-button>

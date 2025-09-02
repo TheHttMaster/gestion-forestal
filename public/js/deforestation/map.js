@@ -420,6 +420,7 @@ class DeforestationMap {
         }
     }
 
+    // En map.js - Mejorar la función extractKMLData
     extractKMLData(feature) {
         try {
             // Obtener la descripción KML que contiene los datos extendidos
@@ -430,23 +431,232 @@ class DeforestationMap {
             const parser = new DOMParser();
             const doc = parser.parseFromString(kmlDescription, 'text/html');
             
-            // Buscar datos de productor
+            // Buscar datos extendidos
             const simpleDataElements = doc.querySelectorAll('simpledata');
-            let productor = '';
+            const data = {};
             
             simpleDataElements.forEach(el => {
                 const name = el.getAttribute('name');
                 const value = el.textContent;
-                
-                if (name === 'Productor') productor = value;
+                if (name && value) {
+                    data[name.toLowerCase()] = value;
+                }
             });
             
-            return productor || null;
+            // Priorizar Productor, luego Name, luego otros campos
+            return data.productor || data.name || data.nombre || null;
+            
         } catch (error) {
             console.warn('Error extrayendo datos KML:', error);
             return null;
         }
     }
+
+    // Mejorar la función processMultiPolygonInfo para extraer más datos
+    processMultiPolygonInfo(features) {
+        const polygonsInfo = [];
+        
+        features.forEach(feature => {
+            const geometry = feature.getGeometry();
+            if (geometry.getType() === 'Polygon') {
+                const productor = feature.get('productor') || feature.get('name') || 'Propietario desconocido';
+                const areaHa = this.calculateArea(feature);
+                
+                // Extraer más datos si están disponibles
+                const localidad = feature.get('localidad') || feature.get('municipio') || 'No especificado';
+                
+                polygonsInfo.push({
+                    productor: productor,
+                    localidad: localidad,
+                    area: areaHa
+                });
+            }
+        });
+        
+        this.displayPolygonsInfo(polygonsInfo);
+    }
+
+// Mejorar la función displayPolygonsInfo
+displayPolygonsInfo(polygonsInfo) {
+    const container = document.getElementById('producers-info');
+    const list = document.getElementById('producers-list');
+    
+    if (polygonsInfo.length > 0) {
+        list.innerHTML = '';
+        
+        polygonsInfo.forEach(info => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.productor}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.localidad}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.area} Ha</td>
+            `;
+            list.appendChild(row);
+        });
+        
+        container.classList.remove('hidden');
+    } else {
+        container.classList.add('hidden');
+    }
+}
+
+// Modificar la función importKML para procesar múltiples polígonos
+importKML(kmlText) {
+    try {
+        this.clearMap();
+
+        const format = new ol.format.KML();
+        const features = format.readFeatures(kmlText, {
+            featureProjection: 'EPSG:3857'
+        });
+
+        if (features.length === 0) {
+            this.showAlert('El archivo KML no contiene geometría válida.', 'error');
+            return;
+        }
+
+        // Procesar TODOS los features
+        features.forEach(feature => {
+            const productor = this.extractKMLData(feature);
+            
+            if (productor) {
+                feature.set('label', productor);
+                feature.set('productor', productor);
+            }
+            
+            this.source.addFeature(feature);
+        });
+
+        // Centrar el mapa en todas las features
+        const extent = this.source.getExtent();
+        this.map.getView().fit(extent, {
+            padding: [50, 50, 50, 50],
+            duration: 1000
+        });
+
+        // Guardar todas las geometrías como FeatureCollection
+        const featureCollection = {
+            type: 'FeatureCollection',
+            features: features.map(feature => {
+                const geoJSONFormat = new ol.format.GeoJSON();
+                return JSON.parse(geoJSONFormat.writeFeature(feature, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+                }));
+            })
+        };
+        
+        document.getElementById('geometry').value = JSON.stringify(featureCollection);
+
+        // Procesar información de múltiples polígonos
+        this.processMultiPolygonInfo(features);
+
+        this.showAlert(`${features.length} áreas importadas correctamente.`, 'success');
+    } catch (error) {
+        this.showAlert('Error al importar el área KML: ' + error.message, 'error');
+    }
+}
+
+// Modificar también la función importGeoJSON para múltiples polígonos
+importGeoJSON(geojson) {
+    try {
+        this.clearMap();
+
+        const format = new ol.format.GeoJSON();
+        const features = format.readFeatures(geojson, {
+            featureProjection: 'EPSG:3857'
+        });
+
+        if (features.length === 0) {
+            this.showAlert('El archivo no contiene geometría válida.', 'error');
+            return;
+        }
+
+        // Añadir todas las features al mapa
+        features.forEach(feature => {
+            this.source.addFeature(feature);
+            const name = feature.get('name') || feature.get('Nombre') || feature.get('NOMBRE') || feature.get('title') || feature.get('Productor');
+            if (name) {
+                feature.set('label', name);
+                feature.set('productor', name);
+            }
+        });
+
+        // Centrar el mapa en la extensión de todas las features
+        const extent = this.source.getExtent();
+        this.map.getView().fit(extent, {
+            padding: [50, 50, 50, 50],
+            duration: 1000
+        });
+
+        // Guardar la geometría como FeatureCollection
+        document.getElementById('geometry').value = JSON.stringify(geojson);
+
+        // Procesar información de múltiples polígonos
+        this.processMultiPolygonInfo(features);
+
+        this.showAlert('Áreas importadas correctamente.', 'success');
+    } catch (error) {
+        this.showAlert('Error al importar el área: ' + error.message, 'error');
+    }
+}
+
+// Modificar handleFormSubmit para manejar múltiples polígonos
+async handleFormSubmit(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const submitButton = form.querySelector('button[type="submit"]');
+    const spinner = document.getElementById('loading-spinner');
+
+    // Validar que se haya dibujado un polígono
+    if (!document.getElementById('geometry').value) {
+        this.showAlert('Por favor, dibuja un polígono en el mapa primero.', 'warning');
+        return;
+    }
+
+    // Mostrar spinner y desactivar botón
+    spinner.classList.remove('d-none');
+    submitButton.disabled = true;
+
+    try {
+        // Obtener el token CSRF de la meta
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // Enviar la solicitud AJAX
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': token
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            if (result.multiple) {
+                // Para múltiples polígonos, redirigir a página de resumen
+                const polygonIds = result.results.map(r => r.polygon_id);
+                window.location.href = `/deforestation/multiple-results?polygon_ids=${polygonIds.join(',')}`;
+            } else {
+                // Para un solo polígono, redirigir a la página de resultados normal
+                window.location.href = `/deforestation/results/${result.polygon_id}`;
+            }
+        } else {
+            this.showAlert('Error: ' + result.message, 'error');
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        this.showAlert('Error al procesar la solicitud', 'error');
+    } finally {
+        spinner.classList.add('d-none');
+        submitButton.disabled = false;
+    }
+}
 }
 
 // Inicializar el mapa cuando el documento esté listo
