@@ -35,9 +35,10 @@ class FormUser extends Component
                     ->mixedCase()
                     ->numbers()
                     ->symbols()
-                    ->uncompromised()
+                    ->uncompromised(),
+                    
             ],
-            'password_confirmation' => 'required'
+            'password_confirmation' => ''
         ];
 
         // Solo agregar 'confirmed' cuando ambas contraseñas tienen valor
@@ -84,24 +85,22 @@ class FormUser extends Component
     ];
 }
     
-    public function updated($propertyName)
-    {
-        /* // Para email
-        if ($propertyName === 'email') {
-            $this->validateOnly('email', [
-                'email' => ['required', 'email', Rule::unique('users')->whereNull('deleted_at')]
-            ]);
-        }
-        // Para password fields, mostrar errores después de interactuar
-        elseif (in_array($propertyName, ['password', 'password_confirmation'])) {
-            $this->showPasswordErrors = true;
-            $this->validateOnly($propertyName);
-        }
-        // Para otros campos
-        else {
-        } */
-            $this->validateOnly($propertyName);
+public function updated($propertyName)
+{
+    // Valida todos los campos, excepto los de contraseña, uno por uno.
+    if (!in_array($propertyName, ['password', 'password_confirmation'])) {
+        $this->validateOnly($propertyName);
     }
+    
+    // Si se actualiza cualquiera de los campos de contraseña,
+    // valida ambos para que la regla 'confirmed' funcione correctamente.
+    if (in_array($propertyName, ['password', 'password_confirmation'])) {
+        $this->validate([
+            'password' => $this->rules()['password'],
+            'password_confirmation' => $this->rules()['password_confirmation']
+        ], $this->messages(), $this->validationAttributes());
+    }
+}
 
     public function store()
     {
