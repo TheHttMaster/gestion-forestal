@@ -115,8 +115,7 @@ public function updated($propertyName)
 
         activity()
             ->causedBy(auth()->user())
-            ->performedOn($user)
-            ->log('creó un nuevo usuario');
+            ->performedOn($user);
 
         $this->reset();
 
@@ -125,6 +124,37 @@ public function updated($propertyName)
                 'icon' => 'success',
                 'title' => 'Éxito',
                 'text' => 'Usuario creado exitosamente.'
+            ]);
+    }
+
+    public function update()
+    {
+
+        $validatedData = $this->validate();
+
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+        ];
+
+        /* // Actualizar password solo si se proporciona
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        } */
+
+        $user->update($data);
+
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user);
+
+        // Usar with() en lugar de session()->flash()
+        return redirect()->route('admin.users.index')
+            ->with('swal', [
+                'icon' => 'success',
+                'title' => 'Éxito',
+                'text' => 'Usuario actualizado exitosamente.'
             ]);
     }
 

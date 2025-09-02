@@ -26,6 +26,7 @@ class UserController extends Controller
     {
         return view('admin.users.create');
     }
+    
     public function edit(User $user)
     {
         return view('admin.users.edit', compact('user'));
@@ -39,11 +40,11 @@ class UserController extends Controller
             'role' => ['required', 'string', 'in:basico,administrador'],
         ];
     
-        // Agregar validación condicional para password
+        /* // Agregar validación condicional para password
         if ($request->filled('password')) {
             $rules['password'] = ['confirmed', Rules\Password::defaults()];
         }
-
+ */
         $request->validate($rules);
 
         $data = [
@@ -52,10 +53,10 @@ class UserController extends Controller
             'role' => $request->role,
         ];
 
-        // Actualizar password solo si se proporciona
+        /* // Actualizar password solo si se proporciona
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
-        }
+        } */
 
         $user->update($data);
 
