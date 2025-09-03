@@ -1,0 +1,3 @@
+lista de errors visto en los modulos
+
+Proveedores - error visual en los parametros de filtrado
