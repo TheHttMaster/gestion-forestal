@@ -11,21 +11,103 @@ class DeforestationMap {
         this.polygonStyle = null; // Estilo para polígonos
         this.pointStyle = null;   // Estilo para puntos/vértices
 
+        this.coordinateDisplay = null; // Para mostrar coordenadas
+        this.baseLayers = {}; // Para almacenar las capas base
+        this.currentBaseLayer = null; // Capa base actual
+
         this.initializeMap();
         this.setupEventListeners();
+        this.setupCoordinateDisplay(); // Configurar display de coordenadas
+    }
+
+    // Agregar este método para configurar el display de coordenadas
+    setupCoordinateDisplay() {
+        // Crear elemento para mostrar coordenadas
+        this.coordinateDisplay = document.createElement('div');
+        this.coordinateDisplay.className = 'coordinate-display';
+        this.coordinateDisplay.style.position = 'absolute';
+        this.coordinateDisplay.style.bottom = '10px';
+        this.coordinateDisplay.style.left = '10px';
+        this.coordinateDisplay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        this.coordinateDisplay.style.padding = '5px 10px';
+        this.coordinateDisplay.style.borderRadius = '4px';
+        this.coordinateDisplay.style.fontSize = '12px';
+        this.coordinateDisplay.style.zIndex = '1000';
+        this.coordinateDisplay.style.fontFamily = 'monospace';
+        
+         // Crear elemento para mostrar coordenadas
+        this.coordinateDisplay = document.createElement('div');
+        this.coordinateDisplay.className = 'coordinate-display';
+        
+        // Agregar al contenedor del mapa (no al documento)
+        const mapContainer = document.getElementById('map');
+        mapContainer.appendChild(this.coordinateDisplay);
+        
+        // Evento para mostrar coordenadas al mover el mouse
+        this.map.on('pointermove', (evt) => {
+            const coordinate = evt.coordinate;
+            const lonLat = ol.proj.toLonLat(coordinate);
+            
+            // Formatear coordenadas con 6 decimales
+            const lon = lonLat[0].toFixed(6);
+            const lat = lonLat[1].toFixed(6);
+            
+            this.coordinateDisplay.textContent = `Lon: ${lon} | Lat: ${lat}`;
+            this.coordinateDisplay.style.display = 'block';
+        });
+        
+        // Ocultar coordenadas cuando el mouse sale del mapa
+        this.map.on('pointerout', () => {
+            this.coordinateDisplay.style.display = 'none';
+        });
+        
+        // También ocultar coordenadas cuando el mouse sale del viewport del mapa
+        this.map.getViewport().addEventListener('mouseleave', () => {
+            this.coordinateDisplay.style.display = 'none';
+        });
     }
 
     /**
      * Inicializa el mapa, las capas y los estilos.
      */
     initializeMap() {
-        // Capa base OpenStreetMap
-        const osmLayer = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
+         // Definir diferentes capas base
+        this.baseLayers = {
+            osm: new ol.layer.Tile({
+                source: new ol.source.OSM(),
+                visible: true,
+                title: 'OpenStreetMap'
+            }),
+            satellite: new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                    attributions: 'Tiles © Esri'
+                }),
+                visible: false,
+                title: 'Satélite'
+            }),
+            terrain: new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
+                    attributions: 'Tiles © Esri'
+                }),
+                visible: false,
+                title: 'Relieve'
+            }),
+            dark: new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    url: 'https://{a-c}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+                    attributions: '© CartoDB'
+                }),
+                visible: false,
+                title: 'Oscuro'
+            })
+        };
 
         // Fuente para las geometrías dibujadas
         this.source = new ol.source.Vector();
+
+       
 
         // Estilo para polígonos
         this.polygonStyle = new ol.style.Style({
@@ -34,7 +116,7 @@ class DeforestationMap {
                 width: 3
             }),
             fill: new ol.style.Fill({
-                color: 'rgba(0, 0, 255, 0.2)'
+                color: 'rgba(0, 255, 21, 0.2)'
             })
         });
 
@@ -45,7 +127,7 @@ class DeforestationMap {
                 width: 3
             }),
             fill: new ol.style.Fill({
-                color: 'rgba(0, 0, 255, 0.2)'
+                color: 'rgba(0, 255, 55, 0.2)'
             })
         });
 
@@ -94,15 +176,35 @@ class DeforestationMap {
             }
         });
 
-        // Inicializar el mapa centrado en Colombia
+        // Crear grupo de capas base
+        const baseLayerGroup = new ol.layer.Group({
+            layers: Object.values(this.baseLayers)
+        });
+
+         // Inicializar el mapa con las capas
         this.map = new ol.Map({
             target: 'map',
-            layers: [osmLayer, vectorLayer],
+            layers: [baseLayerGroup, vectorLayer],
             view: new ol.View({
-                center: ol.proj.fromLonLat([-74.0, 4.6]), // Coordenadas de Colombia
+                center: ol.proj.fromLonLat([-66.0, 8.0]),
                 zoom: 6
             })
         });
+        
+        // Guardar referencia a la capa base actual
+        this.currentBaseLayer = this.baseLayers.osm;
+    }
+
+    // Agregar método para cambiar capa base
+    changeBaseLayer(layerKey) {
+        // Ocultar todas las capas base
+        Object.values(this.baseLayers).forEach(layer => {
+            layer.setVisible(false);
+        });
+        
+        // Mostrar la capa seleccionada
+        this.baseLayers[layerKey].setVisible(true);
+        this.currentBaseLayer = this.baseLayers[layerKey];
     }
 
     /**
