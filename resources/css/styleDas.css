@@ -407,4 +407,68 @@ input:checked+.toggle-slider:before {
     opacity: 0.04;
 }
 
+/* ESTILOS PARA EL MAPA Y LAS CORDENADAS */
+
+/* ESTILOS PARA EL MAPA Y LAS COORDENADAS - ACTUALIZADOS */
+
+/* Contenedor del mapa debe tener posición relativa */
+#map {
+    position: relative;
+    height: 500px;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow: hidden; /* Asegura que nada se salga del contenedor */
+}
+
+.coordinate-display {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    font-family: monospace;
+    display: none; /* Oculto por defecto */
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para modo oscuro */
+.dark .coordinate-display {
+    background-color: rgba(31, 41, 55, 0.9);
+    color: #e5e7eb;
+    border: 1px solid #4b5563;
+}
+
+/* Menú de selección de mapas */
+#base-map-menu {
+    display: none;
+    z-index: 10000;
+}
+
+#base-map-menu.show {
+    display: block;
+}
+
+/* Asegurar que el menú tenga un fondo sólido */
+#base-map-menu .py-1 {
+    background: inherit;
+}
+
+/* Estilos para modo oscuro del menú */
+.dark #base-map-menu {
+    background-color: #1f2937;
+    border: 1px solid #374151;
+}
+
+.dark #base-map-menu button {
+    color: #e5e7eb;
+}
+
+.dark #base-map-menu button:hover {
+    background-color: #374151;
+    color: #ffffff;
+}
 

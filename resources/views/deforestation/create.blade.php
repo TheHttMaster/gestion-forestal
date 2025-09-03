@@ -2,15 +2,16 @@
  
 <x-app-layout>
     <div class="max-w-7xl mx-auto ">
-        <div class="bg-stone-100/90 dark:bg-custom-gray overflow-hidden shadow-sm sm:rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 mb-6">
-            <div class="text-gray-900 dark:text-gray-100 ">
+        <div class="bg-stone-100/90 dark:bg-custom-gray  shadow-sm sm:rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 mb-6">
+            <div class="text-gray-900 dark:text-gray-100 mb-10">
                 <h2 class="font-semibold text-xl leading-tight ">
                     {{('Análisis de Deforestación') }}
                 </h2>
    
-        
+                    <!-- CARGA DEL MAPA AQUÍ -->
                     <div id="map" style="height: 500px; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></div>
-                    <!-- BOTONES DE CONTROL AÑADIDOS AQUÍ -->
+
+                    <!-- BOTONES DE CONTROL AÑADIDOS -->
                     <div class="mt-4 flex space-x-2">
                         <button id="draw-polygon" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,6 +25,27 @@
                             </svg>
                             Limpiar Mapa
                         </button>
+
+                         <!-- Selector de mapa base -->
+                        <div class="relative mb-2">
+                            <button id="base-map-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                                </svg>
+                                Cambiar Mapa
+                            </button>
+                            <div id="base-map-menu" class="absolute hidden mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10000">
+                                <div class="py-1 z-10000" role="menu" aria-orientation="vertical">
+
+                                
+                                    <button data-layer="osm" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">OpenStreetMap</button>
+                                    <button data-layer="satellite" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Satélite</button>
+                                    <button data-layer="terrain" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Relieve</button>
+                                    <button data-layer="dark" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Oscuro</button>
+                                </div>
+                            </div>
+                        </div>
+                    
                     </div>
                 </div>
             </div>
@@ -168,5 +190,31 @@ document.getElementById('import-area').addEventListener('change', async function
     else {
         window.deforestationMapInstance.showAlert('Formato no soportado.', 'error');
     }
+});
+</script>
+<script>
+// Toggle del menú de selección de mapa base
+document.getElementById('base-map-toggle').addEventListener('click', function() {
+    const menu = document.getElementById('base-map-menu');
+    menu.classList.toggle('show');
+});
+
+// Cerrar menú al hacer clic fuera
+document.addEventListener('click', function(e) {
+    const toggle = document.getElementById('base-map-toggle');
+    const menu = document.getElementById('base-map-menu');
+    
+    if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.remove('show');
+    }
+});
+
+// Cambiar capa base
+document.querySelectorAll('#base-map-menu button').forEach(button => {
+    button.addEventListener('click', function() {
+        const layerKey = this.getAttribute('data-layer');
+        window.deforestationMapInstance.changeBaseLayer(layerKey);
+        document.getElementById('base-map-menu').classList.remove('show');
+    });
 });
 </script>
