@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use App\Traits\StandardizesEmails;
+use App\Traits\StandardizesCities;
+use App\Traits\StandardizesCountries;
+
 class Provider extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, StandardizesEmails, StandardizesCities, StandardizesCountries;
 
     protected $fillable = [
         'name',

@@ -22,12 +22,14 @@ class CreateProvider extends Component
     protected function rules()
     {
         return [
-            'name' => ['required', 'string', 'min:3', Rule::unique('providers', 'name')],
+            'name' => ['required', 'string', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\']+$/', 'min:3', Rule::unique('providers', 'name')],
             'contact_name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', Rule::unique('providers', 'email')],
-            'address' => ['nullable', 'string'],
-            'city' => ['nullable', 'string'],
-            'country' => ['nullable', 'string'],
+            'email' => ['nullable', 'email'],
+
+            'address' => ['nullable', 'string', 'max:500', 'regex:/^[a-zA-Z0-9\s.,-]+$/'],
+            'city' => ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
+            'country' => ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
+            
             'notes' => ['nullable', 'string'],
             'is_active' => ['boolean'],
         ];
