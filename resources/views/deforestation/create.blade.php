@@ -3,7 +3,7 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto ">
         <div class="bg-stone-100/90 dark:bg-custom-gray  shadow-sm sm:rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 mb-6">
-            <div class="text-gray-900 dark:text-gray-100 mb-10">
+            <div class="text-gray-900 dark:text-gray-100 ">
                 <h2 class="font-semibold text-xl leading-tight ">
                     {{('Análisis de Deforestación') }}
                 </h2>

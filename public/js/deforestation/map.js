@@ -30,7 +30,7 @@ class DeforestationMap {
         this.coordinateDisplay.style.left = '10px';
         this.coordinateDisplay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
         this.coordinateDisplay.style.padding = '5px 10px';
-        this.coordinateDisplay.style.borderRadius = '4px';
+        
         this.coordinateDisplay.style.fontSize = '12px';
         this.coordinateDisplay.style.zIndex = '1000';
         this.coordinateDisplay.style.fontFamily = 'monospace';
@@ -107,23 +107,10 @@ class DeforestationMap {
         // Fuente para las geometrías dibujadas
         this.source = new ol.source.Vector();
 
-       
-
-        // Estilo para polígonos
-        this.polygonStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'blue',
-                width: 3
-            }),
-            fill: new ol.style.Fill({
-                color: 'rgba(0, 255, 21, 0.2)'
-            })
-        });
-
         // Estilo mejorado para mostrar etiquetas
         this.polygonStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
-                color: 'blue',
+                color: 'rgba(26, 166, 30, 0.63)',
                 width: 3
             }),
             fill: new ol.style.Fill({
@@ -136,15 +123,16 @@ class DeforestationMap {
             text: new ol.style.Text({
                 text: '', // Se establecerá dinámicamente
                 font: 'bold 14px Arial',
-                fill: new ol.style.Fill({ color: '#000' }),
-                stroke: new ol.style.Stroke({ color: '#fff', width: 3 }),
+                fill: new ol.style.Fill({ color: '#000000' }),
+                stroke: new ol.style.Stroke({ color: '#04a3072b', width: 3 }),
                 offsetY: -20,
+                borderRadius: '4px',
                 overflow: true,
                 background: true,
                 backgroundFill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.6)'
+                    color: 'rgba(0, 0, 0, 0.52)'
                 }),
-                padding: [3, 5, 3, 5]
+                padding: [3, 8, 3, 8]
             })
         });
 
