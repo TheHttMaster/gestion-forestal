@@ -7,6 +7,8 @@ use App\Http\Requests\AreaRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AreaController extends Controller
 {
@@ -33,17 +35,49 @@ class AreaController extends Controller
         return view('areas.create', compact('areasPadre', 'tipos'));
     }
 
-    public function store(AreaRequest $request): RedirectResponse
+    public function store(Request $request)
     {
+        // 1. Validar los datos de entrada, asegurándose de que las coordenadas son requeridas y numéricas.
+        $validator = Validator::make($request->all(), [
+            'nombre'    => 'required|string|max:150',
+            'codigo'    => 'required|string|max:50|unique:areas,codigo',
+            'latitud'   => 'nullable|numeric|between:-90,90',
+            'longitud'  => 'nullable|numeric|between:-180,180',
+            'tipo'      => 'required|in:pais,estado,ciudad,municipio,zona,barrio',
+            'area_padre_id' => 'nullable|exists:areas,id',
+            'descripcion' => 'nullable|string',
+        ]);
+        
+        // Si la validación falla, redirecciona de vuelta con los errores.
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         try {
-            Area::create($request->validated());
-            
+            // 2. Crear una nueva instancia del modelo Area con los datos validados.
+            $area = Area::create($validator->validated());
+
+            // 3. Registrar la actividad de creación del área.
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($area)
+                ->log('Área creada');
+
+            // 4. Redireccionar con un mensaje de éxito en formato Swal.
             return redirect()->route('areas.index')
-                ->with('success', 'Área creada exitosamente');
-                
+                ->with('swal', [
+                    'icon' => 'success',
+                    'title' => 'Éxito',
+                    'text' => 'Área geográfica creada con éxito.'
+                ]);
         } catch (\Exception $e) {
+            // Manejar errores si la creación falla.
             return redirect()->back()
-                ->with('error', 'Error al crear el área: ' . $e->getMessage())
+                ->with('swal', [
+                    'icon' => 'error',
+                    'title' => 'Error',
+                    'text' => 'Error al crear el área: ' . $e->getMessage()
+                ])
                 ->withInput();
         }
     }
