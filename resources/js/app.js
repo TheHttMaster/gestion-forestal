@@ -9,6 +9,12 @@ window.Alpine = Alpine;
 Alpine.start();
  */
 
+/* import $ from 'jquery';   ESTA IMPLE
+import 'datatables.net';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+
+// Opcional: Si quieres los estilos por defecto de DataTables
+import 'datatables.net-dt/js/dataTables.dataTables'; */
 
 import Swal from 'sweetalert2';
 
