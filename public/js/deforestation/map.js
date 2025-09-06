@@ -130,7 +130,7 @@ class DeforestationMap {
                 overflow: true,
                 background: true,
                 backgroundFill: new ol.style.Fill({
-                    color: 'rgba(0, 0, 0, 0.52)'
+                    color: 'rgba(242, 242, 242, 0.52)'
                 }),
                 padding: [3, 8, 3, 8]
             })
