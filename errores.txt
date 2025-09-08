@@ -1,3 +1,6 @@
 lista de errors visto en los modulos
 
-Proveedores - error visual en los parametros de filtrado
+- Proveedores - error visual en los parametros de filtrado
+
+- agregarle a todos los iconos, botones e inputs el atributo "title" 
+
