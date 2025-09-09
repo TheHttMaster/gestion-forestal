@@ -14,6 +14,9 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        {{-- Super importante para usar en la convercion de los mapas, no borrar --}}
+        <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
+
         {{-- Compilación de archivos Vite --}}
         @vite([
             'resources/css/app.css', 
