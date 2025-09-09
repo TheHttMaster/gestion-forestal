@@ -2,7 +2,6 @@
 .sidebar {
     width: 16rem;
     transition: width 0.35s cubic-bezier(.4, 0, .2, 1);
-
     display: flex;
     flex-direction: column;
     border-radius: 0 0 1rem 0;
@@ -12,11 +11,9 @@
 
 .sidebar.collapsed {
     width: 4.6rem;
-
 }
 
 .dark .sidebar {
-   
     color: #f1f5f9;
 }
 
@@ -392,20 +389,6 @@ input:checked+.toggle-slider:before {
     /* Resto de tus estilos... */
 }
 
-/* Estilos del SVG de fondo */
-.svg-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    opacity: 0.09;
-    pointer-events: none;
-}
-.dark .svg-background {
-    opacity: 0.04;
-}
 
 /* ESTILOS PARA EL MAPA Y LAS CORDENADAS */
 
