@@ -7,25 +7,110 @@
 
         <title>Sistema de Gestion Geografica</title>
 
-        {{-- Estilos de Livewire --}}
         @livewireStyles
-
-        {{-- Fuentes y estilos de la aplicación --}}
+        
+        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        {{-- Compilación de archivos Vite --}}
+        <!-- Styles -->
         @vite([
             'resources/css/app.css', 
             'resources/css/styleDas.css', 
-            'resources/css/DataTableCss.css',
-            'resources/js/app.js'
+            'resources/css/DataTableCss.css'
         ])
 
-        {{-- Estilos y scripts específicos del head --}}
-        @yield('head-styles')
-        @yield('head-scripts')
+        <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
 
+         <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            overflow: hidden;
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #3a6186 0%, #89253e 100%);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3a6186 0%, #89253e 100%);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2a4c6b 0%, #6a1e35 100%);
+        }
+        #map {
+            height: 100vh;
+            z-index: 1;
+        }
+        .form-container {
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .coordinates-info {
+            background-color: #f1f5f9;
+            border-left: 4px solid #3a6186;
+        }
+        .map-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        .input-icon {
+            color: #64748b;
+        }
+        .leaflet-popup-content {
+            margin: 12px 15px;
+        }
+        @media (max-width: 768px) {
+            .container-main {
+                flex-direction: column;
+            }
+            #map {
+                height: 50vh;
+            }
+            .form-container {
+                height: auto;
+            }
+        }
+    </style>
+
+        
+        <script>
+        // Verifica el tema guardado o el preferido del sistema ANTES de renderizar
+        const storedTheme = localStorage.getItem('theme') || 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+            if (storedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+
+            // Aplica sidebar colapsado antes de pintar (solo escritorio)
+            if (window.innerWidth > 768 && localStorage.getItem('sidebarCollapsed') === '1') {
+                // Espera a que el sidebar esté en el DOM y aplica la clase lo antes posible
+                const applySidebarCollapsed = () => {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar && !sidebar.classList.contains('collapsed')) {
+                        sidebar.classList.add('collapsed');
+                        return true;
+                    }
+                    return false;
+                };
+                if (!applySidebarCollapsed()) {
+                    // Si aún no existe, observa el DOM hasta que aparezca
+                    const observer = new MutationObserver(() => {
+                        if (applySidebarCollapsed()) observer.disconnect();
+                    });
+                    observer.observe(document.documentElement, { childList: true, subtree: true });
+                }
+            }
+        </script>
+       
     </head>
     
     <body class="bg-neutral-200 dark:bg-custom-dark ">
@@ -56,7 +141,7 @@
             'resources/js/jquery-3.7.1.min.js',
             'resources/js/app.js', 
             'resources/js/DataTableJs.js',
-            'resources\js\DashFunctions.js'
+            'resources/js/DashFunctions.js'
         ])
     @if(session('swal'))
     <script>
