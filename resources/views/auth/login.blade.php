@@ -20,8 +20,8 @@
 
     <!-- Logo y título de la empresa -->
     <div class="text-center mb-4 sm:mb-5 md:mb-6">
-        <div class="inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 md:w-32 md:h-32 bg-amber-800 dark:bg-amber-700 rounded-full mb-2 sm:mb-3 shadow-lg">
-            <!-- Icono de café/cacao usando SVG -->
+        <div class="inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 md:w-32 md:h-32 bg-amber-700 dark:bg-amber-700 rounded-full mb-2 sm:mb-3 shadow-lg">
+            <!-- Icono de cacao usando SVG -->
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="80.000000pt" height="80.000000pt" viewBox="0 0 172.000000 167.000000" preserveAspectRatio="xMidYMid meet">
                 <g transform="translate(0.000000,167.000000) scale(0.100000,-0.100000)" fill="#ffffffff" stroke="none">
                     <path d="M1052 1609 l-40 -20 15 -37 c24 -57 111 -228 160 -315 24 -44 43 -80 41 -81 -2 -1 -26 -11 -54 -22 l-52 -21 -13 31 c-13 28 -26 34 -148 74 -247 80 -375 81 -537 2 -170 -82 -282 -223 -360 -450 -39 -113 -39 -113 72 -159 134 -56 231 -74 376 -68 102 4 125 2 121 -9 -10 -27 19 -203 48 -284 17 -47 38
