@@ -1,77 +1,35 @@
 /**
+ * DeforestationMap
  * Clase principal para gestionar el mapa de deforestación.
- * Permite dibujar polígonos, calcular área, convertir a GeoJSON y enviar el formulario.
- * Usa OpenLayers.
+ * Permite dibujar, importar y visualizar múltiples áreas (polígonos) con etiquetas y detalles.
+ * Soporta GeoJSON, KML y SHP (usando shpjs).
+ * Autor: Inspirado en principios de "Código Limpio".
  */
 class DeforestationMap {
     constructor() {
-        this.map = null;      // Instancia del mapa
-        this.draw = null;     // Interacción de dibujo
-        this.source = null;   // Fuente de datos vectoriales
-        this.polygonStyle = null; // Estilo para polígonos
-        this.pointStyle = null;   // Estilo para puntos/vértices
+        // Instancias y configuraciones principales
+        this.map = null;                // Instancia OpenLayers Map
+        this.draw = null;               // Interacción de dibujo
+        this.source = null;             // Fuente vectorial para features
+        this.polygonStyle = null;       // Estilo para polígonos
+        this.pointStyle = null;         // Estilo para puntos/vértices
+        this.labelStyle = null;         // Estilo para etiquetas
+        this.coordinateDisplay = null;  // Elemento para mostrar coordenadas
+        this.baseLayers = {};           // Capas base disponibles
+        this.currentBaseLayer = null;   // Capa base actual
 
-        this.coordinateDisplay = null; // Para mostrar coordenadas
-        this.baseLayers = {}; // Para almacenar las capas base
-        this.currentBaseLayer = null; // Capa base actual
-
+        // Inicialización
         this.initializeMap();
         this.setupEventListeners();
-        this.setupCoordinateDisplay(); // Configurar display de coordenadas
-    }
-
-    // Agregar este método para configurar el display de coordenadas
-    setupCoordinateDisplay() {
-        // Crear elemento para mostrar coordenadas
-        this.coordinateDisplay = document.createElement('div');
-        this.coordinateDisplay.className = 'coordinate-display';
-        this.coordinateDisplay.style.position = 'absolute';
-        this.coordinateDisplay.style.bottom = '10px';
-        this.coordinateDisplay.style.left = '10px';
-        this.coordinateDisplay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-        this.coordinateDisplay.style.padding = '5px 10px';
-        
-        this.coordinateDisplay.style.fontSize = '12px';
-        this.coordinateDisplay.style.zIndex = '1000';
-        this.coordinateDisplay.style.fontFamily = 'monospace';
-        
-         // Crear elemento para mostrar coordenadas
-        this.coordinateDisplay = document.createElement('div');
-        this.coordinateDisplay.className = 'coordinate-display';
-        
-        // Agregar al contenedor del mapa (no al documento)
-        const mapContainer = document.getElementById('map');
-        mapContainer.appendChild(this.coordinateDisplay);
-        
-        // Evento para mostrar coordenadas al mover el mouse
-        this.map.on('pointermove', (evt) => {
-            const coordinate = evt.coordinate;
-            const lonLat = ol.proj.toLonLat(coordinate);
-            
-            // Formatear coordenadas con 6 decimales
-            const lon = lonLat[0].toFixed(6);
-            const lat = lonLat[1].toFixed(6);
-            
-            this.coordinateDisplay.textContent = `Lon: ${lon} | Lat: ${lat}`;
-            this.coordinateDisplay.style.display = 'block';
-        });
-        
-        // Ocultar coordenadas cuando el mouse sale del mapa
-        this.map.on('pointerout', () => {
-            this.coordinateDisplay.style.display = 'none';
-        });
-        
-        // También ocultar coordenadas cuando el mouse sale del viewport del mapa
-        this.map.getViewport().addEventListener('mouseleave', () => {
-            this.coordinateDisplay.style.display = 'none';
-        });
+        this.setupCoordinateDisplay();
     }
 
     /**
-     * Inicializa el mapa, las capas y los estilos.
+     * Inicializa el mapa, las capas base y los estilos.
+     * Nota: Mantén los estilos y capas bien organizados para facilitar el mantenimiento.
      */
     initializeMap() {
-         // Definir diferentes capas base
+        // Definir capas base
         this.baseLayers = {
             osm: new ol.layer.Tile({
                 source: new ol.source.OSM(),
@@ -104,10 +62,10 @@ class DeforestationMap {
             })
         };
 
-        // Fuente para las geometrías dibujadas
+        // Fuente vectorial para geometrías dibujadas/importadas
         this.source = new ol.source.Vector();
 
-        // Estilo mejorado para mostrar etiquetas
+        // Estilo para polígonos
         this.polygonStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: 'rgba(26, 166, 30, 0.63)',
@@ -118,17 +76,24 @@ class DeforestationMap {
             })
         });
 
-        // Estilo para etiquetas con mejor contraste
+        // Estilo para puntos/vértices
+        this.pointStyle = new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 6,
+                fill: new ol.style.Fill({ color: 'red' }),
+                stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+            })
+        });
+
+        // Estilo para etiquetas sobre los polígonos
         this.labelStyle = new ol.style.Style({
             text: new ol.style.Text({
-                text: '', // Se establecerá dinámicamente
+                text: '', // Se asigna dinámicamente
                 font: 'bold 14px Arial',
                 fill: new ol.style.Fill({ color: '#000000' }),
                 stroke: new ol.style.Stroke({ color: '#04a3072b', width: 3 }),
                 offsetY: -20,
-                borderRadius: '4px',
                 overflow: true,
-                background: true,
                 backgroundFill: new ol.style.Fill({
                     color: 'rgba(242, 242, 242, 0.52)'
                 }),
@@ -136,110 +101,135 @@ class DeforestationMap {
             })
         });
 
-        // Capa vectorial con estilo mejorado
+        // Capa vectorial con soporte para etiquetas
         const vectorLayer = new ol.layer.Vector({
             source: this.source,
             style: (feature) => {
                 const geometry = feature.getGeometry();
                 const styles = [this.polygonStyle];
-                
-                // Añadir etiqueta si existe
+
+                // Si la feature tiene 'label', mostrarla como etiqueta sobre el polígono
                 const label = feature.get('label');
                 if (label && geometry.getType() !== 'Point') {
                     const labelStyle = this.labelStyle.clone();
-                    const center = ol.extent.getCenter(geometry.getExtent());
                     labelStyle.getText().setText(label);
-                    
-                    // Crear un punto en el centro para la etiqueta
+
+                    // Ubicar la etiqueta en el centro del polígono
+                    const center = ol.extent.getCenter(geometry.getExtent());
                     const pointFeature = new ol.Feature({
                         geometry: new ol.geom.Point(center)
                     });
                     pointFeature.setStyle(labelStyle);
-                    
-                    // Añadir la etiqueta como feature separada
+
+                    // Añadir la etiqueta como feature separada (no afecta el backend)
                     this.source.addFeature(pointFeature);
                 }
-                
                 return styles;
             }
         });
 
-        // Crear grupo de capas base
+        // Grupo de capas base
         const baseLayerGroup = new ol.layer.Group({
             layers: Object.values(this.baseLayers)
         });
 
-         // Inicializar el mapa con las capas
+        // Inicializar el mapa
         this.map = new ol.Map({
             target: 'map',
             layers: [baseLayerGroup, vectorLayer],
             view: new ol.View({
-                center: ol.proj.fromLonLat([-66.0, 8.0]),
+                center: ol.proj.fromLonLat([-66.0, 8.0]), // Centro inicial
                 zoom: 6
             })
         });
-        
-        // Guardar referencia a la capa base actual
+
         this.currentBaseLayer = this.baseLayers.osm;
     }
 
-    // Agregar método para cambiar capa base
+    /**
+     * Permite cambiar la capa base del mapa.
+     * @param {string} layerKey - Clave de la capa base ('osm', 'satellite', etc.)
+     */
     changeBaseLayer(layerKey) {
-        // Ocultar todas las capas base
-        Object.values(this.baseLayers).forEach(layer => {
-            layer.setVisible(false);
-        });
-        
-        // Mostrar la capa seleccionada
+        Object.values(this.baseLayers).forEach(layer => layer.setVisible(false));
         this.baseLayers[layerKey].setVisible(true);
         this.currentBaseLayer = this.baseLayers[layerKey];
     }
 
     /**
      * Configura los listeners de los botones y el formulario.
+     * Nota: Mantén los IDs consistentes en el HTML.
      */
     setupEventListeners() {
-        // Botón para activar el dibujo de polígono
-        document.getElementById('draw-polygon').addEventListener('click', () => {
-            this.activateDrawing();
-        });
-
-        // Botón para limpiar el mapa
-        document.getElementById('clear-map').addEventListener('click', () => {
-            this.clearMap();
-        });
-
-        // Envío del formulario de análisis
-        document.getElementById('analysis-form').addEventListener('submit', (e) => {
-            this.handleFormSubmit(e);
-        });
+        document.getElementById('draw-polygon').addEventListener('click', () => this.activateDrawing());
+        document.getElementById('clear-map').addEventListener('click', () => this.clearMap());
+        document.getElementById('analysis-form').addEventListener('submit', (e) => this.handleFormSubmit(e));
     }
 
     /**
-     * Activa la herramienta de dibujo de polígonos en el mapa.
+     * Configura el display de coordenadas UTM/geográficas en el mapa.
+     * Nota: Útil para usuarios técnicos y para depuración.
+     */
+    setupCoordinateDisplay() {
+        this.coordinateDisplay = document.createElement('div');
+        this.coordinateDisplay.className = 'coordinate-display';
+        Object.assign(this.coordinateDisplay.style, {
+            position: 'absolute',
+            bottom: '10px',
+            left: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            padding: '5px 10px',
+            fontSize: '12px',
+            zIndex: '1000',
+            fontFamily: 'monospace',
+            borderRadius: '3px',
+            display: 'none'
+        });
+
+        const mapContainer = this.map.getTargetElement();
+        mapContainer.appendChild(this.coordinateDisplay);
+
+        // Mostrar coordenadas al mover el mouse
+        this.map.on('pointermove', (evt) => {
+            if (evt.dragging) return;
+            const coordinate = evt.coordinate;
+            const lonLat = ol.proj.toLonLat(coordinate);
+            const zone = Math.floor((lonLat[0] + 180) / 6) + 1;
+            const hemisphere = lonLat[1] >= 0 ? 'north' : 'south';
+            const utmEpsg = hemisphere === 'north' ? `EPSG:326${zone.toString().padStart(2, '0')}` : `EPSG:327${zone.toString().padStart(2, '0')}`;
+            try {
+                const utm = ol.proj.transform(coordinate, 'EPSG:3857', utmEpsg);
+                this.coordinateDisplay.textContent = `UTM Zona ${zone}${hemisphere === 'north' ? 'N' : 'S'} | Este: ${utm[0].toFixed(2)} m | Norte: ${utm[1].toFixed(2)} m`;
+                this.coordinateDisplay.style.display = 'block';
+            } catch (error) {
+                const lon = lonLat[0].toFixed(6);
+                const lat = lonLat[1].toFixed(6);
+                this.coordinateDisplay.textContent = `Lon: ${lon} | Lat: ${lat}`;
+                this.coordinateDisplay.style.display = 'block';
+            }
+        });
+
+        // Ocultar coordenadas al salir del mapa
+        this.map.on('pointerout', () => this.coordinateDisplay.style.display = 'none');
+        this.map.getViewport().addEventListener('mouseleave', () => this.coordinateDisplay.style.display = 'none');
+    }
+
+    /**
+     * Activa la herramienta de dibujo de polígonos.
      * Limpia interacciones previas y muestra instrucciones.
      */
     activateDrawing() {
-        // Eliminar interacción de dibujo previa si existe
-        if (this.draw) {
-            this.map.removeInteraction(this.draw);
-        }
+        if (this.draw) this.map.removeInteraction(this.draw);
 
-        // Crear nueva interacción de dibujo de polígonos
         this.draw = new ol.interaction.Draw({
             source: this.source,
             type: 'Polygon',
             style: (feature) => {
-                // Añade el estilo de polígono y puntos en los vértices
                 const geometry = feature.getGeometry();
                 const styles = [this.polygonStyle];
-
                 if (geometry.getType() === 'Polygon') {
-                    const coordinates = geometry.getCoordinates()[0];
-                    coordinates.forEach((coordinate) => {
-                        const point = new ol.Feature({
-                            geometry: new ol.geom.Point(coordinate)
-                        });
+                    geometry.getCoordinates()[0].forEach(coordinate => {
+                        const point = new ol.Feature({ geometry: new ol.geom.Point(coordinate) });
                         point.setStyle(this.pointStyle);
                         this.source.addFeature(point);
                     });
@@ -251,46 +241,37 @@ class DeforestationMap {
         // Evento al terminar de dibujar el polígono
         this.draw.on('drawend', (event) => {
             const feature = event.feature;
-
             // Limpiar puntos anteriores
             this.source.getFeatures().forEach(f => {
-                if (f.getGeometry().getType() === 'Point') {
-                    this.source.removeFeature(f);
-                }
+                if (f.getGeometry().getType() === 'Point') this.source.removeFeature(f);
             });
-
-            // Calcular y mostrar área aproximada en hectáreas
+            // Calcular y mostrar área aproximada
             const areaHa = this.calculateArea(feature);
             this.showAlert(`Polígono dibujado. Área aproximada: ${areaHa} hectáreas`);
-
-            // Convertir a GeoJSON y guardar la geometría
+            // Guardar la geometría
             this.convertToGeoJSON(feature);
-
             // Desactivar la interacción de dibujo
             this.map.removeInteraction(this.draw);
         });
 
-        // Agregar la interacción de dibujo al mapa
         this.map.addInteraction(this.draw);
-
-        // Mostrar instrucciones al usuario
         this.showAlert('Dibuja el área de interés en el mapa. Haz clic para añadir vértices y doble clic para terminar.');
     }
 
     /**
      * Calcula el área de un polígono en hectáreas.
-     * @param {ol.Feature} feature - El polígono dibujado.
-     * @returns {number} Área en hectáreas.
+     * @param {ol.Feature} feature
+     * @returns {number}
      */
     calculateArea(feature) {
         const geometry = feature.getGeometry();
         const area = ol.sphere.getArea(geometry);
-        return Math.round(area / 10000); // Convertir m² a hectáreas
+        return Math.round(area / 10000); // m² a hectáreas
     }
 
     /**
      * Convierte la geometría a GeoJSON y la guarda en el input oculto.
-     * @param {ol.Feature} feature - El polígono dibujado.
+     * @param {ol.Feature} feature
      */
     convertToGeoJSON(feature) {
         try {
@@ -299,16 +280,9 @@ class DeforestationMap {
                 dataProjection: 'EPSG:4326',
                 featureProjection: 'EPSG:3857'
             });
-
             const geojsonObj = JSON.parse(geojson);
-
-            if (!geojsonObj.geometry) {
-                throw new Error('El polígono no tiene geometría válida');
-            }
-
-            // Guardar solo la geometría en el input oculto
+            if (!geojsonObj.geometry) throw new Error('El polígono no tiene geometría válida');
             document.getElementById('geometry').value = JSON.stringify(geojsonObj.geometry);
-
             this.showAlert('Polígono guardado. Ahora puedes enviar el formulario.');
         } catch (error) {
             console.error('Error al convertir GeoJSON:', error);
@@ -327,31 +301,26 @@ class DeforestationMap {
     /**
      * Maneja el envío del formulario de análisis.
      * Valida que exista un polígono, muestra spinner y envía por AJAX.
+     * Nota: Para múltiples áreas, redirige a resumen.
      * @param {Event} event
      */
     async handleFormSubmit(event) {
         event.preventDefault();
-
         const form = event.target;
         const formData = new FormData(form);
         const submitButton = form.querySelector('button[type="submit"]');
         const spinner = document.getElementById('loading-spinner');
 
-        // Validar que se haya dibujado un polígono
         if (!document.getElementById('geometry').value) {
-            this.showAlert('Por favor, dibuja un polígono en el mapa primero.', 'warning');
+            this.showAlert('Por favor, dibuja o importa un polígono en el mapa primero.', 'warning');
             return;
         }
 
-        // Mostrar spinner y desactivar botón
         spinner.classList.remove('d-none');
         submitButton.disabled = true;
 
         try {
-            // Obtener el token CSRF de la meta
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            // Enviar la solicitud AJAX
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData,
@@ -360,16 +329,19 @@ class DeforestationMap {
                     'X-CSRF-TOKEN': token
                 }
             });
-
             const result = await response.json();
 
             if (result.success) {
-                // Redirigir a la página de resultados
-                window.location.href = `/deforestation/results/${result.polygon_id}`;
+                if (result.multiple) {
+                    // Redirige a resumen de múltiples áreas
+                    const polygonIds = result.results.map(r => r.polygon_id);
+                    window.location.href = `/deforestation/multiple-results?polygon_ids=${polygonIds.join(',')}`;
+                } else {
+                    window.location.href = `/deforestation/results/${result.polygon_id}`;
+                }
             } else {
                 this.showAlert('Error: ' + result.message, 'error');
             }
-
         } catch (error) {
             console.error('Error:', error);
             this.showAlert('Error al procesar la solicitud', 'error');
@@ -382,8 +354,8 @@ class DeforestationMap {
     /**
      * Muestra una alerta al usuario.
      * Usa SweetAlert2 si está disponible, si no usa alert nativo.
-     * @param {string} message - Mensaje a mostrar.
-     * @param {string} [icon='info'] - Tipo de alerta: 'success', 'error', 'warning', 'info'.
+     * @param {string} message
+     * @param {string} [icon='info']
      */
     showAlert(message, icon = 'info') {
         if (window.Swal) {
@@ -408,12 +380,11 @@ class DeforestationMap {
     /**
      * Importa uno o varios polígonos desde un objeto GeoJSON y los dibuja en el mapa.
      * Si las features tienen nombre, lo muestra como etiqueta.
-     * @param {Object} geojson - Objeto GeoJSON válido.
+     * @param {Object} geojson
      */
     importGeoJSON(geojson) {
         try {
             this.clearMap();
-
             const format = new ol.format.GeoJSON();
             const features = format.readFeatures(geojson, {
                 featureProjection: 'EPSG:3857'
@@ -424,29 +395,21 @@ class DeforestationMap {
                 return;
             }
 
-            // Añadir todas las features al mapa
             features.forEach(feature => {
                 this.source.addFeature(feature);
-                const name = feature.get('name') || feature.get('Nombre') || feature.get('NOMBRE') || feature.get('title');
+                const name = feature.get('name') || feature.get('Nombre') || feature.get('NOMBRE') || feature.get('title') || feature.get('Productor');
                 if (name) {
                     feature.set('label', name);
+                    feature.set('productor', name);
                 }
             });
 
-            // Centrar el mapa en la extensión de todas las features
             const extent = this.source.getExtent();
-            this.map.getView().fit(extent, {
-                padding: [50, 50, 50, 50],
-                duration: 1000
-            });
+            this.map.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 1000 });
 
-            // Guardar la geometría (puedes guardar el GeoJSON completo o solo el primero, según tu backend)
-            // Aquí guardamos el GeoJSON de todas las features
-            const geojsonAll = format.writeFeatures(features, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
-            document.getElementById('geometry').value = geojsonAll;
+            document.getElementById('geometry').value = JSON.stringify(geojson);
+
+            this.processMultiPolygonInfo(features);
 
             this.showAlert('Áreas importadas correctamente.', 'success');
         } catch (error) {
@@ -455,14 +418,13 @@ class DeforestationMap {
     }
 
     /**
-     * Importa un polígono desde un string KML y lo dibuja en el mapa.
-     * @param {string} kmlText - Contenido del archivo KML.
+     * Importa uno o varios polígonos desde un string KML y los dibuja en el mapa.
+     * Extrae nombres/productores si existen.
+     * @param {string} kmlText
      */
-    // map.js - Modificar la función importKML
     importKML(kmlText) {
         try {
             this.clearMap();
-
             const format = new ol.format.KML();
             const features = format.readFeatures(kmlText, {
                 featureProjection: 'EPSG:3857'
@@ -473,36 +435,32 @@ class DeforestationMap {
                 return;
             }
 
-            // Procesar TODOS los features, no solo el primero
-            const allFeatures = [];
-            
             features.forEach(feature => {
-                // Extraer datos del KML (nombres de productores)
                 const productor = this.extractKMLData(feature);
-                
                 if (productor) {
-                    // Establecer etiqueta con la información del productor
                     feature.set('label', productor);
                     feature.set('productor', productor);
                 }
-                
                 this.source.addFeature(feature);
-                allFeatures.push(feature);
             });
 
-            // Centrar el mapa en todas las features
             const extent = this.source.getExtent();
-            this.map.getView().fit(extent, {
-                padding: [50, 50, 50, 50],
-                duration: 1000
-            });
+            this.map.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 1000 });
 
-            // Guardar todas las geometrías
-            const geojsonAll = new ol.format.GeoJSON().writeFeatures(allFeatures, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
-            document.getElementById('geometry').value = geojsonAll;
+            // Guardar como FeatureCollection
+            const featureCollection = {
+                type: 'FeatureCollection',
+                features: features.map(feature => {
+                    const geoJSONFormat = new ol.format.GeoJSON();
+                    return JSON.parse(geoJSONFormat.writeFeature(feature, {
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: 'EPSG:3857'
+                    }));
+                })
+            };
+            document.getElementById('geometry').value = JSON.stringify(featureCollection);
+
+            this.processMultiPolygonInfo(features);
 
             this.showAlert(`${features.length} áreas importadas correctamente.`, 'success');
         } catch (error) {
@@ -510,51 +468,45 @@ class DeforestationMap {
         }
     }
 
-    // En map.js - Mejorar la función extractKMLData
+    /**
+     * Extrae el nombre/productor de una feature KML.
+     * Nota: Adapta según la estructura de tus archivos KML.
+     * @param {ol.Feature} feature
+     * @returns {string|null}
+     */
     extractKMLData(feature) {
         try {
-            // Obtener la descripción KML que contiene los datos extendidos
             const kmlDescription = feature.get('description');
             if (!kmlDescription) return null;
-
-            // Parsear el HTML de la descripción para encontrar los datos extendidos
             const parser = new DOMParser();
             const doc = parser.parseFromString(kmlDescription, 'text/html');
-            
-            // Buscar datos extendidos
             const simpleDataElements = doc.querySelectorAll('simpledata');
             const data = {};
-            
             simpleDataElements.forEach(el => {
                 const name = el.getAttribute('name');
                 const value = el.textContent;
-                if (name && value) {
-                    data[name.toLowerCase()] = value;
-                }
+                if (name && value) data[name.toLowerCase()] = value;
             });
-            
-            // Priorizar Productor, luego Name, luego otros campos
             return data.productor || data.name || data.nombre || null;
-            
         } catch (error) {
             console.warn('Error extrayendo datos KML:', error);
             return null;
         }
     }
 
-    // Mejorar la función processMultiPolygonInfo para extraer más datos
+    /**
+     * Procesa información de múltiples polígonos y la muestra en una tabla.
+     * Nota: Útil para mostrar resumen de productores, localidad y área.
+     * @param {Array<ol.Feature>} features
+     */
     processMultiPolygonInfo(features) {
         const polygonsInfo = [];
-        
         features.forEach(feature => {
             const geometry = feature.getGeometry();
             if (geometry.getType() === 'Polygon') {
                 const productor = feature.get('productor') || feature.get('name') || 'Propietario desconocido';
                 const areaHa = this.calculateArea(feature);
-                
-                // Extraer más datos si están disponibles
                 const localidad = feature.get('localidad') || feature.get('municipio') || 'No especificado';
-                
                 polygonsInfo.push({
                     productor: productor,
                     localidad: localidad,
@@ -562,191 +514,33 @@ class DeforestationMap {
                 });
             }
         });
-        
         this.displayPolygonsInfo(polygonsInfo);
     }
 
-// Mejorar la función displayPolygonsInfo
-displayPolygonsInfo(polygonsInfo) {
-    const container = document.getElementById('producers-info');
-    const list = document.getElementById('producers-list');
-    
-    if (polygonsInfo.length > 0) {
-        list.innerHTML = '';
-        
-        polygonsInfo.forEach(info => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.productor}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.localidad}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.area} Ha</td>
-            `;
-            list.appendChild(row);
-        });
-        
-        container.classList.remove('hidden');
-    } else {
-        container.classList.add('hidden');
-    }
-}
-
-// Modificar la función importKML para procesar múltiples polígonos
-importKML(kmlText) {
-    try {
-        this.clearMap();
-
-        const format = new ol.format.KML();
-        const features = format.readFeatures(kmlText, {
-            featureProjection: 'EPSG:3857'
-        });
-
-        if (features.length === 0) {
-            this.showAlert('El archivo KML no contiene geometría válida.', 'error');
-            return;
-        }
-
-        // Procesar TODOS los features
-        features.forEach(feature => {
-            const productor = this.extractKMLData(feature);
-            
-            if (productor) {
-                feature.set('label', productor);
-                feature.set('productor', productor);
-            }
-            
-            this.source.addFeature(feature);
-        });
-
-        // Centrar el mapa en todas las features
-        const extent = this.source.getExtent();
-        this.map.getView().fit(extent, {
-            padding: [50, 50, 50, 50],
-            duration: 1000
-        });
-
-        // Guardar todas las geometrías como FeatureCollection
-        const featureCollection = {
-            type: 'FeatureCollection',
-            features: features.map(feature => {
-                const geoJSONFormat = new ol.format.GeoJSON();
-                return JSON.parse(geoJSONFormat.writeFeature(feature, {
-                    dataProjection: 'EPSG:4326',
-                    featureProjection: 'EPSG:3857'
-                }));
-            })
-        };
-        
-        document.getElementById('geometry').value = JSON.stringify(featureCollection);
-
-        // Procesar información de múltiples polígonos
-        this.processMultiPolygonInfo(features);
-
-        this.showAlert(`${features.length} áreas importadas correctamente.`, 'success');
-    } catch (error) {
-        this.showAlert('Error al importar el área KML: ' + error.message, 'error');
-    }
-}
-
-// Modificar también la función importGeoJSON para múltiples polígonos
-importGeoJSON(geojson) {
-    try {
-        this.clearMap();
-
-        const format = new ol.format.GeoJSON();
-        const features = format.readFeatures(geojson, {
-            featureProjection: 'EPSG:3857'
-        });
-
-        if (features.length === 0) {
-            this.showAlert('El archivo no contiene geometría válida.', 'error');
-            return;
-        }
-
-        // Añadir todas las features al mapa
-        features.forEach(feature => {
-            this.source.addFeature(feature);
-            const name = feature.get('name') || feature.get('Nombre') || feature.get('NOMBRE') || feature.get('title') || feature.get('Productor');
-            if (name) {
-                feature.set('label', name);
-                feature.set('productor', name);
-            }
-        });
-
-        // Centrar el mapa en la extensión de todas las features
-        const extent = this.source.getExtent();
-        this.map.getView().fit(extent, {
-            padding: [50, 50, 50, 50],
-            duration: 1000
-        });
-
-        // Guardar la geometría como FeatureCollection
-        document.getElementById('geometry').value = JSON.stringify(geojson);
-
-        // Procesar información de múltiples polígonos
-        this.processMultiPolygonInfo(features);
-
-        this.showAlert('Áreas importadas correctamente.', 'success');
-    } catch (error) {
-        this.showAlert('Error al importar el área: ' + error.message, 'error');
-    }
-}
-
-// Modificar handleFormSubmit para manejar múltiples polígonos
-async handleFormSubmit(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const formData = new FormData(form);
-    const submitButton = form.querySelector('button[type="submit"]');
-    const spinner = document.getElementById('loading-spinner');
-
-    // Validar que se haya dibujado un polígono
-    if (!document.getElementById('geometry').value) {
-        this.showAlert('Por favor, dibuja un polígono en el mapa primero.', 'warning');
-        return;
-    }
-
-    // Mostrar spinner y desactivar botón
-    spinner.classList.remove('d-none');
-    submitButton.disabled = true;
-
-    try {
-        // Obtener el token CSRF de la meta
-        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        // Enviar la solicitud AJAX
-        const response = await fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': token
-            }
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            if (result.multiple) {
-                // Para múltiples polígonos, redirigir a página de resumen
-                const polygonIds = result.results.map(r => r.polygon_id);
-                window.location.href = `/deforestation/multiple-results?polygon_ids=${polygonIds.join(',')}`;
-            } else {
-                // Para un solo polígono, redirigir a la página de resultados normal
-                window.location.href = `/deforestation/results/${result.polygon_id}`;
-            }
+    /**
+     * Muestra la información de los polígonos en una tabla HTML.
+     * Nota: El contenedor y la tabla deben existir en el HTML.
+     * @param {Array<Object>} polygonsInfo
+     */
+    displayPolygonsInfo(polygonsInfo) {
+        const container = document.getElementById('producers-info');
+        const list = document.getElementById('producers-list');
+        if (polygonsInfo.length > 0) {
+            list.innerHTML = '';
+            polygonsInfo.forEach(info => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.productor}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.localidad}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.area} Ha</td>
+                `;
+                list.appendChild(row);
+            });
+            container.classList.remove('hidden');
         } else {
-            this.showAlert('Error: ' + result.message, 'error');
+            container.classList.add('hidden');
         }
-
-    } catch (error) {
-        console.error('Error:', error);
-        this.showAlert('Error al procesar la solicitud', 'error');
-    } finally {
-        spinner.classList.add('d-none');
-        submitButton.disabled = false;
     }
-}
 }
 
 // Inicializar el mapa cuando el documento esté listo
@@ -755,4 +549,16 @@ document.addEventListener('DOMContentLoaded', function() {
         window.deforestationMapInstance = new DeforestationMap();
     }
 });
+
+/**
+ * NOTAS:
+ * - Mantén los IDs y clases del HTML consistentes con los usados en el JS.
+ * - Para soporte SHP, asegúrate de incluir la librería shpjs y llamar a importGeoJSON con el resultado.
+ * - El método displayPolygonsInfo requiere un contenedor y una tabla en el HTML:
+ *   <div id="producers-info" class="hidden">
+ *     <table><tbody id="producers-list"></tbody></table>
+ *   </div>
+ * - Puedes personalizar los estilos y campos según tus necesidades.
+ * - El código está ampliamente comentado para facilitar el mantenimiento y la extensión.
+ */
 
