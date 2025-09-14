@@ -8,16 +8,54 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Services\GFWService;
+
 
 class DeforestationController extends Controller
 {
     protected $deforestationService;
+    protected $gfwService;
     
-    public function __construct(DeforestationService $deforestationService)
+    public function __construct(DeforestationService $deforestationService, GFWService $gfwService)
     {
         $this->deforestationService = $deforestationService;
+        $this->gfwService = $gfwService;
+        /* este objeto recibe dos parametros  
+        una es un arrego como este
+        $geometry = [
+            'type' => 'Polygon',
+            'coordinates' => [[
+                [
+                    -63.18378116560976,
+                    10.563060285040407
+                  ],
+                  [
+                    -63.18669994025022,
+                    10.55421721571689
+                  ],
+                  [
+                    -63.18014733390075,
+                    10.552596248333586
+                  ],
+                  [
+                    -63.17912460941018,
+                    10.562386593151615
+                  ],
+                  [
+                    -63.18378116560976,
+                    10.563060285040407
+                  ]
+            ]]
+        ];
+        y  el otro es un string que es el año
+        $year = '2020';
+
+        $variable_que_estes_usando = $this->gfwService->getZonalStats($geometry, $year);
+
+        */
     }
-    
+
+
     /**
      * Muestra el formulario para crear nuevo análisis
      */
