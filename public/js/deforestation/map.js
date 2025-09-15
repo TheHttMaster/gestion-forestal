@@ -218,6 +218,7 @@ class DeforestationMap {
      * Activa la herramienta de dibujo de polígonos.
      * Limpia interacciones previas y muestra instrucciones.
      */
+    
     activateDrawing() {
         if (this.draw) this.map.removeInteraction(this.draw);
 
@@ -227,13 +228,15 @@ class DeforestationMap {
             style: (feature) => {
                 const geometry = feature.getGeometry();
                 const styles = [this.polygonStyle];
-                if (geometry.getType() === 'Polygon') {
+
+                /* esto da puntos feo en el mapa */
+               /*  if (geometry.getType() === 'Polygon') {
                     geometry.getCoordinates()[0].forEach(coordinate => {
                         const point = new ol.Feature({ geometry: new ol.geom.Point(coordinate) });
                         point.setStyle(this.pointStyle);
                         this.source.addFeature(point);
                     });
-                }
+                } */
                 return styles;
             }
         });
