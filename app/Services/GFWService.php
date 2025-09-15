@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Facades\Log;
 
 class GFWService
@@ -20,27 +21,72 @@ class GFWService
         ]);
     }
 
-    public function getZonalStats(array $geometry, string $year)
+    /**
+     * Ejecuta una consulta SQL en un dataset específico de la API.
+     *
+     * @param string $dataset Nombre del dataset (ej: 'umd_tree_cover_loss').
+     * @param string $version Versión del dataset (ej: 'latest').
+     * @param array $geometry Un arreglo de geometría GeoJSON para filtrar la consulta.
+     * @param string $sql La consulta SQL a ejecutar.
+     * @return array|null La respuesta decodificada de la API o null en caso de error.
+     */
+    public function executeQuery(string $dataset, string $version, array $geometry, string $sql): array
     {
         try {
-            $response = $this->client->post('dataset/umd_tree_cover_loss/latest/query', [
+            $response = $this->client->post("dataset/{$dataset}/{$version}/query", [
                 'json' => [
                     'geometry' => $geometry,
-                    'sql' => "SELECT SUM(area__ha) FROM results WHERE umd_tree_cover_loss__year=$year"
+                    'sql' => $sql
                 ]
             ]);
 
             return json_decode($response->getBody()->getContents(), true);
 
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            // Maneja errores de cliente, como 400 Bad Request o 404 Not Found
-            Log::error('GFW API Client Error: ' . $e->getMessage());
-            return null;
+        } catch (ClientException $e) {
+            // Un error del lado del cliente (código 4xx)
+            // Obtenemos la respuesta del servidor para ver el mensaje de error de la API.
+            $responseBody = $e->getResponse()->getBody()->getContents();
+            $errorData = json_decode($responseBody, true);
+
+            $errorMessage = $errorData['message'] ?? 'Error de validación desconocido de la API.';
+            Log::error("GFW API Error (HTTP {$e->getCode()}): {$errorMessage}");
+
+            return [
+                'status' => 'error',
+                'message' => $errorMessage
+            ];
 
         } catch (\Exception $e) {
-            // Maneja otros errores
-            Log::error('GFW API Error: ' . $e->getMessage());
-            return null;
+            // Otros errores no relacionados con la API, como un problema de red.
+            Log::error('GFW API Error inesperado: ' . $e->getMessage());
+
+            return [
+                'status' => 'error',
+                'message' => 'Ha ocurrido un error inesperado al conectar con la API.'
+            ];
         }
     }
+
+    /**
+     * Obtiene la suma del área de pérdida de cobertura arbórea para un polígono y un año específicos.
+     *
+     * @param array $geometry
+     * @param string $year
+     * @return array|null
+     */
+    public function getZonalStats(array $geometry, int $year): ?array
+    {
+        $dataset = 'umd_tree_cover_loss';
+        $version = 'latest';
+
+        // Evita la interpolación de cadenas directamente.
+        $sql = sprintf(
+            "SELECT SUM(area__ha) FROM results WHERE umd_tree_cover_loss__year=%d",
+            $year
+        );
+
+        return $this->executeQuery($dataset, $version, $geometry, $sql);
+    }
+
+    
 }
