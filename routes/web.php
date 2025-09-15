@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/forest-stats', [ForestController::class, 'showStats'])->name('forest.stats');
+    Route::get('/radd-alerts', [ForestController::class, 'showRADDAlerts']);
 
    // RUTAS DE PROVEEDORES 
     Route::resource('providers', ProviderController::class)->names([

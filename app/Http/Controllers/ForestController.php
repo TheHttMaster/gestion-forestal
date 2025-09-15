@@ -58,4 +58,43 @@ class ForestController extends Controller
         // Maneja el caso en que la petición falló
         return view('stats.error');
     }
+
+    public function showRADDAlerts()
+    {
+        // Define el área de interés y el rango de fechas
+        $geometry = [
+            'type' => 'Polygon',
+            'coordinates' => [[
+                [
+					-63.18377729271269,
+					10.563102208974854
+				  ],
+				  [
+					-63.18601093182674,
+					10.555033032154896
+				  ],
+				  [
+					-63.17980032550888,
+					10.554158263536166
+				  ],
+				  [
+					-63.1789286614643,
+					10.562388131075139
+				  ],
+				  [
+					-63.18377729271269,
+					10.563102208974854
+				  ]
+            ]]
+        ];
+
+        $startDate = '2024-01-01';
+        $endDate = '2024-06-30';
+
+        // Llama al nuevo método del servicio
+        $alerts = $this->gfwService->getRADDAlertsByDate($geometry, $startDate, $endDate);
+
+        // Muestra las alertas para verificar la respuesta
+        dd($alerts);
+    }
 }

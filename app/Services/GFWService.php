@@ -88,5 +88,23 @@ class GFWService
         return $this->executeQuery($dataset, $version, $geometry, $sql);
     }
 
+    /**
+     * Obtiene las alertas de deforestación RADD para un polígono y un rango de fechas.
+     *
+     * @param array $geometry
+     * @param string $startDate Fecha de inicio (ej: '2024-01-01').
+     * @param string $endDate Fecha de fin (ej: '2024-06-30').
+     * @return array
+     */
+    public function getRADDAlertsByDate(array $geometry, string $startDate, string $endDate): array
+    {
+        $dataset = 'wur_radd_alerts';
+        $version = 'latest';
+
+        // La consulta SQL para seleccionar las coordenadas y filtrar por rango de fechas
+        $sql = "SELECT longitude, latitude, wur_radd_alerts__date, wur_radd_alerts__confidence FROM results WHERE wur_radd_alerts__date >= '{$startDate}' AND wur_radd_alerts__date <= '{$endDate}'";
+        return $this->executeQuery($dataset, $version, $geometry, $sql);
+    }
+
     
 }
