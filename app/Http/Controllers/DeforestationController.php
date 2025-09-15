@@ -52,6 +52,17 @@ class DeforestationController extends Controller
 
         $variable_que_estes_usando = $this->gfwService->getZonalStats($geometry, $year);
 
+        te va a devolver un objeto json como este 
+        array:2 [▼ // app\Http\Controllers\ForestController.php:51
+        
+            "data" => array:1 [▼
+                0 => array:1 [▼
+                "area__ha" => 1.36165
+                ]
+            ]
+            "status" => "success"
+            ]
+
         */
     }
 

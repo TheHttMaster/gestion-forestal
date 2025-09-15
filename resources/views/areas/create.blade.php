@@ -11,7 +11,7 @@
                     <form>
                         <div class="relative rounded-lg overflow-hidden mb-6 border border-gray-200 dark:border-gray-700" style="height: 500px;">
                             <div id="map" class="h-full w-full"></div>
-                            <div class="coordinates-display" id="coordinates-display">
+                            <div style="-webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;" class="coordinates-display" id="coordinates-display">
                                 Lat: 0.000000 | Lng: 0.000000
                             </div>
                             <div id="message-display" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-4 py-2 rounded-lg bg-gray-900 text-white font-semibold shadow-lg hidden"></div>
