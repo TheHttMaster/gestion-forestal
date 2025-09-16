@@ -88,7 +88,7 @@ class ForestController extends Controller
             ]]
         ];
 
-        $startDate = '2024-01-01';
+        $startDate = '2020-01-01';
         $endDate = '2024-06-30';
 
         // Llama al nuevo método del servicio

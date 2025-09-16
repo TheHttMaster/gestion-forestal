@@ -96,13 +96,31 @@ class GFWService
      * @param string $endDate Fecha de fin (ej: '2024-06-30').
      * @return array
      */
-    public function getRADDAlertsByDate(array $geometry, string $startDate, string $endDate): array
+    public function getRADDAlertsByDate(array $geometry, string $startDate, string $endDate, array $fields = ['longitude', 'latitude', 'wur_radd_alerts__date', 'wur_radd_alerts__confidence']): array
     {
         $dataset = 'wur_radd_alerts';
         $version = 'latest';
 
+        // Valida las fechas
+        $startDateTime = \DateTime::createFromFormat('Y-m-d', $startDate);
+        $endDateTime = \DateTime::createFromFormat('Y-m-d', $endDate);
+
+        if (!$startDateTime || !$endDateTime) {
+            throw new \InvalidArgumentException('El formato de fecha debe ser YYYY-MM-DD.');
+        }
+
+        if ($startDateTime > $endDateTime) {
+            throw new \InvalidArgumentException('La fecha de inicio no puede ser posterior a la fecha de fin.');
+        }
+
         // La consulta SQL para seleccionar las coordenadas y filtrar por rango de fechas
-        $sql = "SELECT longitude, latitude, wur_radd_alerts__date, wur_radd_alerts__confidence FROM results WHERE wur_radd_alerts__date >= '{$startDate}' AND wur_radd_alerts__date <= '{$endDate}'";
+        $fieldsString = implode(', ', $fields);
+        $sql = sprintf(
+            "SELECT %s FROM results WHERE wur_radd_alerts__date >= '%s' AND wur_radd_alerts__date <= '%s'",
+            $fieldsString,
+            $startDate,
+            $endDate
+        );
         return $this->executeQuery($dataset, $version, $geometry, $sql);
     }
 
