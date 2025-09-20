@@ -378,7 +378,7 @@ input:checked+.toggle-slider:before {
 /* Contenedor del mapa debe tener posición relativa */
 #map {
     position: relative;
-    height: 500px;
+    height: 600px;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
     overflow: hidden; /* Asegura que nada se salga del contenedor */
@@ -401,7 +401,7 @@ input:checked+.toggle-slider:before {
 
 /* Estilo para modo oscuro */
 .dark .coordinate-display {
-    background-color: rgba(31, 41, 55, 0.9);
+    background-color: rgba(21, 23, 29, 0.9);
     color: #e5e7eb;
     border: 1px solid #4b5563;
 }
@@ -416,14 +416,9 @@ input:checked+.toggle-slider:before {
     display: block;
 }
 
-/* Asegurar que el menú tenga un fondo sólido */
-#base-map-menu .py-1 {
-    background: inherit;
-}
-
 /* Estilos para modo oscuro del menú */
 .dark #base-map-menu {
-    background-color: #1f2937;
+    
     border: 1px solid #374151;
 }
 
@@ -432,9 +427,42 @@ input:checked+.toggle-slider:before {
 }
 
 .dark #base-map-menu button:hover {
-    background-color: #374151;
+    background-color: #252a35;
     color: #ffffff;
 }
 
+#map-controls {
+    position: absolute;
+    top: 0.53rem;
+    right: 2.53rem;
+    z-index: 2000;
+}
 
+#base-map-menu {
+    right: 0;
+    left: auto;
+}
+
+#base-map-menu {
+    display: none;
+    z-index: 10000;
+}
+#base-map-menu.show {
+    display: block;
+}
+
+.dark #base-map-menu {
+    border: 1px solid #374151;
+}
+
+#manual-polygon-menu {
+    display: none;
+    z-index: 10000;
+}
+#manual-polygon-menu.show {
+    display: block;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: scale(1) !important;
+}
 

@@ -138,9 +138,14 @@ class DeforestationMap {
             target: 'map',
             layers: [baseLayerGroup, vectorLayer],
             view: new ol.View({
-                center: ol.proj.fromLonLat([-66.0, 8.0]), // Centro inicial
+                center: ol.proj.fromLonLat([-66.0, 8.0]),
                 zoom: 6
-            })
+            }),
+            controls: ol.control.defaults().extend([
+                new ol.control.FullScreen({
+                    tipLabel: 'Pantalla completa'
+                })
+            ])
         });
 
         this.currentBaseLayer = this.baseLayers.osm;
@@ -173,18 +178,7 @@ class DeforestationMap {
     setupCoordinateDisplay() {
         this.coordinateDisplay = document.createElement('div');
         this.coordinateDisplay.className = 'coordinate-display';
-        Object.assign(this.coordinateDisplay.style, {
-            position: 'absolute',
-            bottom: '10px',
-            left: '10px',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            padding: '5px 10px',
-            fontSize: '12px',
-            zIndex: '1000',
-            fontFamily: 'monospace',
-            borderRadius: '3px',
-            display: 'none'
-        });
+        
 
         const mapContainer = this.map.getTargetElement();
         mapContainer.appendChild(this.coordinateDisplay);
@@ -210,8 +204,8 @@ class DeforestationMap {
         });
 
         // Ocultar coordenadas al salir del mapa
-        this.map.on('pointerout', () => this.coordinateDisplay.style.display = 'none');
-        this.map.getViewport().addEventListener('mouseleave', () => this.coordinateDisplay.style.display = 'none');
+        /* this.map.on('pointerout', () => this.coordinateDisplay.style.display = 'none');
+        this.map.getViewport().addEventListener('mouseleave', () => this.coordinateDisplay.style.display = 'none'); */
     }
 
     /**

@@ -72,8 +72,16 @@ sidebarToggle.addEventListener('click', () => {
                 icon.style.width = '';
                 icon.style.minWidth = '';
                 icon.style.maxWidth = '';
+                
             });
         }, 400);
+
+        setTimeout(() => {
+        if (window.deforestationMapInstance && window.deforestationMapInstance.map) {
+            window.deforestationMapInstance.map.updateSize();
+            }
+        }, 400); // 400ms para asegurar que la transición terminó
+
     }
 });
 
