@@ -1,5 +1,5 @@
 <!-- resources/views/deforestation/create.blade.php -->
- 
+
 <x-app-layout>
     <div class="max-w-7xl mx-auto ">
         <div class="bg-stone-100/90 dark:bg-custom-gray  shadow-sm sm:rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 mb-6">
@@ -10,64 +10,130 @@
    
                     <!-- CARGA DEL MAPA AQUÍ -->
                     <div id="map" style="height: 500px; border: 1px solid #dededeff; border-radius: 0.5rem; position: relative;">
-                        <!-- Botón y menú de cambio de mapa, posicionado sobre el mapa -->
+                        <!-- Controles del mapa -->
                         <div id="map-controls">
-                            <!-- Botón de cambio de mapa -->
-                            <button id="base-map-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                                </svg>
-                                Cambiar Mapa
-                            </button>
-                            <!-- Menú de cambio de mapa -->
-                            <div id="base-map-menu"
-                                 class="absolute mt-3 w-44 rounded-xl shadow-lg bg-white dark:bg-custom-gray ring-1 ring-black ring-opacity-5 z-10000 right-0
-                                        transition-all duration-400 ease-out scale-95 opacity-0 pointer-events-none">
-                                <!-- Flechita -->
-                                <div class="absolute -top-2 right-6 w-4 h-2 z-100000 pointer-events-none">
-                                    <svg viewBox="0 0 16 8" class="w-4 h-2 text-white dark:text-custom-gray">
-                                        <polygon points="8,0 16,8 0,8" fill="currentColor"/>
-                                    </svg>
-                                </div>
-                                <!-- Menú -->
-                                <div class="py-2 z-10000" role="menu" aria-orientation="vertical">
-                                    <button data-layer="osm" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200" role="menuitem">OpenStreetMap</button>
-                                    <button data-layer="satellite" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200" role="menuitem">Satélite</button>
-                                    <button data-layer="terrain" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200" role="menuitem">Relieve</button>
-                                    <button data-layer="dark" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200" role="menuitem">Oscuro</button>
-                                </div>
-                            </div>
-
-                            <!-- Botón para formulario manual -->
-                            <button id="manual-polygon-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg ml-2">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                Polígono Manual
-                            </button>
-                            <!-- Menú/formulario desplegable para polígono manual -->
-                            <div id="manual-polygon-menu"
-                                 class="absolute mt-3 w-80 rounded-xl shadow-lg bg-white dark:bg-custom-gray ring-1 ring-black ring-opacity-5 z-10000 right-0
-                                        transition-all duration-400 ease-out scale-95 opacity-0 pointer-events-none">
-                                <!-- Flechita -->
-                                <div class="absolute -top-2 right-6 w-4 h-2 z-100000 pointer-events-none">
-                                    <svg viewBox="0 0 16 8" class="w-4 h-2 text-white dark:text-custom-gray">
-                                        <polygon points="8,0 16,8 0,8" fill="currentColor"/>
-                                    </svg>
-                                </div>
-                                <!-- Formulario manual -->
-                                <form id="manual-polygon-form" class="p-4 space-y-3">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Coordenadas (lat,lon por línea):</label>
-                                    <textarea id="manual-coords" rows="4" class="block w-full rounded-md border-gray-300 dark:bg-custom-gray dark:text-gray-100 text-xs" placeholder="Ejemplo:
-                                        8.123,-66.123
-                                        8.124,-66.124
-                                        8.125,-66.125
-                                        8.123,-66.123">
-                                    </textarea>
-                                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md">
-                                        Dibujar Polígono
+                            <!-- Contenedor para los botones superiores (Cambiar Mapa y Pantalla Completa) -->
+                            <div class="flex flex-col items-end space-y-2">
+                                <!-- Fila superior: Cambiar Mapa y Pantalla Completa -->
+                                <div class="flex space-x-2">
+                                    <!-- Contenedor para Cambiar Mapa con menú -->
+                                    <div class="relative">
+                                        <!-- Botón de cambio de mapa -->
+                                        <button id="base-map-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                                            </svg>
+                                            Cambiar Mapa
+                                        </button>
+                                        
+                                        <!-- Menú de cambio de mapa - POSICIONADO RELATIVO AL BOTÓN -->
+                                        <div id="base-map-menu"
+                                             class="absolute mt-4 w-40 rounded-xl shadow-lg bg-white dark:bg-custom-gray ring-1 ring-black ring-opacity-5 z-10000 right-0
+                                                    transition-all duration-400 ease-out scale-95 opacity-0 pointer-events-none">
+                                            <!-- Flechita -->
+                                            <div class="absolute -top-2 right-6 w-4 h-2 z-100000 pointer-events-none">
+                                                <svg viewBox="0 0 16 8" class="w-4 h-2 text-white dark:text-custom-gray">
+                                                    <polygon points="8,0 16,8 0,8" fill="currentColor"/>
+                                                </svg>
+                                            </div>
+                                            <!-- Menú -->
+                                            <div class="py-2 z-10000" role="menu" aria-orientation="vertical">
+                                                <button data-layer="osm" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">OpenStreetMap</button>
+                                                <button data-layer="satellite" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Satélite</button>
+                                                <button data-layer="terrain" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Relieve</button>
+                                                <button data-layer="dark" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Oscuro</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Botón de pantalla completa -->
+                                    <button id="fullscreen-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"></path>
+                                        </svg>
                                     </button>
-                                </form>
+                                </div>
+                                
+                                <!-- Fila inferior: Solo el botón de coordenadas manuales -->
+                                <div class="relative">
+                                   <!-- Botón para formulario manual -->
+                                    <button id="manual-polygon-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-line-icon w-5 h-6 lucide-pencil-line">
+                                            <path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                                        </svg>
+                                       
+                                    </button>
+
+                                    <!-- Modal moderno para coordenadas -->
+                                    <div id="manual-polygon-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                                        <div class="bg-white dark:bg-custom-gray rounded-xl shadow-2xl w-full max-w-md mx-4">
+                                            <!-- Header -->
+                                            <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-600">
+                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Ingresar Coordenadas</h3>
+                                                <button id="close-modal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Formulario -->
+                                            <form id="manual-polygon-form" class="p-6 space-y-4">
+                                                <!-- Método de entrada -->
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de entrada:</label>
+                                                    <div class="flex space-x-2">
+                                                        <button type="button" id="method-single" class="flex-1 py-2 px-3 bg-blue-600 text-white rounded-lg text-sm font-medium">Una por una</button>
+                                                        <button type="button" id="method-bulk" class="flex-1 py-2 px-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">Lote</button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Entrada individual (por defecto) -->
+                                                <div id="single-input" class="space-y-3">
+                                                    <div class="flex space-x-2">
+                                                        <div class="flex-1">
+                                                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitud</label>
+                                                            <input type="text" id="single-lat" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ej: 8.123">
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitud</label>
+                                                            <input type="text" id="single-lon" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80  dark:text-gray-100 text-sm p-2" placeholder="Ej: -66.123">
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" id="add-coord" class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm">
+                                                        + Agregar coordenada
+                                                    </button>
+                                                </div>
+
+                                                <!-- Entrada por lote (oculta inicialmente) -->
+                                                <div id="bulk-input" class="hidden">
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas (lat,lon por línea):</label>
+                                                    <!-- En el modal de coordenadas (alrededor de línea 150) -->
+                                                    <textarea id="bulk-coords" rows="4" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ejemplo:&#10;&#9;Latitud,Longitud&#10;&#9;8.123, -66.123&#10;&#9;8.124, -66.124&#10;&#9;8.125, -66.125"></textarea>
+                                                </div>
+
+                                                <!-- Lista de coordenadas agregadas -->
+                                                <div id="coords-list" class="hidden">
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas agregadas:</label>
+                                                    <div class="max-h-32 overflow-y-auto border border-gray-200 dark:border-gray-500 rounded-md p-2 bg-gray-50 dark:bg-gray-800/80">
+                                                        <div id="coords-container" class="space-y-1"></div>
+                                                    </div>
+                                                    <button type="button" id="clear-list" class="text-red-600 hover:text-red-700 text-xs mt-1">Limpiar lista</button>
+                                                </div>
+
+                                                <!-- Botones -->
+                                                <div class="flex space-x-3 pt-2">
+                                                    <button type="button" id="cancel-modal" class="flex-1 py-2 px-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium">
+                                                        Cancelar
+                                                    </button>
+                                                    <button type="submit" class="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+                                                        Dibujar
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -86,8 +152,6 @@
                             </svg>
                             Limpiar Mapa
                         </button>
-                       
-                        
                     </div>
                 </div>
             </div>
@@ -183,6 +247,296 @@
 <!-- Incluir nuestro JavaScript -->
 <script src="{{ asset('js/deforestation/map.js') }}"></script>
 <script>
+// Variables globales para el modal de coordenadas
+let coordinatesList = [];
+
+// Mostrar/ocultar menú de cambio de mapa - CORREGIDO
+document.getElementById('base-map-toggle').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('base-map-menu');
+    const isShowing = menu.classList.contains('show');
+    
+    // Solo alternar el menú actual, no intentar cerrar menús que no existen
+    toggleMenu('base-map-menu', !isShowing);
+});
+
+// Abrir modal de coordenadas - CORREGIDO
+document.getElementById('manual-polygon-toggle').addEventListener('click', function(e) {
+    e.stopPropagation();
+    // Cerrar el menú de mapas si está abierto
+    closeMenu('base-map-menu');
+    document.getElementById('manual-polygon-modal').classList.remove('hidden');
+});
+
+// Cerrar modal de coordenadas
+document.getElementById('close-modal').addEventListener('click', closeCoordinateModal);
+document.getElementById('cancel-modal').addEventListener('click', closeCoordinateModal);
+
+// Cambiar método de entrada en el modal
+document.getElementById('method-single').addEventListener('click', function() {
+    setInputMethod('single');
+});
+
+document.getElementById('method-bulk').addEventListener('click', function() {
+    setInputMethod('bulk');
+});
+
+// Agregar coordenada individual
+document.getElementById('add-coord').addEventListener('click', function() {
+    const lat = document.getElementById('single-lat').value.trim();
+    const lon = document.getElementById('single-lon').value.trim();
+    
+    if (!lat || !lon) {
+        showAlert('Debe ingresar latitud y longitud', 'warning');
+        return;
+    }
+    
+    if (isNaN(lat) || isNaN(lon)) {
+        showAlert('Las coordenadas deben ser números válidos', 'warning');
+        return;
+    }
+    
+    coordinatesList.push({ lat: parseFloat(lat), lon: parseFloat(lon) });
+    updateCoordinatesList();
+    
+    // Limpiar inputs
+    document.getElementById('single-lat').value = '';
+    document.getElementById('single-lon').value = '';
+    
+    showAlert('Coordenada agregada', 'success');
+});
+
+// Limpiar lista de coordenadas
+document.getElementById('clear-list').addEventListener('click', function() {
+    coordinatesList = [];
+    updateCoordinatesList();
+});
+
+// Enviar formulario del modal
+document.getElementById('manual-polygon-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let coords = [];
+    
+    // Determinar de dónde obtener las coordenadas
+    if (document.getElementById('method-single').classList.contains('bg-blue-600')) {
+        // Método individual
+        if (coordinatesList.length < 3) {
+            showAlert('Se necesitan al menos 3 coordenadas', 'warning');
+            return;
+        }
+        coords = coordinatesList.map(coord => [coord.lon, coord.lat]);
+    } else {
+        // Método por lote
+        const coordsText = document.getElementById('bulk-coords').value.trim();
+        if (!coordsText) {
+            showAlert('Debe ingresar coordenadas', 'warning');
+            return;
+        }
+        
+        coordsText.split('\n').forEach(line => {
+            const parts = line.split(',').map(s => s.trim());
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                coords.push([parseFloat(parts[1]), parseFloat(parts[0])]);
+            }
+        });
+        
+        if (coords.length < 3) {
+            showAlert('Se necesitan al menos 3 coordenadas válidas', 'warning');
+            return;
+        }
+    }
+    
+    // Cerrar polígono si no está cerrado
+    if (coords.length > 0 && (coords[0][0] !== coords[coords.length-1][0] || coords[0][1] !== coords[coords.length-1][1])) {
+        coords.push(coords[0]);
+    }
+    
+    // Dibujar en el mapa
+    drawPolygonOnMap(coords);
+    closeCoordinateModal();
+});
+
+// Funciones para el modal de coordenadas
+function setInputMethod(method) {
+    const singleBtn = document.getElementById('method-single');
+    const bulkBtn = document.getElementById('method-bulk');
+    const singleInput = document.getElementById('single-input');
+    const bulkInput = document.getElementById('bulk-input');
+    const coordsList = document.getElementById('coords-list');
+    
+    if (method === 'single') {
+        singleBtn.classList.add('bg-blue-600', 'text-white');
+        singleBtn.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+        bulkBtn.classList.remove('bg-blue-600', 'text-white');
+        bulkBtn.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        singleInput.classList.remove('hidden');
+        bulkInput.classList.add('hidden');
+        coordsList.classList.remove('hidden');
+    } else {
+        bulkBtn.classList.add('bg-blue-600', 'text-white');
+        bulkBtn.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+        singleBtn.classList.remove('bg-blue-600', 'text-white');
+        singleBtn.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        bulkInput.classList.remove('hidden');
+        singleInput.classList.add('hidden');
+        coordsList.classList.add('hidden');
+    }
+}
+
+function updateCoordinatesList() {
+    const container = document.getElementById('coords-container');
+    const listSection = document.getElementById('coords-list');
+    
+    container.innerHTML = '';
+    
+    if (coordinatesList.length === 0) {
+        listSection.classList.add('hidden');
+        return;
+    }
+    
+    listSection.classList.remove('hidden');
+    
+    coordinatesList.forEach((coord, index) => {
+        const coordElement = document.createElement('div');
+        coordElement.className = 'flex justify-between items-center text-xs';
+        coordElement.innerHTML = `
+            <span>${index + 1}. ${coord.lat}, ${coord.lon}</span>
+            <button type="button" onclick="removeCoordinate(${index})" class="text-red-500 hover:text-red-700">X</button>
+        `;
+        container.appendChild(coordElement);
+    });
+}
+
+function removeCoordinate(index) {
+    coordinatesList.splice(index, 1);
+    updateCoordinatesList();
+}
+
+function drawPolygonOnMap(coords) {
+    const feature = new ol.Feature({
+        geometry: new ol.geom.Polygon([coords]).transform('EPSG:4326', 'EPSG:3857')
+    });
+    
+    window.deforestationMapInstance.clearMap();
+    window.deforestationMapInstance.source.addFeature(feature);
+    
+    window.deforestationMapInstance.map.getView().fit(
+        feature.getGeometry().getExtent(),
+        { padding: [50, 50, 50, 50], duration: 1000 }
+    );
+    
+    window.deforestationMapInstance.convertToGeoJSON(feature);
+    window.deforestationMapInstance.showAlert('Polígono dibujado exitosamente', 'success');
+}
+
+function closeCoordinateModal() {
+    document.getElementById('manual-polygon-modal').classList.add('hidden');
+    coordinatesList = [];
+    updateCoordinatesList();
+    document.getElementById('bulk-coords').value = '';
+    document.getElementById('single-lat').value = '';
+    document.getElementById('single-lon').value = '';
+}
+
+// Funciones para los menús desplegables - CORREGIDAS
+function toggleMenu(menuId, show) {
+    const menu = document.getElementById(menuId);
+    if (show) {
+        menu.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
+        menu.classList.add('scale-100', 'opacity-100', 'pointer-events-auto', 'show');
+    } else {
+        menu.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto', 'show');
+        menu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+    }
+}
+
+function closeMenu(menuId) {
+    toggleMenu(menuId, false);
+}
+
+// Cerrar menús al hacer clic fuera - VERSIÓN SIMPLIFICADA Y CORREGIDA
+document.addEventListener('click', function(e) {
+    const baseMapToggle = document.getElementById('base-map-toggle');
+    const baseMapMenu = document.getElementById('base-map-menu');
+    const modal = document.getElementById('manual-polygon-modal');
+    
+    // Solo manejar menús si el modal está cerrado
+    if (modal.classList.contains('hidden')) {
+        // Si se hace clic fuera del menú de mapas, cerrarlo
+        if (!baseMapToggle.contains(e.target) && !baseMapMenu.contains(e.target)) {
+            closeMenu('base-map-menu');
+        }
+    }
+    
+    // Cerrar modal si se hace clic fuera de él
+    if (!modal.classList.contains('hidden') && e.target === modal) {
+        closeCoordinateModal();
+    }
+});
+
+// Cambiar capa base - LLAMA A LA FUNCIÓN DEL map.js
+document.querySelectorAll('#base-map-menu button').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevenir que el clic se propague
+        const layerKey = this.getAttribute('data-layer');
+        // Usar la función del map.js
+        if (window.deforestationMapInstance && window.deforestationMapInstance.changeBaseLayer) {
+            window.deforestationMapInstance.changeBaseLayer(layerKey);
+        }
+        closeMenu('base-map-menu');
+        
+        // Actualizar texto del botón
+        const layerNames = {
+            'osm': 'OpenStreetMap',
+            'satellite': 'Satélite', 
+            'terrain': 'Relieve',
+            'dark': 'Oscuro'
+        };
+        
+        const button = document.getElementById('base-map-toggle');
+        const svg = button.querySelector('svg').cloneNode(true);
+        button.innerHTML = '';
+        button.appendChild(svg);
+        button.appendChild(document.createTextNode(' ' + layerNames[layerKey]));
+    });
+});
+
+// Función para pantalla completa
+document.getElementById('fullscreen-toggle').addEventListener('click', function() {
+    const mapElement = document.getElementById('map');
+    if (!document.fullscreenElement) {
+        if (mapElement.requestFullscreen) {
+            mapElement.requestFullscreen();
+        } else if (mapElement.webkitRequestFullscreen) {
+            mapElement.webkitRequestFullscreen();
+        } else if (mapElement.msRequestFullscreen) {
+            mapElement.msRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+});
+
+// Función de alerta auxiliar
+function showAlert(message, type) {
+    if (window.deforestationMapInstance && window.deforestationMapInstance.showAlert) {
+        window.deforestationMapInstance.showAlert(message, type);
+    } else {
+        alert(message);
+    }
+}
+
+// Inicializar el modal con método individual por defecto
+setInputMethod('single');
+
+// Manejo de importación de archivos
 document.getElementById('import-area').addEventListener('change', async function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -233,107 +587,11 @@ document.getElementById('import-area').addEventListener('change', async function
         window.deforestationMapInstance.showAlert('Formato no soportado.', 'error');
     }
 });
-</script>
-<script>
-// Mostrar menú
-document.getElementById('base-map-toggle').addEventListener('click', function() {
-    const menu = document.getElementById('base-map-menu');
-    menu.classList.toggle('show');
-    if (menu.classList.contains('show')) {
-        menu.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
-        menu.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
-    } else {
-        menu.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto');
-        menu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
-    }
-});
 
-// Cerrar menú al hacer clic fuera
-document.addEventListener('click', function(e) {
-    const toggle = document.getElementById('base-map-toggle');
-    const menu = document.getElementById('base-map-menu');
-    if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-        menu.classList.remove('show', 'scale-100', 'opacity-100', 'pointer-events-auto');
-        menu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCoordinateModal();
     }
-});
-
-// Cambiar capa base
-document.querySelectorAll('#base-map-menu button').forEach(button => {
-    button.addEventListener('click', function() {
-        const layerKey = this.getAttribute('data-layer');
-        window.deforestationMapInstance.changeBaseLayer(layerKey);
-        document.getElementById('base-map-menu').classList.remove('show');
-    });
 });
 </script>
-<script>
-// Mostrar/ocultar formulario manual
-document.getElementById('manual-polygon-toggle').addEventListener('click', function(e) {
-    e.stopPropagation();
-    const menu = document.getElementById('manual-polygon-menu');
-    menu.classList.toggle('show');
-    if (menu.classList.contains('show')) {
-        menu.classList.remove('scale-95', 'opacity-0', 'pointer-events-none');
-        menu.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
-    } else {
-        menu.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto');
-        menu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
-    }
-});
-
-// Cerrar menú manual al hacer clic fuera
-document.addEventListener('click', function(e) {
-    const toggle = document.getElementById('manual-polygon-toggle');
-    const menu = document.getElementById('manual-polygon-menu');
-    if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-        menu.classList.remove('show', 'scale-100', 'opacity-100', 'pointer-events-auto');
-        menu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
-    }
-});
-
-// Dibujar polígono manual
-document.getElementById('manual-polygon-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const coordsText = document.getElementById('manual-coords').value.trim();
-    if (!coordsText) {
-        window.deforestationMapInstance.showAlert('Debes ingresar al menos 3 coordenadas.', 'warning');
-        return;
-    }
-    // Procesar coordenadas
-    const coords = [];
-    coordsText.split('\n').forEach(line => {
-        const parts = line.split(',').map(s => s.trim());
-        if (parts.length === 2 && !isNaN(Number(parts[0])) && !isNaN(Number(parts[1]))) {
-            // El usuario ingresa lat,lon pero OpenLayers espera lon,lat
-            coords.push([Number(parts[1]), Number(parts[0])]);
-        }
-    });
-    if (coords.length < 3) {
-        window.deforestationMapInstance.showAlert('Debes ingresar al menos 3 coordenadas válidas.', 'warning');
-        return;
-    }
-    // Cerrar el polígono si no está cerrado
-    if (coords[0][0] !== coords[coords.length-1][0] || coords[0][1] !== coords[coords.length-1][1]) {
-        coords.push(coords[0]);
-    }
-    // Crear el polígono y agregarlo al mapa
-    const feature = new ol.Feature({
-        geometry: new ol.geom.Polygon([coords]).transform('EPSG:4326', 'EPSG:3857')
-    });
-    window.deforestationMapInstance.clearMap();
-    window.deforestationMapInstance.source.addFeature(feature);
-    // Centrar el mapa en el polígono
-    window.deforestationMapInstance.map.getView().fit(
-        feature.getGeometry().getExtent(),
-        { padding: [50, 50, 50, 50], duration: 1000 }
-    );
-    window.deforestationMapInstance.convertToGeoJSON(feature);
-    window.deforestationMapInstance.showAlert('Polígono dibujado manualmente.', 'success');
-    // Cierra el menú
-    const menu = document.getElementById('manual-polygon-menu');
-    menu.classList.remove('show', 'scale-100', 'opacity-100', 'pointer-events-auto');
-    menu.classList.add('scale-95', 'opacity-0', 'pointer-events-none');
-});
-</script>
-

@@ -140,12 +140,7 @@ class DeforestationMap {
             view: new ol.View({
                 center: ol.proj.fromLonLat([-66.0, 8.0]),
                 zoom: 6
-            }),
-            controls: ol.control.defaults().extend([
-                new ol.control.FullScreen({
-                    tipLabel: 'Pantalla completa'
-                })
-            ])
+            })
         });
 
         this.currentBaseLayer = this.baseLayers.osm;

@@ -434,7 +434,7 @@ input:checked+.toggle-slider:before {
 #map-controls {
     position: absolute;
     top: 0.53rem;
-    right: 2.53rem;
+    right: 0.53rem;
     z-index: 2000;
 }
 
@@ -459,10 +459,89 @@ input:checked+.toggle-slider:before {
     display: none;
     z-index: 10000;
 }
+
 #manual-polygon-menu.show {
     display: block;
     opacity: 1 !important;
     pointer-events: auto !important;
     transform: scale(1) !important;
 }
+
+/* ESTILOS PARA EL MAPA Y LAS COORDENADAS */
+
+/* Contenedor del mapa debe tener posición relativa */
+#map {
+    position: relative;
+    height: 600px;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow: hidden; /* Asegura que nada se salga del contenedor */
+}
+
+.coordinate-display {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    font-family: monospace;
+    display: none; /* Oculto por defecto */
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para modo oscuro */
+.dark .coordinate-display {
+    background-color: rgba(21, 23, 29, 0.9);
+    color: #e5e7eb;
+    border: 1px solid #4b5563;
+}
+
+/* Controles del mapa */
+#map-controls {
+    position: absolute;
+    top: 0.53rem;
+    right: 0.53rem;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+/* Menú de selección de mapas */
+#base-map-menu {
+    display: none;
+    z-index: 10000;
+    right: 0;
+    left: auto;
+}
+
+#base-map-menu.show {
+    display: block;
+}
+
+/* Menú de coordenadas manuales */
+#manual-polygon-menu {
+    display: none;
+    z-index: 10000;
+    right: 0;
+    left: auto;
+}
+
+#manual-polygon-menu.show {
+    display: block;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: scale(1) !important;
+}
+
+
+
+
+
+
 
