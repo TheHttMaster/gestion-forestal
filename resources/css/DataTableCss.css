@@ -972,8 +972,4 @@ html.dark .dt-container .dt-paging .dt-paging-button:active {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Asegurar que el mapa ocupe el espacio disponible */
-#map {
-    min-height: 500px;
-    width: 100%;
-}
+

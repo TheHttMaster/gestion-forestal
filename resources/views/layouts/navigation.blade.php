@@ -163,7 +163,7 @@
                             </svg>
                         </button>
 
-                        <div id="userMenu" class="dropdown-menu absolute right-0 mt-2 w-48 md:w-64 bg-stone-100 dark:bg-custom-gray rounded-xl shadow-soft py-2 z-50">
+                        <div id="userMenu" class="dropdown-menu absolute right-0 mt-2 w-48 md:w-64 bg-stone-100 dark:bg-custom-gray rounded-xl shadow-soft py-2 z-[1000001]">
                             <div class="px-4 md:px-6 py-3 md:py-4">
                                 <p class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ Auth::user()->name }}</p>
                                 <p class="text-sm text-gray-500">{{ Auth::user()->email }}</p>

@@ -327,7 +327,7 @@ input:checked+.toggle-slider:before {
 
 .headi {
     position: relative; /* Contexto para z-index */
-    z-index: 20; /* Menor que el sidebar */
+    z-index: 2; /* Menor que el sidebar */
 }
 
 @media (min-width: 769px) and (max-width: 5024px) {
@@ -384,21 +384,6 @@ input:checked+.toggle-slider:before {
     overflow: hidden; /* Asegura que nada se salga del contenedor */
 }
 
-.coordinate-display {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-    z-index: 1000;
-    font-family: monospace;
-    display: none; /* Oculto por defecto */
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 /* Estilo para modo oscuro */
 .dark .coordinate-display {
     background-color: rgba(21, 23, 29, 0.9);
@@ -431,13 +416,6 @@ input:checked+.toggle-slider:before {
     color: #ffffff;
 }
 
-#map-controls {
-    position: absolute;
-    top: 0.53rem;
-    right: 0.53rem;
-    z-index: 2000;
-}
-
 #base-map-menu {
     right: 0;
     left: auto;
@@ -445,7 +423,7 @@ input:checked+.toggle-slider:before {
 
 #base-map-menu {
     display: none;
-    z-index: 10000;
+    z-index: 1;
 }
 #base-map-menu.show {
     display: block;
@@ -457,7 +435,7 @@ input:checked+.toggle-slider:before {
 
 #manual-polygon-menu {
     display: none;
-    z-index: 10000;
+    z-index: 1;
 }
 
 #manual-polygon-menu.show {
@@ -486,7 +464,7 @@ input:checked+.toggle-slider:before {
     padding: 5px 10px;
     border-radius: 4px;
     font-size: 12px;
-    z-index: 1000;
+    z-index: 1;
     font-family: monospace;
     display: none; /* Oculto por defecto */
     border: 1px solid #e5e7eb;
@@ -505,7 +483,7 @@ input:checked+.toggle-slider:before {
     position: absolute;
     top: 0.53rem;
     right: 0.53rem;
-    z-index: 2000;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -515,7 +493,7 @@ input:checked+.toggle-slider:before {
 /* Menú de selección de mapas */
 #base-map-menu {
     display: none;
-    z-index: 10000;
+    z-index: 1;
     right: 0;
     left: auto;
 }
@@ -527,7 +505,7 @@ input:checked+.toggle-slider:before {
 /* Menú de coordenadas manuales */
 #manual-polygon-menu {
     display: none;
-    z-index: 10000;
+    z-index: 1;
     right: 0;
     left: auto;
 }
@@ -538,6 +516,22 @@ input:checked+.toggle-slider:before {
     pointer-events: auto !important;
     transform: scale(1) !important;
 }
+
+#map {
+    position: relative;
+    z-index: 1 !important;
+}
+#map-controls {
+    z-index: 10 !important;
+}
+#base-map-menu,
+#manual-polygon-menu {
+    z-index: 20 !important;
+}
+#userMenu {
+    z-index: 11000 !important;
+}
+
 
 
 

@@ -28,16 +28,16 @@
                                         
                                         <!-- Menú de cambio de mapa - POSICIONADO RELATIVO AL BOTÓN -->
                                         <div id="base-map-menu"
-                                             class="absolute mt-4 w-40 rounded-xl shadow-lg bg-white dark:bg-custom-gray ring-1 ring-black ring-opacity-5 z-10000 right-0
+                                             class="absolute mt-4 w-40 rounded-xl shadow-lg bg-white dark:bg-custom-gray ring-1 ring-black ring-opacity-5 z-1 right-0
                                                     transition-all duration-400 ease-out scale-95 opacity-0 pointer-events-none">
                                             <!-- Flechita -->
-                                            <div class="absolute -top-2 right-6 w-4 h-2 z-100000 pointer-events-none">
+                                            <div class="absolute -top-2 right-6 w-4 h-2 z-100 pointer-events-none">
                                                 <svg viewBox="0 0 16 8" class="w-4 h-2 text-white dark:text-custom-gray">
                                                     <polygon points="8,0 16,8 0,8" fill="currentColor"/>
                                                 </svg>
                                             </div>
                                             <!-- Menú -->
-                                            <div class="py-2 z-10000" role="menu" aria-orientation="vertical">
+                                            <div class="py-2 z-100" role="menu" aria-orientation="vertical">
                                                 <button data-layer="osm" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">OpenStreetMap</button>
                                                 <button data-layer="satellite" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Satélite</button>
                                                 <button data-layer="terrain" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Relieve</button>
@@ -63,78 +63,78 @@
                                         </svg>
                                        
                                     </button>
-
-                                    <!-- Modal moderno para coordenadas -->
-                                    <div id="manual-polygon-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                                        <div class="bg-white dark:bg-custom-gray rounded-xl shadow-2xl w-full max-w-md mx-4">
-                                            <!-- Header -->
-                                            <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-600">
-                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Ingresar Coordenadas</h3>
-                                                <button id="close-modal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                            
-                                            <!-- Formulario -->
-                                            <form id="manual-polygon-form" class="p-6 space-y-4">
-                                                <!-- Método de entrada -->
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de entrada:</label>
-                                                    <div class="flex space-x-2">
-                                                        <button type="button" id="method-single" class="flex-1 py-2 px-3 bg-blue-600 text-white rounded-lg text-sm font-medium">Una por una</button>
-                                                        <button type="button" id="method-bulk" class="flex-1 py-2 px-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">Lote</button>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Entrada individual (por defecto) -->
-                                                <div id="single-input" class="space-y-3">
-                                                    <div class="flex space-x-2">
-                                                        <div class="flex-1">
-                                                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitud</label>
-                                                            <input type="text" id="single-lat" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ej: 8.123">
-                                                        </div>
-                                                        <div class="flex-1">
-                                                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitud</label>
-                                                            <input type="text" id="single-lon" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80  dark:text-gray-100 text-sm p-2" placeholder="Ej: -66.123">
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" id="add-coord" class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm">
-                                                        + Agregar coordenada
-                                                    </button>
-                                                </div>
-
-                                                <!-- Entrada por lote (oculta inicialmente) -->
-                                                <div id="bulk-input" class="hidden">
-                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas (lat,lon por línea):</label>
-                                                    <!-- En el modal de coordenadas (alrededor de línea 150) -->
-                                                    <textarea id="bulk-coords" rows="4" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ejemplo:&#10;&#9;Latitud,Longitud&#10;&#9;8.123, -66.123&#10;&#9;8.124, -66.124&#10;&#9;8.125, -66.125"></textarea>
-                                                </div>
-
-                                                <!-- Lista de coordenadas agregadas -->
-                                                <div id="coords-list" class="hidden">
-                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas agregadas:</label>
-                                                    <div class="max-h-32 overflow-y-auto border border-gray-200 dark:border-gray-500 rounded-md p-2 bg-gray-50 dark:bg-gray-800/80">
-                                                        <div id="coords-container" class="space-y-1"></div>
-                                                    </div>
-                                                    <button type="button" id="clear-list" class="text-red-600 hover:text-red-700 text-xs mt-1">Limpiar lista</button>
-                                                </div>
-
-                                                <!-- Botones -->
-                                                <div class="flex space-x-3 pt-2">
-                                                    <button type="button" id="cancel-modal" class="flex-1 py-2 px-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium">
-                                                        Cancelar
-                                                    </button>
-                                                    <button type="submit" class="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
-                                                        Dibujar
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                <!-- Modal moderno para coordenadas -->
+                    <div id="manual-polygon-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                        <div class="bg-white dark:bg-custom-gray rounded-xl shadow-2xl w-full max-w-md mx-4">
+                            <!-- Header -->
+                            <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-600">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Ingresar Coordenadas</h3>
+                                <button id="close-modal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <!-- Formulario -->
+                            <form id="manual-polygon-form" class="p-6 space-y-4">
+                                <!-- Método de entrada -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de entrada:</label>
+                                    <div class="flex space-x-2">
+                                        <button type="button" id="method-single" class="flex-1 py-2 px-3 bg-blue-600 text-white rounded-lg text-sm font-medium">Una por una</button>
+                                        <button type="button" id="method-bulk" class="flex-1 py-2 px-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">Lote</button>
+                                    </div>
+                                </div>
+
+                                <!-- Entrada individual (por defecto) -->
+                                <div id="single-input" class="space-y-3">
+                                    <div class="flex space-x-2">
+                                        <div class="flex-1">
+                                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitud</label>
+                                            <input type="text" id="single-lat" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ej: 8.123">
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitud</label>
+                                            <input type="text" id="single-lon" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80  dark:text-gray-100 text-sm p-2" placeholder="Ej: -66.123">
+                                        </div>
+                                    </div>
+                                    <button type="button" id="add-coord" class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm">
+                                        + Agregar coordenada
+                                    </button>
+                                </div>
+
+                                <!-- Entrada por lote (oculta inicialmente) -->
+                                <div id="bulk-input" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas (lat,lon por línea):</label>
+                                    <!-- En el modal de coordenadas (alrededor de línea 150) -->
+                                    <textarea id="bulk-coords" rows="4" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ejemplo:&#10;&#9;Latitud,Longitud&#10;&#9;8.123, -66.123&#10;&#9;8.124, -66.124&#10;&#9;8.125, -66.125"></textarea>
+                                </div>
+
+                                <!-- Lista de coordenadas agregadas -->
+                                <div id="coords-list" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas agregadas:</label>
+                                    <div class="max-h-32 overflow-y-auto border border-gray-200 dark:border-gray-500 rounded-md p-2 bg-gray-50 dark:bg-gray-800/80">
+                                        <div id="coords-container" class="space-y-1"></div>
+                                    </div>
+                                    <button type="button" id="clear-list" class="text-red-600 hover:text-red-700 text-xs mt-1">Limpiar lista</button>
+                                </div>
+
+                                <!-- Botones -->
+                                <div class="flex space-x-3 pt-2">
+                                    <button type="button" id="cancel-modal" class="flex-1 py-2 px-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium">
+                                        Cancelar
+                                    </button>
+                                    <button type="submit" class="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+                                        Dibujar
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
