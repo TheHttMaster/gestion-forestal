@@ -1,10 +1,10 @@
 <x-guest-layout>
-       
+  
     <!-- Toggle de modo oscuro -->
-    <div class="flex justify-end mb-2 sm:mb-3">
+    <div class="flex justify-end mb-2 sm:mb-3 ">
         <button
             id="themeToggle"
-            class="p-1.5 sm:p-2 rounded-md bg-white/80 dark:bg-gray-800/80 backdrop-blur border border-amber-200 dark:border-gray-600 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 shadow-sm"
+            class="p-1.5 sm:p-2 rounded-md bg-white/80 dark:bg-gray-800/80 backdrop-blur border border-amber-200 dark:border-gray-600 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 shadow-sm transition transform hover:scale-[1.10] duration-300 hover:-translate-y-1 duration-300"
             title="Cambiar tema"
         >
             <!-- Icono de sol (modo claro) -->
@@ -17,11 +17,10 @@
             </svg>
         </button>
     </div>
-
-    <!-- Logo y título de la empresa -->
-    <div class="text-center mb-4 sm:mb-5 md:mb-6">
-        <div class="inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 md:w-32 md:h-32 bg-amber-700 dark:bg-amber-700 rounded-full mb-2 sm:mb-3 shadow-lg">
-            <!-- Icono de cacao usando SVG -->
+<!-- Logo y título de la empresa -->
+<div class="text-center mb-4 sm:mb-5 md:mb-6">
+    <div class="logo-container inline-flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 md:w-32 md:h-32 bg-yellow-950/95 dark:bg-amber-700 rounded-full mb-2 sm:mb-3 shadow-lg">
+    <!-- Icono de cacao usando SVG -->
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="80.000000pt" height="80.000000pt" viewBox="0 0 172.000000 167.000000" preserveAspectRatio="xMidYMid meet">
                 <g transform="translate(0.000000,167.000000) scale(0.100000,-0.100000)" fill="#ffffffff" stroke="none">
                     <path d="M1052 1609 l-40 -20 15 -37 c24 -57 111 -228 160 -315 24 -44 43 -80 41 -81 -2 -1 -26 -11 -54 -22 l-52 -21 -13 31 c-13 28 -26 34 -148 74 -247 80 -375 81 -537 2 -170 -82 -282 -223 -360 -450 -39 -113 -39 -113 72 -159 134 -56 231 -74 376 -68 102 4 125 2 121 -9 -10 -27 19 -203 48 -284 17 -47 38
@@ -38,25 +37,25 @@
                     <path d="M1713 440 c0 -25 2 -35 4 -22 2 12 2 32 0 45 -2 12 -4 2 -4 -23z"/>
                 </g>
             </svg>
-        </div>
-        <h1 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-custom-dark dark:text-amber-100 mb-1 transition-colors">Cacao San José</h1>
-        <p class="text-xs sm:text-sm md:text-base text-amber-700 dark:text-custom-gold-light transition-colors">Gestion Forestal</p>
-    </div>
+       </div>
+    <h1 class="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-custom-dark dark:text-amber-100 mb-1 transition-colors">Cacao San José</h1>
+    <p class="text-ms sm:text-base md:text-lg text-amber-600 dark:text-custom-gold-light transition-colors">Gestion Forestal</p>
+</div>
 
-    <div class="shadow-2xl hover:shadow-3xl dark:shadow-gray-900/50 bg-stone-100/90 dark:bg-custom-gray rounded-lg transition-all duration-300">
+    <div class="card-glow shadow-2xl hover:shadow-3xl dark:shadow-gray-900/50 bg-stone-200/90 dark:bg-custom-gray rounded-2xl transition-all duration-300">
         <!-- Header del card -->
-        <div class="px-3 sm:px-4 md:px-5 py-3 sm:py-4 pb-3 sm:pb-4">
-            <h2 class="text-base sm:text-lg md:text-xl lg:text-2xl text-center text-custom-dark dark:text-amber-100 font-semibold transition-colors">Iniciar Sesión</h2>
+        <div class="px-3 sm:px-4 md:px-5 py-1 sm:py-2 pb-3 sm:pb-4">
+            <h2 class="heading2 text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center text-custom-dark dark:text-amber-100 font-black transition-colors">Iniciar Sesión</h2>
         </div>
     
 
         <!-- Contenido del card -->
-        <div class="px-3 sm:px-4 md:px-5 pb-3 sm:pb-4 md:pb-5">
-            <form method="POST" class="space-y-2.5 sm:space-y-3 md:space-y-4" action="{{ route('login') }}">
+        <div class=" px-3 sm:px-4 md:px-5 sm:pb-4 ">
+            <form method="POST" class="space-y-2.5 sm:space-y-3 md:space-y-5" action="{{ route('login') }}">
                 @csrf
                 <!-- Campo de email -->
                 <div class="space-y-1 sm:space-y-1.5">
-                    <label for="email" class="block text-custom-dark dark:text-amber-100 font-medium text-xs sm:text-sm transition-colors">
+                    <label for="email" class="block text-custom-dark dark:text-amber-100 font-medium text-sm sm:text-base transition-colors">
                         Correo Electrónico
                     </label>
                     <input
@@ -65,24 +64,25 @@
                         name="email"
                         value="{{ old('email') }}"
                         placeholder="usuario@empresa.com"
-                        class="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-stone-400/80 dark:border-gray-600 !bg-stone-50 dark:!bg-gray-800/50 text-custom-gray dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-custom-gold-dark dark:focus:ring-custom-gold-medium/70 focus:border-custom-gold-dark dark:focus:border-custom-gold-medium/70 transition-all duration-200"
+                        class="w-full px-2.5 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base border-[3px] border-stone-300/80 dark:border-gray-600 !bg-stone-50 dark:!bg-gray-800/50 text-custom-gray dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-custom-gold-dark dark:focus:ring-custom-gold-medium/70 focus:border-custom-gold-dark dark:focus:border-custom-gold-medium/70 transition-all duration-200 transition transform hover:scale-[1.02] duration-300 hover:-translate-y-1 duration-300"
                         required
                     />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                   
                 </div>
 
                 <!-- Campo de contraseña -->
                 <div class="space-y-1 sm:space-y-1.5">
-                    <label for="password" class="block text-custom-dark dark:text-amber-100 font-medium text-xs sm:text-sm transition-colors">
+                    <label for="password" class="block text-custom-dark dark:text-amber-100 font-medium text-sm sm:text-base transition-colors">
                         Contraseña
                     </label>
-                    <div class="relative">
+                    <div class="relative hover:-translate-y-1 duration-300">
                         <input
                             id="password"
                             type="password"
                             name="password"
                             placeholder="Contraseña"
-                            class="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 pr-8 sm:pr-9 text-xs sm:text-sm border border-stone-400/80  dark:border-gray-600 bg-white dark:bg-gray-800/50 text-custom-gray dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-custom-gold-dark dark:focus:ring-custom-gold-medium/70 focus:border-custom-gold-dark dark:focus:border-custom-gold-medium/70 transition-all duration-200"
+                            class="w-full px-2.5 sm:px-4 py-1.5 sm:py-2 pr-8  text-sm sm:text-base border-[3px] border-stone-300/80  dark:border-gray-600 bg-white dark:bg-gray-800/50 text-custom-gray dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-custom-gold-dark dark:focus:ring-custom-gold-medium/70 focus:border-custom-gold-dark dark:focus:border-custom-gold-medium/70 transition-all duration-200 transition transform hover:scale-[1.02] duration-300"
                             required
                         />
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
@@ -129,17 +129,13 @@
                 </div>
 
                 <!-- Botón de submit -->
-                <button
-                    type="submit"
-                    title="Iniciar sección"
-                    class="w-full bg-amber-800 dark:bg-amber-700 hover:bg-amber-950/90 dark:hover:bg-custom-gold-dark/50 text-white font-medium py-2 sm:py-2.5 px-3 text-xs sm:text-sm md:text-base rounded-md transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-custom-gold-dark dark:focus:ring-amber-700 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                >
+                <button type="submit" title="Iniciar sesión" class="relative w-full [background:linear-gradient(144deg,#3E2723,#4E342E_50%,#6D4C41)] dark:[background:linear-gradient(144deg,#3b220f,#61361d_50%,#794606)] text-white px-4 py-2 font-bold rounded-md hover:opacity-95 dark:hover:opacity-90 transition-all duration-200 shadow-sm hover:shadow-md focus:scale-[1.03] hover:scale-[1.03] active:scale-95 before:content-[''] before:absolute before:inset-0 before:rounded-md before:ring-[3px] before:ring-offset-2 before:ring-offset-gray-100 before:ring-[#3E2723] dark:before:ring-offset-gray-800 dark:before:ring-amber-500">
                     Iniciar Sesión
                 </button>
             </form>
 
             <!-- Separador y enlace de contacto -->
-            <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-amber-200 dark:border-gray-600 transition-colors">
+            <div class="mt-3 pt-3 border-t border-amber-200 dark:border-gray-600 transition-colors">
                 <p class="text-center text-xs text-custom-gold-darker dark:text-custom-gold-medium transition-colors">
                     ¿Necesitas acceso?
                     <button class="text-amber-800 dark:text-custom-gold-light hover:text-custom-dark dark:hover:text-amber-100 font-medium hover:underline ml-1 transition-colors">

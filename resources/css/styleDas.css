@@ -532,8 +532,99 @@ input:checked+.toggle-slider:before {
     z-index: 11000 !important;
 }
 
+/* Animación pulse-organic para el logo */
+@keyframes pulse-organic {
+    0%, 100% {
+        box-shadow: 0 0 30px rgba(121, 85, 72, 0.4), 0 0 60px rgba(161, 136, 127, 0.2);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 50px rgba(121, 85, 72, 0.6), 0 0 80px rgba(161, 136, 127, 0.3);
+        transform: scale(1.07);
+    }
+}
+
+/* Animación de flotación para el SVG */
+@keyframes floatIcon {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+/* Aplica las animaciones */
+.logo-container {
+    animation: pulse-organic 6s ease-in-out infinite;
+}
+
+/* Aplica la flotación al SVG dentro del logo */
+.logo-container svg {
+    animation: floatIcon 4s ease-in-out infinite;
+}
+
+/* Card glow para modo claro - tonos ámbar/café */
+@keyframes cardGlowLight {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px rgba(184, 100, 31, 0.33),
+            0 0 40px rgba(54, 18, 2, 0.23),
+            0 4px 20px rgba(0, 0, 0, 0.38);
+    }
+    50% {
+        box-shadow: 
+            0 0 30px rgba(255, 255, 255, 0.21),
+            0 0 60px rgba(114, 112, 110, 0.15),
+            0 8px 30px rgba(0, 0, 0, 0.34);
+    }
+}
+
+/* Card glow para modo oscuro - tonos ámbar/dorados */
+@keyframes cardGlowDark {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px rgba(110, 85, 42, 0.32),
+            0 0 40px rgba(138, 111, 90, 0.2),
+            0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 0 30px rgba(146, 118, 68, 0.29),
+            0 0 60px rgba(92, 76, 65, 0.3),
+            0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+}
 
 
+/* Aplica el glow según el modo */
+.card-glow {
+    animation: cardGlowLight 3s ease-in-out infinite;
+}
+
+.dark .card-glow {
+    animation: cardGlowDark 3s ease-in-out infinite;
+}
+
+.card-glow{
+    border-radius: 30px;
+    padding: 7px 0px;
+    margin: 6px;
+    background: linear-gradient(#ffffffe3, #f2f2f2) padding-box,
+    linear-gradient(135deg, transparent 4%, #904800aa, #e6e5e5) border-box;
+    border: 6px solid transparent;
+    transition: all 0.1s; /* ← Transición en el estado base */
+}
+
+.dark .card-glow{
+    border: 6px solid rgba(35, 37, 46, 0.446);
+    background: linear-gradient(rgb(30, 32, 40),rgb(15, 17, 21)) padding-box,
+    linear-gradient(135deg, transparent 4%, #e5831aba, rgb(44, 47, 62)) border-box;
+}
+
+.heading2 {
+    font-size: 35px;
+} 
 
 
 
