@@ -17,7 +17,7 @@ class DeforestationMap {
         this.coordinateDisplay = null;  // Elemento para mostrar coordenadas
         this.baseLayers = {};           // Capas base disponibles
         this.currentBaseLayer = null;   // Capa base actual
-
+        
         // Inicialización
         this.initializeMap();
         this.setupEventListeners();
@@ -31,6 +31,7 @@ class DeforestationMap {
     initializeMap() {
         // Definir capas base
         this.baseLayers = {
+            
             osm: new ol.layer.Tile({
                 source: new ol.source.OSM(),
                 visible: true,
@@ -59,6 +60,14 @@ class DeforestationMap {
                 }),
                 visible: false,
                 title: 'Oscuro'
+            }),
+            deforestacion: new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    url: 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png',
+                    attributions: 'GFW - Pérdida de Bosque'
+                }),
+                visible: false,
+                title: 'deforestacion'
             })
         };
 
@@ -150,7 +159,9 @@ class DeforestationMap {
      * Permite cambiar la capa base del mapa.
      * @param {string} layerKey - Clave de la capa base ('osm', 'satellite', etc.)
      */
+    
     changeBaseLayer(layerKey) {
+        
         Object.values(this.baseLayers).forEach(layer => layer.setVisible(false));
         this.baseLayers[layerKey].setVisible(true);
         this.currentBaseLayer = this.baseLayers[layerKey];
@@ -553,4 +564,57 @@ document.addEventListener('DOMContentLoaded', function() {
  * - Puedes personalizar los estilos y campos según tus necesidades.
  * - El código está ampliamente comentado para facilitar el mantenimiento y la extensión.
  */
+
+
+// logia para el boton de mostrar u ocultar capa de deforestacion
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    // 1. Obtener referencias
+    const toggleButton = document.getElementById('visibility-toggle-button');
+    const iconVisible = document.getElementById('icon-eye-open');
+    const iconHidden = document.getElementById('icon-eye-closed');
+    const STORAGE_KEY = 'polygonVisibilityState';
+
+    // 2. Función para aplicar el estado (Actualiza iconos y estado interno)
+    function applyState(isVisible) {
+        if (isVisible) {
+            // Estado VISIBLE: Mostrar icono de Ojo Abierto, ocultar Ojo Tachado
+            iconVisible.style.display = 'inline-block';
+            iconHidden.style.display = 'none';
+            // Lógica REAL para hacer el polígono visible
+        } else {
+            // Estado OCULTO: Mostrar icono de Ojo Tachado, ocultar Ojo Abierto
+            iconVisible.style.display = 'none';
+            iconHidden.style.display = 'inline-block';
+            // Lógica REAL para hacer el polígono invisible
+        }
+    }
+
+    // 3. Inicializar el estado al cargar la página (ANTES de mostrar el botón)
+    let storedState = localStorage.getItem(STORAGE_KEY);
+    let isPolygonVisible = storedState === 'false' ? false : true;
+    
+    // Aplicar el estado inicial (el botón sigue invisible)
+    applyState(isPolygonVisible);
+    
+    // **Paso clave para evitar el parpadeo:**
+    // Una vez que el estado correcto se aplica a los iconos, mostramos el botón.
+    if (toggleButton) {
+        toggleButton.classList.remove('invisible');
+        toggleButton.classList.add('visible'); // o la clase que maneje la visibilidad
+    }
+
+    // 4. Función para alternar y guardar el estado
+    function toggleIconAndSave() {
+        isPolygonVisible = !isPolygonVisible;
+        applyState(isPolygonVisible);
+        localStorage.setItem(STORAGE_KEY, isPolygonVisible.toString());
+        console.log(`Estado guardado: ${isPolygonVisible}`);
+    }
+
+    // 5. Asignar el evento click
+    if (toggleButton) {
+        toggleButton.addEventListener('click', toggleIconAndSave);
+    }
+});
 

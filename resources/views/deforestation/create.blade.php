@@ -16,8 +16,34 @@
                             <div class="flex flex-col items-end space-y-2">
                                 <!-- Fila superior: Cambiar Mapa y Pantalla Completa -->
                                 <div class="flex space-x-2">
+
+                                    {{-- boton para mostrar u ocultar areas en deforestacion --}}
+
+                                    <div class="relative">
+                                        <button id="visibility-toggle-button" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg mb-2 invisible">
+                                            <span id="icon-eye-open">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye w-5 h-6">
+                                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                </svg>
+                                            </span>
+                                            
+                                            <span id="icon-eye-closed">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off w-5 h-6">
+                                                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                                    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                                    <line x1="2" x2="22" y1="2" y2="22"/>
+                                                </svg>
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    {{-- ///////////////////////////////////////////////////// --}}
+
                                     <!-- Contenedor para Cambiar Mapa con menú -->
                                     <div class="relative">
+                                        
                                         <!-- Botón de cambio de mapa -->
                                         <button id="base-map-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,28 +68,44 @@
                                                 <button data-layer="satellite" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Satélite</button>
                                                 <button data-layer="terrain" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Relieve</button>
                                                 <button data-layer="dark" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Oscuro</button>
+                                                <button data-layer="deforestacion" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">deforestacion</button>
+                                                
                                             </div>
                                         </div>
                                     </div>
+
+                                    {{-- ///////////////////////////////////////////////////// --}}
                                     
                                     <!-- Botón de pantalla completa -->
-                                    <button id="fullscreen-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
+
+                                    <button id="fullscreen-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg mb-2">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"></path>
                                         </svg>
                                     </button>
+
+                                    {{-- ///////////////////////////////////////////////////// --}}
                                 </div>
                                 
                                 <!-- Fila inferior: Solo el botón de coordenadas manuales -->
-                                <div class="relative">
+
+        
+
                                    <!-- Botón para formulario manual -->
-                                    <button id="manual-polygon-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
+
+                                    <button id="manual-polygon-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg mb-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-line-icon w-5 h-6 lucide-pencil-line">
                                             <path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
                                         </svg>
                                        
                                     </button>
-                                </div>
+
+                                    
+                                    
+                                
+
+                                {{-- ///////////////////////////////////////////////////// --}}
+                                
                             </div>
                         </div>
                     </div>
