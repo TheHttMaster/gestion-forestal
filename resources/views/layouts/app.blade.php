@@ -76,7 +76,7 @@
         <div class="flex h-screen ">
             @include('layouts.navigation')
             
-            <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-6">
                 {{ $slot }}
             </main>
         </div>
