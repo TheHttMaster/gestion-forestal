@@ -17,11 +17,15 @@ class DeforestationMap {
         this.coordinateDisplay = null;  // Elemento para mostrar coordenadas
         this.baseLayers = {};           // Capas base disponibles
         this.currentBaseLayer = null;   // Capa base actual
+
+        this.gfwLossLayer = null; // La instancia de la capa GFW de OpenLayers
+        this.STORAGE_KEY = 'gfwLossLayerState'; // Clave para localStorage
         
         // Inicialización
         this.initializeMap();
         this.setupEventListeners();
         this.setupCoordinateDisplay();
+        this.initializeGfWLayerToggle();
     }
 
     /**
@@ -61,15 +65,27 @@ class DeforestationMap {
                 visible: false,
                 title: 'Oscuro'
             }),
-            deforestacion: new ol.layer.Tile({
+            /* deforestacion: new ol.layer.Tile({
                 source: new ol.source.XYZ({
                     url: 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png',
                     attributions: 'GFW - Pérdida de Bosque'
                 }),
                 visible: false,
                 title: 'deforestacion'
-            })
+            }) */
         };
+
+        const GFW_LOSS_URL = 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png';
+
+        this.gfwLossLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: GFW_LOSS_URL,
+                attributions: 'Hansen/UMD/Google/USGS/NASA | GFW',
+            }),
+            opacity: 0.9, 
+            visible: false, // Inicialmente la configuramos como oculta
+            title: 'Pérdida Arbórea GFW'
+        });
 
         // Fuente vectorial para geometrías dibujadas/importadas
         this.source = new ol.source.Vector();
@@ -145,7 +161,8 @@ class DeforestationMap {
         // Inicializar el mapa
         this.map = new ol.Map({
             target: 'map',
-            layers: [baseLayerGroup, vectorLayer],
+            // Añadimos la capa GFW a la lista de capas del mapa
+            layers: [baseLayerGroup, vectorLayer, this.gfwLossLayer], 
             view: new ol.View({
                 center: ol.proj.fromLonLat([-66.0, 8.0]),
                 zoom: 6
@@ -544,6 +561,63 @@ class DeforestationMap {
             container.classList.add('hidden');
         }
     }
+
+    /**
+     * Aplica el estado de visibilidad a los íconos del botón y a la capa GFW.
+     * @param {boolean} isVisible - Si la capa debe ser visible (true) u oculta (false).
+     */
+    applyGfwLayerState(isVisible) {
+        const iconVisible = document.getElementById('icon-eye-open');
+        const iconHidden = document.getElementById('icon-eye-closed');
+        
+        // 1. Lógica de ÍCONOS (Ojo Abierto o Cerrado)
+        if (iconVisible && iconHidden) {
+            // Mostrar ojo abierto si es visible
+            iconVisible.style.display = isVisible ? 'inline-block' : 'none';
+            // Mostrar ojo tachado si está oculta
+            iconHidden.style.display = isVisible ? 'none' : 'inline-block';
+        }
+
+        // 2. Lógica del MAPA (Alternar visibilidad en OpenLayers)
+        if (this.gfwLossLayer) {
+            // Usamos el método nativo de OpenLayers para controlar la visibilidad
+            this.gfwLossLayer.setVisible(isVisible);
+            console.log(`Capa GFW: ${isVisible ? 'VISIBLE' : 'OCULTA'}`);
+        }
+    }
+
+    /**
+     * Configura el botón de alternancia, la persistencia con localStorage y previene el parpadeo.
+     */
+    initializeGfWLayerToggle() {
+        // Usamos DOMContentLoaded para garantizar que el botón existe, aunque ya estamos en el constructor.
+        // Lo incluimos aquí por seguridad. Si usas un patrón de módulo, esto podría ir fuera del constructor.
+        
+        const toggleButton = document.getElementById('visibility-toggle-button');
+        
+        if (!toggleButton) return;
+
+        // 1. Obtener el estado guardado (Persistencia)
+        let storedState = localStorage.getItem(this.STORAGE_KEY);
+        // Si el estado guardado es 'false', isLayerVisible será false; de lo contrario, true.
+        let isLayerVisible = storedState === 'false' ? false : true;
+        
+        // 2. Aplicar el estado inicial
+        // Se llama a la función de control para ajustar los íconos y la visibilidad de la capa ANTES de mostrar el botón.
+        this.applyGfwLayerState(isLayerVisible);
+        
+        // 3. Revelar el botón (Previene el Parpadeo)
+        // Se remueve la clase 'invisible' de Tailwind CSS.
+        toggleButton.classList.remove('invisible');
+
+        // 4. Asignar el evento click
+        toggleButton.addEventListener('click', () => {
+            isLayerVisible = !isLayerVisible; // Invertir el estado
+            this.applyGfwLayerState(isLayerVisible); // Aplicar el nuevo estado
+            // Guardar el nuevo estado en localStorage
+            localStorage.setItem(this.STORAGE_KEY, isLayerVisible.toString()); 
+        });
+    }
 }
 
 // Inicializar el mapa cuando el documento esté listo
@@ -568,7 +642,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // logia para el boton de mostrar u ocultar capa de deforestacion
 
-document.addEventListener('DOMContentLoaded', (event) => {
+/* document.addEventListener('DOMContentLoaded', (event) => {
     // 1. Obtener referencias
     const toggleButton = document.getElementById('visibility-toggle-button');
     const iconVisible = document.getElementById('icon-eye-open');
@@ -616,5 +690,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
     if (toggleButton) {
         toggleButton.addEventListener('click', toggleIconAndSave);
     }
-});
+}); */
 
