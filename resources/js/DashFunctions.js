@@ -140,57 +140,79 @@ document.querySelectorAll('.bg-white.rounded-xl').forEach((card, idx) => {
     }, idx * 100); // Efecto cascada
 });
 
-// --- MODO OSCURO ---
+// --- MODO OSCURO SIMPLIFICADO ---
 const darkModeToggle = document.getElementById('darkModeToggle');
 const mobileDarkToggle = document.getElementById('mobileDarkToggle');
 const mobileDarkIcon = document.getElementById('mobileDarkIcon');
 const htmlElement = document.documentElement;
-const savedTheme = localStorage.getItem('theme');
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-
-
-// Cambia el icono del botón móvil según el modo
+// Función para actualizar el icono móvil (se usa en ambos lugares)
 function updateMobileIcon(isDark) {
     if (mobileDarkIcon) {
-        mobileDarkIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-       
+        if (isDark) {
+            // Modo oscuro activado - mostrar sol
+            mobileDarkIcon.innerHTML = `
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2"/><path d="M12 20v2"/>
+                <path d="m4.93 4.93 1.41 1.41"/>
+                <path d="m17.66 17.66 1.41 1.41"/>
+                <path d="M2 12h2"/><path d="M20 12h2"/>
+                <path d="m6.34 17.66-1.41 1.41"/>
+                <path d="m19.07 4.93-1.41 1.41"/>
+            `;
+        } else {
+            // Modo claro activado - mostrar luna
+            mobileDarkIcon.innerHTML = `
+                <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
+            `;
+        }
     }
 }
 
 // Alterna el modo oscuro/claro
 function toggleDarkMode() {
     const isDark = htmlElement.classList.contains('dark');
+    
     if (isDark) {
         htmlElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
-        if (darkModeToggle) darkModeToggle.checked = false;
-        updateMobileIcon(false);
     } else {
         htmlElement.classList.add('dark');
         localStorage.setItem('theme', 'dark');
-        if (darkModeToggle) darkModeToggle.checked = true;
-        updateMobileIcon(true);
     }
+    
+    // Actualiza todos los controles inmediatamente
+    const newIsDark = !isDark;
+    if (darkModeToggle) {
+        darkModeToggle.checked = newIsDark;
+    }
+    updateMobileIcon(newIsDark);
 }
 
-// Listeners para los toggles de modo oscuro
-if (darkModeToggle) darkModeToggle.addEventListener('change', toggleDarkMode);
-if (mobileDarkToggle) mobileDarkToggle.addEventListener('click', toggleDarkMode);
+// Solo añade los event listeners aquí (la inicialización ya se hizo en app.blade.php)
+document.addEventListener('DOMContentLoaded', function() {
+    // Listeners para los toggles
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', toggleDarkMode);
+    }
+    
+    if (mobileDarkToggle) {
+        mobileDarkToggle.addEventListener('click', toggleDarkMode);
+    }
+});
 
-
-// Detecta cambios en la preferencia del sistema
+// Detecta cambios en la preferencia del sistema (solo si no hay preferencia guardada)
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     if (!localStorage.getItem('theme')) {
         if (e.matches) {
             htmlElement.classList.add('dark');
-            if (darkModeToggle) darkModeToggle.checked = true;
-            updateMobileIcon(true);
         } else {
             htmlElement.classList.remove('dark');
-            if (darkModeToggle) darkModeToggle.checked = false;
-            updateMobileIcon(false);
         }
+        // Actualiza controles
+        const isDark = htmlElement.classList.contains('dark');
+        if (darkModeToggle) darkModeToggle.checked = isDark;
+        updateMobileIcon(isDark);
     }
 });
 

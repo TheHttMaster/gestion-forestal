@@ -12,7 +12,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/css/styleDas.css', 'resources/js/app.js'])
 
         <script>
         // Verifica el tema guardado o el preferido del sistema ANTES de renderizar
@@ -24,7 +24,7 @@
             }
         </script>
     </head>
-    <body class="min-h-screen bg-neutral-300 dark:bg-custom-dark transition-colors duration-300">
+    <body class="min-h-screen bg-neutral-200 dark:bg-custom-dark transition-colors duration-300">
         
 
         <div class="min-h-screen flex items-center justify-center p-2 sm:p-3 md:p-4">
