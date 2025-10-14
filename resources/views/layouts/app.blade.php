@@ -7,87 +7,116 @@
 
     <title>Sistema de Gestion Geografica</title>
 
-        @livewireStyles
-        
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        {{-- Super importante para usar en la convercion de los mapas, no borrar --}}
-        <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
-
-        {{-- Super importante para usar en la convercion de los mapas, no borrar --}}
-        <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
-
-        <!-- Styles -->
-        @vite([
-            'resources/css/app.css', 
-            'resources/css/styleDas.css', 
-            'resources/css/DataTableCss.css',
-            'resources/js/app.js'
-        ])
-
-        {{-- Estilos y scripts específicos del head --}}
-        @yield('head-styles')
-        @yield('head-scripts')
-         <script>
-        // Verifica el tema guardado o el preferido del sistema ANTES de renderizar
-        const storedTheme = localStorage.getItem('theme') || 
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        
-            if (storedTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-            }
-
-            // Aplica sidebar colapsado antes de pintar (solo escritorio)
-            if (window.innerWidth > 768 && localStorage.getItem('sidebarCollapsed') === '1') {
-                // Espera a que el sidebar esté en el DOM y aplica la clase lo antes posible
-                const applySidebarCollapsed = () => {
-                    const sidebar = document.getElementById('sidebar');
-                    if (sidebar && !sidebar.classList.contains('collapsed')) {
-                        sidebar.classList.add('collapsed');
-                        return true;
-                    }
-                    return false;
-                };
-                if (!applySidebarCollapsed()) {
-                    // Si aún no existe, observa el DOM hasta que aparezca
-                    const observer = new MutationObserver(() => {
-                        if (applySidebarCollapsed()) observer.disconnect();
-                    });
-                    observer.observe(document.documentElement, { childList: true, subtree: true });
-                }
-            }
-        </script>
-
-    </head>
+    @livewireStyles
     
-    <body class="bg-neutral-200 dark:bg-custom-dark ">
-        <!-- Mobile sidebar overlay -->
-        <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Mobile dark mode toggle button -->
-        <button id="mobileDarkToggle" class="mobile-dark-toggle">
-            <svg id="mobileDarkIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun w-6 h-6 text-white">
-                <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
-            </svg>
-        </button>
+    {{-- Super importante para usar en la convercion de los mapas, no borrar --}}
+    <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
 
-        <div class="flex h-screen ">
-            @include('layouts.navigation')
-            
-            <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-6">
-                {{ $slot }}
-            </main>
-        </div>
-       
-        <!-- Scripts locales (optimizado) -->
-        @vite([
-            'resources/js/jquery-3.7.1.min.js',
-            'resources/js/app.js', 
-            'resources/js/DataTableJs.js',
-            'resources/js/DashFunctions.js'
-        ])
+    <!-- Styles -->
+    @vite([
+        'resources/css/app.css', 
+        'resources/css/styleDas.css', 
+        'resources/css/DataTableCss.css',
+        'resources/js/app.js'
+    ])
+
+    {{-- Estilos y scripts específicos del head --}}
+    @yield('head-styles')
+    @yield('head-scripts')
+    
+     <script>
+    // SOLO UNA inicialización del tema en el head
+    const storedTheme = localStorage.getItem('theme') || 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    
+    if (storedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+
+    // Aplica sidebar colapsado antes de pintar (solo escritorio)
+    if (window.innerWidth > 768 && localStorage.getItem('sidebarCollapsed') === '1') {
+        const applySidebarCollapsed = () => {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('collapsed');
+                return true;
+            }
+            return false;
+        };
+        if (!applySidebarCollapsed()) {
+            const observer = new MutationObserver(() => {
+                if (applySidebarCollapsed()) observer.disconnect();
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+        }
+    }
+
+    // 🔥 NUEVO: Sincroniza el toggle inmediatamente después de aplicar el tema
+    document.addEventListener('DOMContentLoaded', function() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const mobileDarkIcon = document.getElementById('mobileDarkIcon');
+        
+        // Sincroniza el checkbox inmediatamente
+        if (darkModeToggle) {
+            darkModeToggle.checked = isDark;
+        }
+        
+        // Sincroniza el icono móvil inmediatamente
+        if (mobileDarkIcon) {
+            if (isDark) {
+                // Modo oscuro activado - mostrar sol
+                mobileDarkIcon.innerHTML = `
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2"/><path d="M12 20v2"/>
+                    <path d="m4.93 4.93 1.41 1.41"/>
+                    <path d="m17.66 17.66 1.41 1.41"/>
+                    <path d="M2 12h2"/><path d="M20 12h2"/>
+                    <path d="m6.34 17.66-1.41 1.41"/>
+                    <path d="m19.07 4.93-1.41 1.41"/>
+                `;
+            } else {
+                // Modo claro activado - mostrar luna
+                mobileDarkIcon.innerHTML = `
+                    <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
+                `;
+            }
+        }
+    });
+    </script>
+</head>
+    
+<body class="bg-neutral-200 dark:bg-custom-dark ">
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Mobile dark mode toggle button -->
+    <button id="mobileDarkToggle" class="mobile-dark-toggle">
+        <svg id="mobileDarkIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun w-6 h-6 text-white">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+        </svg>
+    </button>
+
+    <div class="flex h-screen ">
+        @include('layouts.navigation')
+        
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-6">
+            {{ $slot }}
+        </main>
+    </div>
+   
+    <!-- Scripts locales (optimizado) -->
+    @vite([
+        'resources/js/jquery-3.7.1.min.js',
+        'resources/js/app.js', 
+        'resources/js/DataTableJs.js',
+        'resources/js/DashFunctions.js'
+    ])
+    
     @if(session('swal'))
     <script>
         /* Alerta para las notificaciones de la confirmación de las cosas */
@@ -133,7 +162,8 @@
             });
         });
     </script>
-@endif
-@livewireScripts
-    </body>
+    @endif
+    
+    @livewireScripts
+</body>
 </html>
