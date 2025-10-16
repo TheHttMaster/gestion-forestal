@@ -28,7 +28,7 @@
     @yield('head-styles')
     @yield('head-scripts')
     
-     <script>
+       <script>
     // SOLO UNA inicialización del tema en el head
     const storedTheme = localStorage.getItem('theme') || 
         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -54,6 +54,18 @@
             observer.observe(document.documentElement, { childList: true, subtree: true });
         }
     }
+
+    // 🔥 NUEVO: Inicializar estado del botón GFW ANTES de que se renderice
+    const gfwStoredState = localStorage.getItem('gfwLossLayerState');
+    const isGfwLayerVisible = gfwStoredState === 'false' ? false : true;
+    
+    // Aplicar el estado inmediatamente creando estilos inline
+    const style = document.createElement('style');
+    style.textContent = `
+        #icon-eye-open { display: ${isGfwLayerVisible ? 'inline-block' : 'none'}; }
+        #icon-eye-closed { display: ${isGfwLayerVisible ? 'none' : 'inline-block'}; }
+    `;
+    document.head.appendChild(style);
 
     // 🔥 NUEVO: Sincroniza el toggle inmediatamente después de aplicar el tema
     document.addEventListener('DOMContentLoaded', function() {
