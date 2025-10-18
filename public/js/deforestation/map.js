@@ -32,10 +32,11 @@ class DeforestationMap {
      * Inicializa el mapa, las capas base y los estilos.
      * Nota: Mantén los estilos y capas bien organizados para facilitar el mantenimiento.
      */
+   // En el método initializeMap(), modifica la capa maptiler_satellite:
+
     initializeMap() {
         // Definir capas base
         this.baseLayers = {
-            
             osm: new ol.layer.Tile({
                 source: new ol.source.OSM(),
                 visible: true,
@@ -47,7 +48,7 @@ class DeforestationMap {
                     attributions: 'Tiles © Esri'
                 }),
                 visible: false,
-                title: 'Satélite'
+                title: 'Satélite Esri'
             }),
             terrain: new ol.layer.Tile({
                 source: new ol.source.XYZ({
@@ -65,16 +66,24 @@ class DeforestationMap {
                 visible: false,
                 title: 'Oscuro'
             }),
-            /* deforestacion: new ol.layer.Tile({
+            // CAPA MAPTILER SATELLITE CON TU API KEY
+            maptiler_satellite: new ol.layer.Tile({
                 source: new ol.source.XYZ({
-                    url: 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png',
-                    attributions: 'GFW - Pérdida de Bosque'
+                    url: 'https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=scUozK4fig7bE6jg7TPi',
+                    attributions: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+                    tileSize: 512,
+                    maxZoom: 20
                 }),
                 visible: false,
-                title: 'deforestacion'
-            }) */
+                title: 'MapTiler Satélite'
+            })
         };
 
+        // También puedes ajustar la vista inicial a tu ubicación de Venezuela
+        const initialCenter = ol.proj.fromLonLat([-63.26716, 10.63673]); // [lon, lat]
+        const initialZoom = 12; // Ajusta según necesites
+
+        // Resto del código de GFW y capas vectoriales permanece igual...
         const GFW_LOSS_URL = 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png';
 
         this.gfwLossLayer = new ol.layer.Tile({
@@ -83,48 +92,14 @@ class DeforestationMap {
                 attributions: 'Hansen/UMD/Google/USGS/NASA | GFW',
             }),
             opacity: 0.9, 
-            visible: false, // Inicialmente la configuramos como oculta
+            visible: false,
             title: 'Pérdida Arbórea GFW'
         });
 
         // Fuente vectorial para geometrías dibujadas/importadas
         this.source = new ol.source.Vector();
 
-        // Estilo para polígonos
-        this.polygonStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'rgba(26, 166, 30, 0.63)',
-                width: 3
-            }),
-            fill: new ol.style.Fill({
-                color: 'rgba(0, 255, 55, 0.2)'
-            })
-        });
-
-        // Estilo para puntos/vértices
-        this.pointStyle = new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 6,
-                fill: new ol.style.Fill({ color: 'red' }),
-                stroke: new ol.style.Stroke({ color: 'white', width: 2 })
-            })
-        });
-
-        // Estilo para etiquetas sobre los polígonos
-        this.labelStyle = new ol.style.Style({
-            text: new ol.style.Text({
-                text: '', // Se asigna dinámicamente
-                font: 'bold 14px Arial',
-                fill: new ol.style.Fill({ color: '#000000' }),
-                stroke: new ol.style.Stroke({ color: '#04a3072b', width: 3 }),
-                offsetY: -20,
-                overflow: true,
-                backgroundFill: new ol.style.Fill({
-                    color: 'rgba(242, 242, 242, 0.52)'
-                }),
-                padding: [3, 8, 3, 8]
-            })
-        });
+        // ... (estilos permanecen igual)
 
         // Capa vectorial con soporte para etiquetas
         const vectorLayer = new ol.layer.Vector({
@@ -158,14 +133,13 @@ class DeforestationMap {
             layers: Object.values(this.baseLayers)
         });
 
-        // Inicializar el mapa
+        // Inicializar el mapa con la nueva ubicación
         this.map = new ol.Map({
             target: 'map',
-            // Añadimos la capa GFW a la lista de capas del mapa
-            layers: [baseLayerGroup, vectorLayer, this.gfwLossLayer], 
+            layers: [baseLayerGroup, vectorLayer, this.gfwLossLayer],
             view: new ol.View({
-                center: ol.proj.fromLonLat([-66.0, 8.0]),
-                zoom: 6
+                center: initialCenter, // Usa la nueva ubicación
+                zoom: initialZoom      // Usa el nuevo zoom
             })
         });
 

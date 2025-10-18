@@ -4,19 +4,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>Sistema de Gestion Geografica</title>
-
     @livewireStyles
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    {{-- Super importante para usar en la convercion de los mapas, no borrar --}}
+    <!-- Dependencias externas -->
     <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
 
-    <!-- Styles -->
+    <!-- Estilos locales -->
     @vite([
         'resources/css/app.css', 
         'resources/css/styleDas.css', 
@@ -27,86 +25,131 @@
     {{-- Estilos y scripts específicos del head --}}
     @yield('head-styles')
     @yield('head-scripts')
-    
-       <script>
-    // SOLO UNA inicialización del tema en el head
-    const storedTheme = localStorage.getItem('theme') || 
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    
-    if (storedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-    }
 
-    // Aplica sidebar colapsado antes de pintar (solo escritorio)
-    if (window.innerWidth > 768 && localStorage.getItem('sidebarCollapsed') === '1') {
-        const applySidebarCollapsed = () => {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('collapsed')) {
-                sidebar.classList.add('collapsed');
-                return true;
+    <!-- =======================
+         Inicialización de tema y sidebar antes de renderizar
+    ======================== -->
+    <script>
+        // Inicializa el tema (oscuro/claro)
+        const storedTheme = localStorage.getItem('theme') || 
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        if (storedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Inicializa el estado del sidebar antes de renderizar
+        const sidebarStoredState = localStorage.getItem('sidebarCollapsed');
+        const isSidebarCollapsed = sidebarStoredState === '1' && window.innerWidth > 768;
+        const sidebarStyle = document.createElement('style');
+        sidebarStyle.textContent = `
+            #sidebar { 
+                width: ${isSidebarCollapsed ? '4.6rem' : '16rem'} !important;
+                transition: none !important;
             }
-            return false;
-        };
-        if (!applySidebarCollapsed()) {
-            const observer = new MutationObserver(() => {
-                if (applySidebarCollapsed()) observer.disconnect();
-            });
-            observer.observe(document.documentElement, { childList: true, subtree: true });
-        }
-    }
+            .sidebar-text { 
+                opacity: ${isSidebarCollapsed ? '0' : '1'} !important;
+                pointer-events: ${isSidebarCollapsed ? 'none' : 'auto'} !important;
+                width: ${isSidebarCollapsed ? '0 !important' : 'auto'} !important;
+                min-width: ${isSidebarCollapsed ? '0 !important' : '0'} !important;
+                max-width: ${isSidebarCollapsed ? '0 !important' : '100%'} !important;
+                transition: none !important;
+            }
+            .nav-item { 
+                gap: ${isSidebarCollapsed ? '0' : '0.75rem'} !important;
+                transition: none !important;
+            }
+        `;
+        document.head.appendChild(sidebarStyle);
 
-    // 🔥 NUEVO: Inicializar estado del botón GFW ANTES de que se renderice
-    const gfwStoredState = localStorage.getItem('gfwLossLayerState');
-    const isGfwLayerVisible = gfwStoredState === 'false' ? false : true;
-    
-    // Aplicar el estado inmediatamente creando estilos inline
-    const style = document.createElement('style');
-    style.textContent = `
-        #icon-eye-open { display: ${isGfwLayerVisible ? 'inline-block' : 'none'}; }
-        #icon-eye-closed { display: ${isGfwLayerVisible ? 'none' : 'inline-block'}; }
-    `;
-    document.head.appendChild(style);
-
-    // 🔥 NUEVO: Sincroniza el toggle inmediatamente después de aplicar el tema
-    document.addEventListener('DOMContentLoaded', function() {
-        const isDark = document.documentElement.classList.contains('dark');
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const mobileDarkIcon = document.getElementById('mobileDarkIcon');
-        
-        // Sincroniza el checkbox inmediatamente
-        if (darkModeToggle) {
-            darkModeToggle.checked = isDark;
-        }
-        
-        // Sincroniza el icono móvil inmediatamente
-        if (mobileDarkIcon) {
-            if (isDark) {
-                // Modo oscuro activado - mostrar sol
-                mobileDarkIcon.innerHTML = `
-                    <circle cx="12" cy="12" r="4"/>
-                    <path d="M12 2v2"/><path d="M12 20v2"/>
-                    <path d="m4.93 4.93 1.41 1.41"/>
-                    <path d="m17.66 17.66 1.41 1.41"/>
-                    <path d="M2 12h2"/><path d="M20 12h2"/>
-                    <path d="m6.34 17.66-1.41 1.41"/>
-                    <path d="m19.07 4.93-1.41 1.41"/>
-                `;
-            } else {
-                // Modo claro activado - mostrar luna
-                mobileDarkIcon.innerHTML = `
-                    <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
-                `;
+        // Aplica sidebar colapsado antes de pintar (solo escritorio)
+        if (window.innerWidth > 768 && isSidebarCollapsed) {
+            const applySidebarCollapsed = () => {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) {
+                    sidebar.classList.add('collapsed');
+                    return true;
+                }
+                return false;
+            };
+            if (!applySidebarCollapsed()) {
+                const observer = new MutationObserver(() => {
+                    if (applySidebarCollapsed()) observer.disconnect();
+                });
+                observer.observe(document.documentElement, { childList: true, subtree: true });
             }
         }
-    });
+
+        // Remueve estilos inline después de la carga
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const sidebar = document.getElementById('sidebar');
+                const sidebarTexts = document.querySelectorAll('.sidebar-text');
+                const navItems = document.querySelectorAll('.nav-item');
+                if (sidebar) {
+                    sidebar.style.transition = '';
+                    sidebar.style.width = '';
+                }
+                sidebarTexts.forEach(text => {
+                    text.style.transition = '';
+                    text.style.opacity = '';
+                    text.style.pointerEvents = '';
+                    text.style.width = '';
+                    text.style.minWidth = '';
+                    text.style.maxWidth = '';
+                });
+                navItems.forEach(item => {
+                    item.style.transition = '';
+                    item.style.gap = '';
+                });
+                if (sidebarStyle.parentNode) {
+                    sidebarStyle.remove();
+                }
+            }, 50);
+        });
+
+        // Inicializa estado del botón GFW antes de renderizar
+        const gfwStoredState = localStorage.getItem('gfwLossLayerState');
+        const isGfwLayerVisible = gfwStoredState === 'false' ? false : true;
+        const style = document.createElement('style');
+        style.textContent = `
+            #icon-eye-open { display: ${isGfwLayerVisible ? 'inline-block' : 'none'}; }
+            #icon-eye-closed { display: ${isGfwLayerVisible ? 'none' : 'inline-block'}; }
+        `;
+        document.head.appendChild(style);
+
+        // Sincroniza el toggle de modo oscuro después de aplicar el tema
+        document.addEventListener('DOMContentLoaded', function() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const mobileDarkIcon = document.getElementById('mobileDarkIcon');
+            if (darkModeToggle) {
+                darkModeToggle.checked = isDark;
+            }
+            if (mobileDarkIcon) {
+                if (isDark) {
+                    mobileDarkIcon.innerHTML = `
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 2v2"/><path d="M12 20v2"/>
+                        <path d="m4.93 4.93 1.41 1.41"/>
+                        <path d="m17.66 17.66 1.41 1.41"/>
+                        <path d="M2 12h2"/><path d="M20 12h2"/>
+                        <path d="m6.34 17.66-1.41 1.41"/>
+                        <path d="m19.07 4.93-1.41 1.41"/>
+                    `;
+                } else {
+                    mobileDarkIcon.innerHTML = `
+                        <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
+                    `;
+                }
+            }
+        });
     </script>
 </head>
-    
 <body class="bg-neutral-200 dark:bg-custom-dark ">
-    <!-- Mobile sidebar overlay -->
+    <!-- Overlay para sidebar móvil -->
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
-    <!-- Mobile dark mode toggle button -->
+    <!-- Botón de modo oscuro móvil -->
     <button id="mobileDarkToggle" class="mobile-dark-toggle">
         <svg id="mobileDarkIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun w-6 h-6 text-white">
             <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
@@ -115,13 +158,12 @@
 
     <div class="flex h-screen ">
         @include('layouts.navigation')
-        
         <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-6">
             {{ $slot }}
         </main>
     </div>
    
-    <!-- Scripts locales (optimizado) -->
+    <!-- Scripts locales -->
     @vite([
         'resources/js/jquery-3.7.1.min.js',
         'resources/js/app.js', 
@@ -131,7 +173,9 @@
     
     @if(session('swal'))
     <script>
-        /* Alerta para las notificaciones de la confirmación de las cosas */
+        /**
+         * Muestra una alerta tipo toast usando SweetAlert2
+         */
         document.addEventListener('DOMContentLoaded', function() {
             const swalData = @json(session('swal'));
             Swal.fire({

@@ -63,13 +63,12 @@
                                                 </svg>
                                             </div>
                                             <!-- Menú -->
-                                            <div class="py-2 z-100" role="menu" aria-orientation="vertical">
+                                             <div class="py-2 z-100" role="menu" aria-orientation="vertical">
                                                 <button data-layer="osm" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">OpenStreetMap</button>
-                                                <button data-layer="satellite" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Satélite</button>
+                                                <button data-layer="satellite" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Satélite Esri</button>
+                                                <button data-layer="maptiler_satellite" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">MapTiler Satélite</button>
                                                 <button data-layer="terrain" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Relieve</button>
                                                 <button data-layer="dark" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">Oscuro</button>
-                                                {{-- <button data-layer="deforestacion" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700" role="menuitem">deforestacion</button> --}}
-                                                
                                             </div>
                                         </div>
                                     </div>
@@ -92,7 +91,7 @@
         
 
                                    <!-- Botón para formulario manual -->
-                                    <button id="manual-polygon-toggle" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
+                                    <button id="manual-polygon-toggle" title="Escribir Cordenadas" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-line-icon w-6 h-6 lucide-pencil-line">
                                             <path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
                                         </svg>
@@ -529,12 +528,14 @@ document.querySelectorAll('#base-map-menu button').forEach(button => {
         closeMenu('base-map-menu');
         
         // Actualizar texto del botón
-        const layerNames = {
-            'osm': 'OpenStreetMap',
-            'satellite': 'Satélite', 
-            'terrain': 'Relieve',
-            'dark': 'Oscuro'
-        };
+        // Actualiza el objeto layerNames:
+const layerNames = {
+    'osm': 'OpenStreetMap',
+    'satellite': 'Satélite Esri', 
+    'maptiler_satellite': 'MapTiler Satélite',
+    'terrain': 'Relieve',
+    'dark': 'Oscuro'
+};
         
         const button = document.getElementById('base-map-toggle');
         const svg = button.querySelector('svg').cloneNode(true);

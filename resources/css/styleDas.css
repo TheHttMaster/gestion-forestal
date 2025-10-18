@@ -166,8 +166,7 @@
 }
 
 
-
-/* Toggle switch styles - moderately rounded */
+/* Toggle switch styles - VERSIÓN MEJORADA */
 .toggle-switch {
     position: relative;
     display: inline-block;
@@ -205,23 +204,31 @@
     transition: 0.3s;
     border-radius: 50%;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    /* 🔥 IMPORTANTE: Sin transform aquí */
 }
 
-input:checked+.toggle-slider {
+/* 🔥 SELECTORES MÁS ESPECÍFICOS */
+#darkModeToggle:checked + .toggle-slider {
     background-color: #3b82f6;
 }
 
-input:checked+.toggle-slider:before {
-    transform: translateX(22px);
+#darkModeToggle:checked + .toggle-slider:before {
+    transform: translateX(22px); /* Solo esto controla el movimiento */
 }
 
 .dark .toggle-slider {
     background-color: #475569;
 }
 
-.dark input:checked+.toggle-slider {
+.dark #darkModeToggle:checked + .toggle-slider {
     background-color: #58504bbd;
 }
+
+/* 🔥 ESTADO INICIAL CORRECTO */
+#darkModeToggle:not(:checked) + .toggle-slider:before {
+    transform: translateX(0);
+}
+
 
 /* Mobile dark mode button */
 .mobile-dark-toggle {
