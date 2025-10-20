@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env(key: 'MAIL_MAILER', default: 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -110,9 +110,9 @@ return [
     |
     */
 
-    'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
-    ],
+   'from' => [
+    'address' => env('MAIL_FROM_ADDRESS', 'kevinsalazaroriginal@gmail.com'),
+    'name' => env('MAIL_FROM_NAME', 'Cacao San José'),
+],
 
 ];

@@ -11,6 +11,7 @@ class DeforestationMap {
         this.map = null;                // Instancia OpenLayers Map
         this.draw = null;               // Interacción de dibujo
         this.source = null;             // Fuente vectorial para features
+       
         this.polygonStyle = null;       // Estilo para polígonos
         this.pointStyle = null;         // Estilo para puntos/vértices
         this.labelStyle = null;         // Estilo para etiquetas
@@ -99,7 +100,41 @@ class DeforestationMap {
         // Fuente vectorial para geometrías dibujadas/importadas
         this.source = new ol.source.Vector();
 
-        // ... (estilos permanecen igual)
+        // Estilo para polígonos
+        this.polygonStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'rgba(26, 166, 30, 0.63)',
+                width: 3
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(0, 255, 55, 0.2)'
+            })
+        });
+
+        // Estilo para puntos/vértices
+        this.pointStyle = new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 6,
+                fill: new ol.style.Fill({ color: 'red' }),
+                stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+            })
+        });
+
+        // Estilo para etiquetas sobre los polígonos
+        this.labelStyle = new ol.style.Style({
+            text: new ol.style.Text({
+                text: '', // Se asigna dinámicamente
+                font: 'bold 14px Arial',
+                fill: new ol.style.Fill({ color: '#000000' }),
+                stroke: new ol.style.Stroke({ color: '#04a3072b', width: 3 }),
+                offsetY: -20,
+                overflow: true,
+                backgroundFill: new ol.style.Fill({
+                    color: 'rgba(242, 242, 242, 0.52)'
+                }),
+                padding: [3, 8, 3, 8]
+            })
+        });
 
         // Capa vectorial con soporte para etiquetas
         const vectorLayer = new ol.layer.Vector({

@@ -28,9 +28,9 @@
         
 
         <div class="min-h-screen flex items-center justify-center p-2 sm:p-3 md:p-4">
-            <div class="w-full max-w-xs sm:max-w-sm md:max-w-md ">
+            
                 {{ $slot }}
-            </div>
+           
         </div>
         
     </body>
