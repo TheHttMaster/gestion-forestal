@@ -12,7 +12,8 @@ use App\Http\Controllers\ForestController;
 
 
 // 🔥 RUTA TEMPORAL PARA EJECUTAR SEEDERS - ELIMINAR DESPUÉS
-Route::get('/run-seeders', function() {
+//CODIGO PARA EJECUTAR LOS SEEDER EN LA BASE DE DATOS
+/* Route::get('/run-seeders', function() {
     try {
         \Artisan::call('db:seed', ['--force' => true]);
         $userCount = \App\Models\User::count();
@@ -20,7 +21,7 @@ Route::get('/run-seeders', function() {
     } catch (\Exception $e) {
         return "❌ Error: " . $e->getMessage();
     }
-});
+}); */
 
 // Rutas públicas
 Route::get('/', function () {
