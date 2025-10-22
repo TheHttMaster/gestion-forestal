@@ -8,10 +8,12 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/styleDas.css',
                 'resources/css/DataTableCss.css',
-                
+
                 'resources/img/user.jpg',
 
                 'resources/js/app.js',
+                'resources/js/jquery-3.7.1.min.js',
+                'resources/js/DataTableJs.js',
                 'resources/js/DashFunctions.js'
             ],
             refresh: true,
