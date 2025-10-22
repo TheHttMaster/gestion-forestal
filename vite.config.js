@@ -5,16 +5,16 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
+                // SOLO CSS
                 'resources/css/app.css',
-                'resources/css/DataTableCss.css',
                 'resources/css/styleDas.css', 
-
-                'resources/img/user.jpg', 
-
+                'resources/css/DataTableCss.css',
+                
+                // SOLO JS - EN ORDEN CORRECTO
+                'resources/js/app.js',           // PRIMERO - el principal
                 'resources/js/jquery-3.7.1.min.js',
-                'resources/js/DashFunctions.js', 
                 'resources/js/DataTableJs.js',
-                'resources/js/app.js' 
+                'resources/js/DashFunctions.js'  // ÚLTIMO - depende de los otros
             ],
             refresh: true,
         }),
