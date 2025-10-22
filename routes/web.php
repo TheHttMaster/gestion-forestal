@@ -10,10 +10,24 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\DeforestationController;
 use App\Http\Controllers\ForestController;
 
+
+// 🔥 RUTA TEMPORAL PARA EJECUTAR SEEDERS - ELIMINAR DESPUÉS
+Route::get('/run-seeders', function() {
+    try {
+        \Artisan::call('db:seed', ['--force' => true]);
+        $userCount = \App\Models\User::count();
+        return "✅ Seeders ejecutados exitosamente. Usuarios en la base de datos: $userCount";
+    } catch (\Exception $e) {
+        return "❌ Error: " . $e->getMessage();
+    }
+});
+
 // Rutas públicas
 Route::get('/', function () {
     return view('auth.login');
 });
+
+
 
 // Rutas accesibles para cualquier usuario autenticado (básico o administrador)
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -44,16 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('providers.force-delete');
     });
 
-        // SOLO TEMPORAL - ELIMINAR DESPUÉS
-    Route::get('/run-seeders', function() {
-        try {
-            \Artisan::call('db:seed', ['--force' => true]);
-            $userCount = \App\Models\User::count();
-            return "✅ Seeders ejecutados. Usuarios en BD: $userCount";
-        } catch (\Exception $e) {
-            return "❌ Error: " . $e->getMessage();
-        }
-    });
+    
 
 
     // Rutas para gestión de áreas
