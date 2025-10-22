@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\URL; // Add this line
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Spatie\Activitylog\Models\Activity;
