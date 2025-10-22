@@ -16,7 +16,7 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
-            colors: { // Añade tus colores personalizados aquí
+            colors: { // Añade tus colores personalizados aquí.
                 custom: {
                     dark: '#0e1013ff',
                     light: '#e7e5db',
