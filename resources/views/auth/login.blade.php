@@ -52,7 +52,7 @@
 
             <!-- Contenido del card -->
             <div class=" px-3 sm:px-4 md:px-5 sm:pb-4 ">
-                <form method="POST" class="space-y-2.5 sm:space-y-3 md:space-y-5" action="{{ route('login') }}">
+                <form method="POST" id="loginForm" class="space-y-2.5 sm:space-y-3 md:space-y-5" action="{{ route('login') }}">
                     @csrf
                     <!-- Campo de email -->
                     <div class="space-y-1 sm:space-y-1.5">
@@ -156,7 +156,7 @@
  
 
     <script>
-        // Gestión del tema (modo oscuro/claro)
+       // Gestión del tema (modo oscuro/claro)
         class ThemeManager {
             constructor() {
                 this.theme = localStorage.getItem('theme') || 'light';
@@ -175,12 +175,12 @@
 
                 if (this.theme === 'dark') {
                     html.classList.add('dark');
-                    sunIcon.classList.add('hidden');
-                    moonIcon.classList.remove('hidden');
+                    if (sunIcon) sunIcon.classList.add('hidden');
+                    if (moonIcon) moonIcon.classList.remove('hidden');
                 } else {
                     html.classList.remove('dark');
-                    sunIcon.classList.remove('hidden');
-                    moonIcon.classList.add('hidden');
+                    if (sunIcon) sunIcon.classList.remove('hidden');
+                    if (moonIcon) moonIcon.classList.add('hidden');
                 }
             }
 
@@ -191,118 +191,118 @@
                 
                 // Añadir feedback visual al cambiar tema
                 const button = document.getElementById('themeToggle');
-                button.classList.add('scale-95');
-                setTimeout(() => {
-                    button.classList.remove('scale-95');
-                }, 150);
+                if (button) {
+                    button.classList.add('scale-95');
+                    setTimeout(() => {
+                        button.classList.remove('scale-95');
+                    }, 150);
+                }
             }
 
             setupToggle() {
                 const toggleButton = document.getElementById('themeToggle');
-                toggleButton.addEventListener('click', () => {
-                    this.toggleTheme();
-                });
+                if (toggleButton) {
+                    toggleButton.addEventListener('click', () => {
+                        this.toggleTheme();
+                    });
+                }
             }
         }
-
-        // Inicializar el gestor de temas cuando se carga la página
-        document.addEventListener('DOMContentLoaded', function() {
-            new ThemeManager();
-        });
 
         // Funcionalidad para mostrar/ocultar contraseña
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const eyeOff = document.getElementById('eyeOff');
-            const eyeOn = document.getElementById('eyeOn');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeOff.classList.add('hidden');
-                eyeOn.classList.remove('hidden');
-            } else {
-                passwordInput.type = 'password';
-                eyeOff.classList.remove('hidden');
-                eyeOn.classList.add('hidden');
+        function setupPasswordToggle() {
+            const toggleButton = document.getElementById('togglePassword');
+            if (toggleButton) {
+                toggleButton.addEventListener('click', function() {
+                    const passwordInput = document.getElementById('password');
+                    const eyeOff = document.getElementById('eyeOff');
+                    const eyeOn = document.getElementById('eyeOn');
+                    
+                    if (passwordInput && passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        if (eyeOff) eyeOff.classList.add('hidden');
+                        if (eyeOn) eyeOn.classList.remove('hidden');
+                    } else if (passwordInput) {
+                        passwordInput.type = 'password';
+                        if (eyeOff) eyeOff.classList.remove('hidden');
+                        if (eyeOn) eyeOn.classList.add('hidden');
+                    }
+                });
             }
-        });
+        }
 
         // Manejo del formulario de login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const remember = document.getElementById('remember').checked;
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            
-            // Feedback visual del botón
-            const submitButton = e.target.querySelector('button[type="submit"]');
-            const originalText = submitButton.textContent;
-            submitButton.textContent = 'Iniciando...';
-            submitButton.disabled = true;
-            
-            // Simular proceso de login
-            setTimeout(() => {
-                submitButton.textContent = originalText;
-                submitButton.disabled = false;
-                
-                // Aquí iría la lógica de autenticación
-                console.log('Login attempt:', { 
-                    email, 
-                    password, 
-                    remember, 
-                    theme: currentTheme,
-                    screenSize: window.innerWidth + 'x' + window.innerHeight
+        function setupLoginForm() {
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    // No prevenir el comportamiento por defecto para que Laravel maneje la autenticación
+                    // Solo añadir feedback visual
+                    
+                    const submitButton = e.target.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        const originalText = submitButton.textContent;
+                        submitButton.textContent = 'Iniciando...';
+                        submitButton.disabled = true;
+                        
+                        // Restaurar el botón después de 3 segundos por si hay error
+                        setTimeout(() => {
+                            submitButton.textContent = originalText;
+                            submitButton.disabled = false;
+                        }, 3000);
+                    }
                 });
-                
-                // Ejemplo de validación simple
-                if (email && password) {
-                    alert(`✅ Datos capturados correctamente\n📱 Pantalla: ${window.innerWidth}px\n🎨 Tema: ${currentTheme}`);
-                } else {
-                    alert('❌ Por favor, completa todos los campos.');
-                }
-            }, 1000);
-        });
-
-        // Efecto de focus mejorado para los inputs
-        const inputs = document.querySelectorAll('input[type="email"], input[type="password"]');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.classList.add('ring-2');
-                this.parentElement.classList.add('transform', 'scale-[1.01]');
-            });
-            
-            input.addEventListener('blur', function() {
-                this.classList.remove('ring-2');
-                this.parentElement.classList.remove('transform', 'scale-[1.01]');
-            });
-        });
-
-        // Detectar preferencia del sistema si no hay tema guardado
-        if (!localStorage.getItem('theme')) {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (prefersDark) {
-                localStorage.setItem('theme', 'dark');
             }
         }
 
-        // Mejorar la experiencia táctil en dispositivos móviles
-        if ('ontouchstart' in window) {
-            document.body.classList.add('touch-device');
-            
-            // Añadir estilos específicos para dispositivos táctiles
-            const style = document.createElement('style');
-            style.textContent = `
-                .touch-device button:active {
-                    transform: scale(0.98);
-                }
-                .touch-device input:focus {
-                    transform: scale(1.01);
-                }
-            `;
-            document.head.appendChild(style);
+        // Efecto de focus mejorado para los inputs
+        function setupInputEffects() {
+            const inputs = document.querySelectorAll('input[type="email"], input[type="password"]');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.classList.add('ring-2');
+                    this.parentElement.classList.add('transform', 'scale-[1.01]');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.classList.remove('ring-2');
+                    this.parentElement.classList.remove('transform', 'scale-[1.01]');
+                });
+            });
         }
+
+        // Inicializar todo cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            new ThemeManager();
+            setupPasswordToggle();
+            setupLoginForm();
+            setupInputEffects();
+
+            // Detectar preferencia del sistema si no hay tema guardado
+            if (!localStorage.getItem('theme')) {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+
+            // Mejorar la experiencia táctil en dispositivos móviles
+            if ('ontouchstart' in window) {
+                document.body.classList.add('touch-device');
+                
+                // Añadir estilos específicos para dispositivos táctiles
+                const style = document.createElement('style');
+                style.textContent = `
+                    .touch-device button:active {
+                        transform: scale(0.98);
+                    }
+                    .touch-device input:focus {
+                        transform: scale(1.01);
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
     </script>
 </x-guest-layout>
 
