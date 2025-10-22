@@ -8,6 +8,9 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/styleDas.css',
                 'resources/css/DataTableCss.css',
+                
+                'resources/img/user.jpg',
+
                 'resources/js/app.js',
                 'resources/js/DashFunctions.js'
             ],
