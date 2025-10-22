@@ -7,6 +7,7 @@
     "license": "MIT",
    "require": {
         "php": "^8.2",
+        "ext-bcmath": "*",
         "guzzlehttp/guzzle": "^7.9",
         "laravel-lang/common": "^6.7",
         "laravel-lang/routes": "^1.9.1",
