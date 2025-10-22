@@ -16,15 +16,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create()
         User::create([
-            'name' => 'Admin2',
-            'email' => 'admin2@gmail.com',
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
             'password' => Hash::make('12345678'), // Hash con mayúscula
             'role' => 'administrador',
         ]);
 
          User::create([
             'name' => 'htt',
-            'email' => 'diperishilla2468@gmail.com',
+            'email' => 'dipe@gmail.com',
             'password' => Hash::make('12345679'), // Hash con mayúscula
             'role' => 'administrador',
         ]);
