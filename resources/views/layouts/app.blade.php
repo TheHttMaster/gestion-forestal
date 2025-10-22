@@ -18,8 +18,7 @@
     @vite([
         'resources/css/app.css', 
         'resources/css/styleDas.css', 
-        'resources/css/DataTableCss.css',
-        'resources/js/app.js'
+        'resources/css/DataTableCss.css'
     ])
 
     {{-- Estilos y scripts específicos del head --}}
@@ -163,7 +162,7 @@
         </main>
     </div>
    
-    <!-- Scripts locales -->
+    <!-- Scripts locales .-->
     @vite([
         'resources/js/jquery-3.7.1.min.js',
         'resources/js/app.js', 
