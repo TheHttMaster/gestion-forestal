@@ -12,21 +12,22 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
+   public function run(): void
     {
-        // User::factory(10)->create()
         User::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
-            'password' => Hash::make('12345678'), // Hash con mayúscula
+            'password' => Hash::make('12345678'),
             'role' => 'administrador',
+            'email_verified_at' => now(), // ← AGREGAR ESTA LÍNEA
         ]);
 
-         User::create([
+        User::create([
             'name' => 'htt',
-            'email' => 'dipe@gmail.com',
-            'password' => Hash::make('12345679'), // Hash con mayúscula
+            'email' => 'dipe@gmail.com', 
+            'password' => Hash::make('12345679'),
             'role' => 'administrador',
+            'email_verified_at' => now(), // ← AGREGAR ESTA LÍNEA
         ]);
     }
 }
