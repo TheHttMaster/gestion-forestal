@@ -31,39 +31,7 @@
                                 $i = 1;
                             @endphp
                             @foreach($users as $user)
-                                <tr id="disabled-user-row-{{ $user->id }}" 
-                                  x-data="{
-                                    
-                                    async enableUser() {
-                                        
-                                        try {
-                                            const response = await fetch('{{ route('admin.users.enable', $user) }}', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                    'X-Requested-With': 'XMLHttpRequest',
-                                                    'Accept': 'application/json'
-                                                }
-                                            });
-                                            
-                                            const data = await response.json();
-                                            
-                                            if (data.success) {
-                                                const table = $('#users-table').DataTable();
-                                                const row = $('#disabled-user-row-{{ $user->id }}');
-                                                table.row(row).remove().draw();
-                                                
-                                                showCustomAlert('success', '¡Éxito!', data.message);
-                                            } else {
-                                                showCustomAlert('error', 'Error', data.message);
-                                            }
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            showCustomAlert('error', 'Error', 'Ocurrió un error al habilitar el usuario.');
-                                        }
-                                    }
-                                }">
-                               
+                                <tr id="disabled-user-row-{{ $user->id }}">
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-400">{{ $i++ }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-400">{{ $user->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-400">{{ $user->email }}</td>
@@ -71,7 +39,15 @@
                                         <form action="{{ route('admin.users.update-role', $user) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
-                                            <select name="role" onchange="this.form.submit()" class="block w-full rounded-md bg-gray-200  border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                            <select name="role" 
+                                                    onchange="handleRoleChange(
+                                                        this, 
+                                                        {{ $user->id }}, 
+                                                        '{{ $user->name }}', 
+                                                        false, 
+                                                        '{{ $user->role }}'
+                                                    )"
+                                                    class="block w-full rounded-md bg-gray-200 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                                 <option value="basico" @if ($user->role === 'basico') selected @endif>Básico</option>
                                                 <option value="administrador" @if ($user->role === 'administrador') selected @endif>Administrador</option>
                                             </select>
@@ -79,13 +55,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <!-- Botón Habilitar -->
-                                        <!-- Botón Habilitar -->
-                                       <button x-on:click="
-                                            const result = await showCustomConfirmation(true, 'Vas a habilitar al usuario: {{ $user->name }}');
-                                            if (result.isConfirmed) {
-                                                enableUser();
-                                            }
-                                        " 
+                                        <button onclick="handleUserEnable({{ $user->id }}, '{{ $user->name }}')" 
                                         class="inline-flex items-center text-green-600 hover:text-green-900 dark:text-green-500 dark:hover:text-green-300 transform hover:-translate-y-0.5 transition-all duration-750 ease-out"
                                         title="Habilitar">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-check-icon w-7 h-7 lucide-user-check">

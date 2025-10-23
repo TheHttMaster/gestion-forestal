@@ -26,7 +26,7 @@ window.showCustomAlert = function(icon, title, text) {
         icon: icon,
         title: title,
         showConfirmButton: false,
-        timer: 1600,
+        timer: 2600,
         timerProgressBar: true,
         toast: true,
         width: '380px',
@@ -54,29 +54,22 @@ window.showCustomAlert = function(icon, title, text) {
 };
 
 // Hacer la función de confirmación disponible globalmente
-window.showCustomConfirmation = function(isEnable = false, customMessage = null, customConfirmText = null) {
+window.showCustomConfirmation = function(isEnable = false, customMessage = null) {
     const title = '¿Estás seguro?';
-    
-    // El texto del mensaje usa customMessage si se proporciona, o el predeterminado
     const message = customMessage || (isEnable 
         ? '¡Esta acción habilitará al usuario!' 
         : '¡Esta acción deshabilitará al usuario!');
-    
-    // CAMBIO CLAVE: Usar customConfirmText si se proporciona
-    const confirmText = customConfirmText || (isEnable ? 'Sí, habilitar' : 'Sí, deshabilitar'); 
-    
+    const confirmText = isEnable ? 'Sí, habilitar' : 'Sí, deshabilitar';
     const iconColor = '#f59f0bea';
     
     return Swal.fire({
         title: title,
         html: `<div class="text-center">
-                   <p class="text-gray-700 dark:text-gray-300 mb-4">${message}</p>
-                 </div>`,
+                 <p class="text-gray-700 dark:text-gray-300 mb-4">${message}</p>
+               </div>`,
         icon: 'warning',
         iconColor: iconColor,
         showCancelButton: true,
-        
-        // Usamos la variable 'confirmText' dinámica
         confirmButtonText: confirmText,
         cancelButtonText: 'Cancelar',
         customClass: {
@@ -115,3 +108,177 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+// FUNCIÓN PARA DESHABILITAR USUARIOS
+window.handleUserDisable = async function(userId, userName) {
+    const result = await window.showCustomConfirmation(false, `Vas a deshabilitar al usuario: ${userName}`);
+    
+    if (result.isConfirmed) {
+        try {
+            const response = await fetch(`/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Eliminar la fila de la tabla
+                const row = document.getElementById(`user-row-${userId}`);
+                if (row) {
+                    row.remove();
+                }
+                showCustomAlert('success', '¡Éxito!', data.message);
+            } else {
+                showCustomAlert('error', 'Error', data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showCustomAlert('error', 'Error', 'Ocurrió un error al deshabilitar el usuario.');
+        }
+    }
+};
+
+// FUNCIÓN PARA MANEJAR CAMBIOS DE ROL CON AJAX
+window.handleRoleChange = async function(selectElement, userId, userName, isSelf, originalRole) {
+    const newRole = selectElement.value;
+    const roleText = (newRole === 'administrador') ? 'Administrador' : 'Básico';
+    
+    // Guardar el valor actual para comparación
+    const currentOriginalRole = originalRole;
+    
+    if (newRole === currentOriginalRole) {
+        return;
+    }
+
+    let customMessage;
+    let customConfirmText = 'Cambiar';
+
+    if (isSelf) {
+        customMessage = `<b>¡ATENCIÓN!</b> Al cambiar tu propio rol, tu <b>acceso</b> y <b>permisos</b>
+            dentro del sistema se verán <b>afectados</b>. <b>¿Estás seguro de que quieres continuar?</b>`;
+        customConfirmText = 'Cambiar';
+    } else {
+        customMessage = `¿Estás seguro de que quieres cambiar el rol de 
+            <b>${userName}</b> a <b>${roleText}</b>?`;
+    }
+
+    const result = await window.showCustomConfirmation(false, customMessage, customConfirmText);
+
+    if (result.isConfirmed) {
+        if (isSelf && newRole === 'basico' && currentOriginalRole === 'administrador') {
+            const permissions = {
+                'administrador': 'Acceso total a la administración de usuarios, auditoría, y gestión completa de datos.',
+                'basico': 'Acceso restringido a la visualización de datos y reportes personales.'
+            };
+            
+            const lostAccess = permissions['administrador'];
+            
+            const secondMessage = `
+                <b>ADVERTENCIA FINAL:</b> Estás cambiando tu rol de <b>Administrador</b> a <b>Básico</b>.
+                Estás a punto de <b>perder el siguiente acceso</b>:
+                
+                <p class='mt-2 p-2 bg-red-100 dark:bg-red-900/50 rounded-lg text-sm'>
+                    ${lostAccess}
+                </p>
+                
+                <b>¿CONFIRMAS BAJAR TUS PROPIOS PERMISOS?</b>
+            `;
+            
+            const secondResult = await window.showCustomConfirmation(true, secondMessage, 'Cambiar');
+            
+            if (!secondResult.isConfirmed) {
+                selectElement.value = currentOriginalRole;
+                return;
+            }
+        }
+        
+        // ENVÍO CON AJAX PARA EVITAR RECARGA - USANDO MÉTODO PATCH
+        try {
+            // Construir la URL correctamente
+            const url = `/admin/users/${userId}/update-role`;
+            
+            console.log('Enviando petición PATCH a:', url); // Para debugging
+            
+            const response = await fetch(url, {
+                method: 'PATCH', // MÉTODO CORRECTO
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    role: newRole
+                })
+            });
+            
+            // Verificar si la respuesta es exitosa
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error ${response.status}: ${response.statusText}. ${errorText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // ✅ ACTUALIZAR EL ORIGINALROLE PARA FUTURAS COMPARACIONES
+                // Esto asegura que en el próximo cambio se compare con el valor correcto
+                originalRole = newRole;
+                
+                showCustomAlert('success', '¡Éxito!', data.message);
+                // El rol se actualizó correctamente, no necesitamos hacer nada más
+            } else {
+                throw new Error(data.message || 'Error al actualizar el rol');
+            }
+            
+        } catch (error) {
+            console.error('Error en la petición:', error);
+            // Revertir el select al valor original en caso de error
+            selectElement.value = currentOriginalRole;
+            showCustomAlert('error', 'Error', error.message || 'Ocurrió un error al actualizar el rol.');
+        }
+        
+    } else {
+        // Si cancela la primera modal, restablece el valor del select
+        selectElement.value = currentOriginalRole;
+    }
+};
+
+// FUNCIÓN PARA HABILITAR USUARIOS DESHABILITADOS
+window.handleUserEnable = async function(userId, userName) {
+    const result = await window.showCustomConfirmation(true, `Vas a habilitar al usuario: ${userName}`);
+    
+    if (result.isConfirmed) {
+        try {
+            const response = await fetch(`/admin/users/${userId}/enable`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Eliminar la fila de la tabla
+                const row = document.getElementById(`disabled-user-row-${userId}`);
+                if (row) {
+                    row.remove();
+                }
+                showCustomAlert('success', '¡Éxito!', data.message);
+            } else {
+                showCustomAlert('error', 'Error', data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showCustomAlert('error', 'Error', 'Ocurrió un error al habilitar el usuario.');
+        }
+    }
+};

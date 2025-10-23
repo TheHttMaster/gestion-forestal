@@ -51,48 +51,51 @@ class UserController extends Controller
         return view('admin.users.edit', compact('user'));
     }
     
-    public function update(Request $request, User $user)
+    public function updateUserRole(Request $request, $userId)
     {
-        $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
+        $request->validate([
             'role' => ['required', 'string', 'in:basico,administrador'],
-        ];
-    
-        /* // Agregar validación condicional para password
-        if ($request->filled('password')) {
-            $rules['password'] = ['confirmed', Rules\Password::defaults()];
-        }
- */
-        $request->validate($rules);
+        ]);
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-        ];
+        try {
+            // Buscar el usuario incluyendo deshabilitados
+            $user = User::withTrashed()->findOrFail($userId);
+            
+            $user->update(['role' => $request->role]);
 
-        /* // Actualizar password solo si se proporciona
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        } */
+            // Respuesta para AJAX
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Rol de usuario actualizado exitosamente.'
+                ]);
+            }
 
-        $user->update($data);
-
-       /*  activity()
-            ->causedBy(auth()->user())
-            ->performedOn($user)
-            ->log('actualizó el usuario');
- */
-        // Usar with() en lugar de session()->flash()
-        return redirect()->route('admin.users.index')
-            ->with('swal', [
+            // Respuesta tradicional para navegación normal
+            return back()->with('swal', [
                 'icon' => 'success',
                 'title' => 'Éxito',
-                'text' => 'Usuario actualizado exitosamente.'
+                'text' => 'Rol de usuario actualizado exitosamente.'
             ]);
+            
+        } catch (\Exception $e) {
+            // Manejo de errores para AJAX
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al actualizar el rol: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            // Manejo de errores tradicional
+            return back()->with('swal', [
+                'icon' => 'error',
+                'title' => 'Error',
+                'text' => 'Error al actualizar el rol: ' . $e->getMessage()
+            ]);
+        }
     }
-
+    
    public function destroy(Request $request, User $user)
     {
         // No permitimos que un usuario se elimine a sí mismo
@@ -153,23 +156,7 @@ class UserController extends Controller
             ]);
     }
 
-    public function updateUserRole(Request $request, $userId)
-    {
-        $request->validate([
-            'role' => ['required', 'string', 'in:basico,administrador'],
-        ]);
-
-        // Buscar el usuario incluyendo deshabilitados
-        $user = User::withTrashed()->findOrFail($userId);
-        
-        $user->update(['role' => $request->role]);
-
-        return back()->with('swal', [
-            'icon' => 'success',
-            'title' => 'Éxito',
-            'text' => 'Rol de usuario actualizado exitosamente.'
-        ]);
-    }
+   
 
     public function listDisabledUsers()
     {
