@@ -27,56 +27,76 @@
                     <h3 class="sidebar-text text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider" style="margin-bottom:1rem;">Aplicación</h3>
                     <ul style="list-style:none;padding:0;margin:0;">
                         <li>
-                            <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house">
-                                    <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                                </svg>
-                                <span class="sidebar-text">Inicio</span>
-                            </a>
+                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
+                                <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                        <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+                                        <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                    </svg>
+                                    <span class="sidebar-text">
+                                        Inicio
+                                    </span>
+                                </a>
+                            </div>
                         </li>
                         <li>
-                            <a href="{{ route('deforestation.create') }}" class="nav-item {{ request()->routeIs('deforestation.create') ? 'active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column-icon lucide-chart-column">
-                                    <path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
-                                </svg>
-                                <span class="sidebar-text">Analisis</span>
-                            </a>
+                            <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2" >
+                                <a href="{{ route('deforestation.create') }}" class="nav-item {{ request()->routeIs('deforestation.create') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column-icon lucide-chart-column transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                        <path d="M3 3v16a2 2 0 0 0 2 2h16"/>
+                                        <path d="M18 17V9"/>
+                                        <path d="M13 17V5"/>
+                                        <path d="M8 17v-3"/>
+                                    </svg>
+                                    <span class="sidebar-text">
+                                        Analisis
+                                    </span>
+                                </a>
+                            </div>
                         </li>
                         <li>
-                            <a href="{{ route('providers.index') }}" class="nav-item {{ request()->routeIs('providers.index') ? 'active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout">
-                                    <path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>
-                                </svg>
-                                <span class="sidebar-text">Proveedores</span>
-                            </a>
+                            <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
+                                <a href="{{ route('providers.index') }}" class="nav-item {{ request()->routeIs('providers.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                        <path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>
+                                    </svg>
+                                    <span class="sidebar-text">Proveedores</span>
+                                </a>
+                            </div>
                         </li>
                         <li>
-                            <a href="{{ route('areas.index') }}" class="nav-item {{ request()->routeIs('areas.index') ? 'active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout">
-                                    <path d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 0 1-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0 1 12 0"/><circle cx="12" cy="8" r="2"/><path d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712"/>
-                                </svg>
-                                <span class="sidebar-text whitespace-nowrap">Areas de cultivo</span>
-                            </a>
+                            <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
+                                <a href="{{ route('areas.index') }}" class="nav-item {{ request()->routeIs('areas.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                        <path d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 0 1-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0 1 12 0"/><circle cx="12" cy="8" r="2"/><path d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712"/>
+                                    </svg>
+                                    <span class="sidebar-text whitespace-nowrap">Areas de cultivo</span>
+                                </a>
+                            </div>
                         </li>
 
                         {{-- Este enlace solo se mostrará para los administradores --}}
                         @if (auth()->check() && auth()->user()->role === 'administrador')
                    
                         <li>
-                            <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-icon lucide-users">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/>
-                                </svg>
-                                <span class="sidebar-text">Usuarios</span>
-                            </a>
+                            <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
+                                <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-icon lucide-users transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/>
+                                    </svg>
+                                    <span class="sidebar-text">Usuarios</span>
+                                </a>
+                            </div>
                         </li>
                         <li>
-                            <a href="{{ route('admin.audit') }}" class="nav-item {{ request()->routeIs('admin.audit') ? 'active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-clock-icon lucide-file-clock">
-                                    <path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M8 14v2.2l1.6 1"/><circle cx="8" cy="16" r="6"/>
-                                </svg>
-                                <span class="sidebar-text">Historial</span>
-                            </a>
+                            <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
+                                <a href="{{ route('admin.audit') }}" class="nav-item {{ request()->routeIs('admin.audit') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-clock-icon lucide-file-clock transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                        <path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M8 14v2.2l1.6 1"/><circle cx="8" cy="16" r="6"/>
+                                    </svg>
+                                    <span class="sidebar-text">Historial</span>
+                                </a>
+                            </div>
                         </li>
                        
                         @endif
@@ -86,8 +106,8 @@
             </nav>
             <!-- Sidebar Footer -->
             <div class="sidebar-header" style="padding-bottom:2rem;">
-                <a href="#" class="nav-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-icon lucide-settings">
+                <a href="#" class="nav-item transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-icon lucide-settings transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
                         <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>
                     </svg>
                     <span class="sidebar-text">Configuración.X</span>
