@@ -7,15 +7,34 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth; // <-- Asegúrate de tener esta importación
 
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource, priorizando el usuario actual.
      */
     public function index()
     {
-        $users = User::paginate(15);
+        // 1. Obtener el ID del usuario autenticado
+        $currentUserId = Auth::id();
+        
+        // 2. Obtener los demás usuarios (excluyendo el actual) y paginarlos
+        $otherUsersPaginator = User::where('id', '!=', $currentUserId)
+                                   ->paginate(15);
+
+        // 3. Obtener el objeto del usuario actual
+        $currentUser = User::find($currentUserId);
+        
+        // 4. Insertar el usuario actual al comienzo de la colección de la página actual
+        // Solo lo hacemos si estamos en la primera página para evitar duplicados en otras páginas.
+        if ($otherUsersPaginator->currentPage() === 1 && $currentUser) {
+            $otherUsersPaginator->getCollection()->prepend($currentUser);
+        }
+
+        // 5. La variable $users ahora contiene el paginador con el usuario actual primero (en la pág. 1)
+        $users = $otherUsersPaginator;
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -113,7 +132,7 @@ class UserController extends Controller
 
    public function enableUser(Request $request, $userId)
     {
-        // 🔥 USAR withTrashed() para buscar usuarios deshabilitados
+        // USAR withTrashed() para buscar usuarios deshabilitados
         $user = User::withTrashed()->findOrFail($userId);
         
         $user->restore();

@@ -55,22 +55,29 @@ window.showCustomAlert = function(icon, title, text) {
 };
 
 // Hacer la función de confirmación disponible globalmente
-window.showCustomConfirmation = function(isEnable = false, customMessage = null) {
+window.showCustomConfirmation = function(isEnable = false, customMessage = null, customConfirmText = null) {
     const title = '¿Estás seguro?';
+    
+    // El texto del mensaje usa customMessage si se proporciona, o el predeterminado
     const message = customMessage || (isEnable 
         ? '¡Esta acción habilitará al usuario!' 
         : '¡Esta acción deshabilitará al usuario!');
-    const confirmText = isEnable ? 'Sí, habilitar' : 'Sí, deshabilitar';
+    
+    // CAMBIO CLAVE: Usar customConfirmText si se proporciona
+    const confirmText = customConfirmText || (isEnable ? 'Sí, habilitar' : 'Sí, deshabilitar'); 
+    
     const iconColor = '#f59f0bea';
     
     return Swal.fire({
         title: title,
         html: `<div class="text-center">
-                 <p class="text-gray-700 dark:text-gray-300 mb-4">${message}</p>
-               </div>`,
+                   <p class="text-gray-700 dark:text-gray-300 mb-4">${message}</p>
+                 </div>`,
         icon: 'warning',
         iconColor: iconColor,
         showCancelButton: true,
+        
+        // Usamos la variable 'confirmText' dinámica
         confirmButtonText: confirmText,
         cancelButtonText: 'Cancelar',
         customClass: {

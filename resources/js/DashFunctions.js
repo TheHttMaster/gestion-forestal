@@ -77,6 +77,8 @@ function toggleDarkMode() {
     updateMobileIcon(!isDark);
 }
 
+
+
 /**
  * Actualiza el tamaño del mapa tras cambios visuales
  */

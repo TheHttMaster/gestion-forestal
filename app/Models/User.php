@@ -55,6 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail{
     {
         return LogOptions::defaults()
             ->logOnly(['name', 'email']) // Solo registra cambios en el nombre y email
+            ->logExcept(['remember_token', 'role'])
             ->setDescriptionForEvent(fn(string $eventName) => "El usuario ha sido {$eventName}");
     }
 }
