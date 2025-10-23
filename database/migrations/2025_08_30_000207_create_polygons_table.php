@@ -12,7 +12,7 @@ class CreatePolygonsTable extends Migration
             $table->id();
             $table->string('name'); // Nombre del área de estudio
             $table->text('description')->nullable(); // Descripción opcional
-            $table->geometry('geometry'); // Almacena el polígono en formato PostGIS
+            $table->json('geometry'); // Almacena el polígono en formato PostGIS
             $table->timestamps();
         });
     }

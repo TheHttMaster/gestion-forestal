@@ -8,6 +8,7 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './resources/js/**/*.js'
     ],
 
     theme: {
@@ -15,7 +16,7 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
-            colors: { // Añade tus colores personalizados aquí
+            colors: { // Añade tus colores personalizados aquí.
                 custom: {
                     dark: '#0e1013ff',
                     light: '#e7e5db',

@@ -152,7 +152,7 @@
                     <div class="relative">
                         <button id="userMenuToggle" class="flex items-center space-x-2 md:space-x-3 p-1 md:p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700/50 hover-lift">
                             <img 
-                                src="{{ Vite::asset('resources/img/01db27489ea9a74e7cfdcfb4220832ae.jpg') }}" 
+                                src="{{ Vite::asset('resources/img/user.jpg') }}" 
                                 alt="Foto de perfil"
                                 class="w-10 h-10 rounded-full"
                             >
