@@ -143,14 +143,14 @@ window.handleUserDisable = async function(userId, userName) {
     }
 };
 
-// FUNCIÓN PARA MANEJAR CAMBIOS DE ROL CON AJAX
-window.handleRoleChange = async function(selectElement, userId, userName, isSelf, originalRole) {
+// FUNCIÓN CORREGIDA PARA MANEJAR CAMBIOS DE ROL CON AJAX
+window.handleRoleChange = async function(selectElement, userId, userName, isSelf, originalRole = null) {
+    // Obtener el rol original del atributo data-original-role (más confiable)
+    const currentOriginalRole = originalRole || selectElement.getAttribute('data-original-role');
     const newRole = selectElement.value;
     const roleText = (newRole === 'administrador') ? 'Administrador' : 'Básico';
     
-    // Guardar el valor actual para comparación
-    const currentOriginalRole = originalRole;
-    
+    // Si el nuevo rol es igual al original, no hacer nada
     if (newRole === currentOriginalRole) {
         return;
     }
@@ -192,6 +192,7 @@ window.handleRoleChange = async function(selectElement, userId, userName, isSelf
             const secondResult = await window.showCustomConfirmation(true, secondMessage, 'Cambiar');
             
             if (!secondResult.isConfirmed) {
+                // Restablecer al valor original
                 selectElement.value = currentOriginalRole;
                 return;
             }
@@ -199,13 +200,10 @@ window.handleRoleChange = async function(selectElement, userId, userName, isSelf
         
         // ENVÍO CON AJAX PARA EVITAR RECARGA - USANDO MÉTODO PATCH
         try {
-            // Construir la URL correctamente
             const url = `/admin/users/${userId}/update-role`;
             
-            console.log('Enviando petición PATCH a:', url); // Para debugging
-            
             const response = await fetch(url, {
-                method: 'PATCH', // MÉTODO CORRECTO
+                method: 'PATCH',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'X-Requested-With': 'XMLHttpRequest',
@@ -217,7 +215,6 @@ window.handleRoleChange = async function(selectElement, userId, userName, isSelf
                 })
             });
             
-            // Verificar si la respuesta es exitosa
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Error ${response.status}: ${response.statusText}. ${errorText}`);
@@ -226,12 +223,10 @@ window.handleRoleChange = async function(selectElement, userId, userName, isSelf
             const data = await response.json();
             
             if (data.success) {
-                // ✅ ACTUALIZAR EL ORIGINALROLE PARA FUTURAS COMPARACIONES
-                // Esto asegura que en el próximo cambio se compare con el valor correcto
-                originalRole = newRole;
+                // ✅ ACTUALIZAR EL ATRIBUTO data-original-role con el nuevo valor
+                selectElement.setAttribute('data-original-role', newRole);
                 
                 showCustomAlert('success', '¡Éxito!', data.message);
-                // El rol se actualizó correctamente, no necesitamos hacer nada más
             } else {
                 throw new Error(data.message || 'Error al actualizar el rol');
             }
@@ -244,7 +239,7 @@ window.handleRoleChange = async function(selectElement, userId, userName, isSelf
         }
         
     } else {
-        // Si cancela la primera modal, restablece el valor del select
+        // Si cancela la primera modal, restablece el valor del select al original
         selectElement.value = currentOriginalRole;
     }
 };
