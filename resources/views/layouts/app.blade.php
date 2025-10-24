@@ -17,9 +17,10 @@
     <!-- Estilos locales -->
     @vite([
         'resources/css/app.css', 
-        'resources/css/styleDas.css', 
-        'resources/css/DataTableCss.css'
+        'resources/css/styleDas.css'
     ])
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
 
     {{-- Estilos y scripts específicos del head --}}
     @yield('head-styles')
@@ -164,9 +165,7 @@
    
     <!-- Scripts locales .-->
     @vite([
-        'resources/js/jquery-3.7.1.min.js',
-        'resources/js/app.js', 
-        'resources/js/DataTableJs.js',
+        'resources/js/app.js',
         'resources/js/DashFunctions.js'
     ])
     
@@ -220,5 +219,8 @@
     @endif
     
     @livewireScripts
+    
 </body>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
 </html>
