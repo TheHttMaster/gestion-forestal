@@ -40,17 +40,18 @@
                                             @csrf
                                             @method('PATCH')
                                             <select name="role" 
-                                                    onchange="handleRoleChange(
-                                                        this, 
-                                                        {{ $user->id }}, 
-                                                        '{{ $user->name }}', 
-                                                        false, 
-                                                        '{{ $user->role }}'
-                                                    )"
-                                                    class="block w-full rounded-md bg-gray-200 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                                <option value="basico" @if ($user->role === 'basico') selected @endif>Básico</option>
-                                                <option value="administrador" @if ($user->role === 'administrador') selected @endif>Administrador</option>
-                                            </select>
+                                                data-original-role="{{ $user->role }}"
+                                                onchange="handleRoleChange(
+                                                    this, 
+                                                    {{ $user->id }}, 
+                                                    '{{ $user->name }}', 
+                                                    false, 
+                                                    '{{ $user->role }}'
+                                                )"
+                                                class="block w-full rounded-md bg-gray-200 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                            <option value="basico" @if ($user->role === 'basico') selected @endif>Básico</option>
+                                            <option value="administrador" @if ($user->role === 'administrador') selected @endif>Administrador</option>
+                                        </select>
                                         </form>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
