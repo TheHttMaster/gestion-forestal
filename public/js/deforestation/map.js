@@ -270,6 +270,31 @@ class DeforestationMap {
         // Evento al terminar de dibujar el polígono
         this.draw.on('drawend', (event) => {
             const feature = event.feature;
+
+            // =======================================================
+            //  MODIFICACIÓN CLAVE PARA INSPECCIÓN POR CONSOLA
+            // =======================================================
+            console.group(' Feature OpenLayers Capturada (Draw End)');
+            console.log('Objeto Feature:', feature);
+            
+            // 1. Mostrar Geometría (en EPSG:3857)
+            const geometry = feature.getGeometry();
+            console.log('Tipo de Geometría:', geometry.getType());
+            console.log('Coordenadas (EPSG:3857):', geometry.getCoordinates());
+            
+            // 2. Convertir y mostrar en Lat/Lon (EPSG:4326)
+            const geojsonFormat = new ol.format.GeoJSON();
+            const geojsonString = geojsonFormat.writeFeature(feature, {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:3857'
+            });
+            const geojsonObj = JSON.parse(geojsonString);
+            console.log('Coordenadas GeoJSON (EPSG:4326):', geojsonObj.geometry.coordinates);
+            
+            console.groupEnd();
+
+            // =======================================================
+
             // Limpiar puntos anteriores
             this.source.getFeatures().forEach(f => {
                 if (f.getGeometry().getType() === 'Point') this.source.removeFeature(f);
@@ -329,55 +354,56 @@ class DeforestationMap {
 
     /**
      * Maneja el envío del formulario de análisis.
-     * Valida que exista un polígono, muestra spinner y envía por AJAX.
-     * Nota: Para múltiples áreas, redirige a resumen.
+     * Valida que exista un polígono y permite el envío normal del formulario.
      * @param {Event} event
      */
-    async handleFormSubmit(event) {
-        event.preventDefault();
-        const form = event.target;
-        const formData = new FormData(form);
-        const submitButton = form.querySelector('button[type="submit"]');
+    handleFormSubmit(event) {
+        // Obtenemos la geometría que ha sido guardada por dibujar o importar.
+        const geometryInput = document.getElementById('geometry');
+        
+        // 1. Obtener la Feature dibujada por el usuario
+    const drawnFeature = this.drawnFeature; // Asumiendo que el polígono dibujado está almacenado aquí
+    
+    if (!drawnFeature) {
+        // Mostrar un error si el usuario intenta enviar sin dibujar
+        this.showAlert('Debes dibujar un polígono en el mapa antes de iniciar el análisis.', 'error');
+        return; // Detener el envío del formulario
+    }
+
+    // 2. Crear el formateador GeoJSON
+    const geoJsonFormatter = new ol.format.GeoJSON();
+    
+    // 3. Convertir la Feature (ol.geom) a una cadena GeoJSON (string)
+    const dynamicGeoJSON = geoJsonFormatter.writeFeature(drawnFeature, {
+        // Especificamos que las coordenadas de salida deben ser EPSG:4326 (Lon/Lat)
+        dataProjection: 'EPSG:4326', 
+        featureProjection: 'EPSG:3857' // La proyección en la que se dibujó el polígono
+    });
+    
+    // 4. Inyectar la geometría dinámica en el campo oculto
+    geometryInput.value = dynamicGeoJSON;
+    
+    // 5. Continuar con el envío del formulario síncrono
+    document.getElementById('analysis-form').submit();
+
+        // 2. Validación de Geometría
+        if (!geometryInput.value) {
+            event.preventDefault(); // Detener el envío
+            this.showAlert('Por favor, dibuja o importa un área de interés.', 'error');
+            return false;
+        }
+
+        // 3. Envío Síncrono
+        // Aquí no hacemos nada más. El event.preventDefault() anterior fue comentado
+        // o eliminado, y al no haber lógica AJAX/Fetch, el formulario se envía
+        // de forma natural al servidor (Browser POST Request).
+        
+        // Desactivar el botón para evitar doble clic mientras el servidor responde
+        const submitButton = event.target.querySelector('button[type="submit"]');
         const spinner = document.getElementById('loading-spinner');
-
-        if (!document.getElementById('geometry').value) {
-            this.showAlert('Por favor, dibuja o importa un polígono en el mapa primero.', 'warning');
-            return;
-        }
-
-        spinner.classList.remove('d-none');
-        submitButton.disabled = true;
-
-        try {
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': token
-                }
-            });
-            const result = await response.json();
-
-            if (result.success) {
-                if (result.multiple) {
-                    // Redirige a resumen de múltiples áreas
-                    const polygonIds = result.results.map(r => r.polygon_id);
-                    window.location.href = `/deforestation/multiple-results?polygon_ids=${polygonIds.join(',')}`;
-                } else {
-                    window.location.href = `/deforestation/results/${result.polygon_id}`;
-                }
-            } else {
-                this.showAlert('Error: ' + result.message, 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            this.showAlert('Error al procesar la solicitud', 'error');
-        } finally {
-            spinner.classList.add('d-none');
-            submitButton.disabled = false;
-        }
+        
+        if (submitButton) submitButton.disabled = true;
+        if (spinner) spinner.classList.remove('d-none');
     }
 
     /**

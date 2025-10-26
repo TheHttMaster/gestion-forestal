@@ -9,6 +9,7 @@ use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Services\GFWService;
+use Illuminate\Support\Facades\Log;
 
 
 class DeforestationController extends Controller
@@ -20,50 +21,7 @@ class DeforestationController extends Controller
     {
         $this->deforestationService = $deforestationService;
         $this->gfwService = $gfwService;
-        /* este objeto recibe dos parametros  
-        una es un arrego como este
-        $geometry = [
-            'type' => 'Polygon',
-            'coordinates' => [[
-                [
-                    -63.18378116560976,
-                    10.563060285040407
-                  ],
-                  [
-                    -63.18669994025022,
-                    10.55421721571689
-                  ],
-                  [
-                    -63.18014733390075,
-                    10.552596248333586
-                  ],
-                  [
-                    -63.17912460941018,
-                    10.562386593151615
-                  ],
-                  [
-                    -63.18378116560976,
-                    10.563060285040407
-                  ]
-            ]]
-        ];
-        y  el otro es un string que es el año
-        $year = '2020';
-
-        $variable_que_estes_usando = $this->gfwService->getZonalStats($geometry, $year);
-
-        te va a devolver un objeto json como este 
-        array:2 [▼ // app\Http\Controllers\ForestController.php:51
         
-            "data" => array:1 [▼
-                0 => array:1 [▼
-                "area__ha" => 1.36165
-                ]
-            ]
-            "status" => "success"
-            ]
-
-        */
     }
 
 
@@ -78,102 +36,54 @@ class DeforestationController extends Controller
     /**
      * Procesa el análisis de deforestación
      */
-    public function analyze(Request $request): JsonResponse
+    public function analyze(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'geometry' => 'required|json',
-            'start_year' => 'required|integer|min:2000|max:2023',
-            'end_year' => 'required|integer|min:2000|max:2023|gte:start_year'
-        ]);
-        
-        try {
-            $geometryData = json_decode($request->geometry, true);
-            $results = [];
-            
-            // Si es una colección de features (múltiples polígonos)
-            if (isset($geometryData['type']) && $geometryData['type'] === 'FeatureCollection') {
-                foreach ($geometryData['features'] as $index => $feature) {
-                    if (!isset($feature['geometry'])) continue;
-                    
-                    // Extraer propiedades del feature
-                    $properties = $feature['properties'] ?? [];
-                    $polygonName = $properties['name'] ?? $properties['Productor'] ?? $request->name . ' - Polígono ' . ($index + 1);
-                    $polygonDescription = $properties['description'] ?? $request->description;
-                    
-                    // Crear el polígono individual
-                    $polygon = Polygon::create([
-                        'name' => $polygonName,
-                        'description' => $polygonDescription,
-                        'geometry' => DB::raw("ST_GeomFromGeoJSON('" . json_encode($feature['geometry']) . "')")
-                    ]);
-                    
-                    // Ejecutar análisis para este polígono
-                    $polygonResults = $this->deforestationService->analyzeDeforestation(
-                        $polygon, 
-                        $request->start_year, 
-                        $request->end_year
-                    );
-                    
-                    $results[] = [
-                        'polygon_id' => $polygon->id,
-                        'name' => $polygon->name,
-                        'area_ha' => $polygon->area_ha,
-                        'results' => $polygonResults
-                    ];
-                }
-            } else {
-                // Si es un solo polígono (compatibilidad con version anterior)
-                $polygon = Polygon::create([
-                    'name' => $request->name,
-                    'description' => $request->description,
-                    'geometry' => DB::raw("ST_GeomFromGeoJSON('{$request->geometry}')")
-                ]);
-                
-                // Ejecutar análisis
-                $polygonResults = $this->deforestationService->analyzeDeforestation(
-                    $polygon, 
-                    $request->start_year, 
-                    $request->end_year
-                );
-                
-                $results[] = [
-                    'polygon_id' => $polygon->id,
-                    'name' => $polygon->name,
-                    'area_ha' => $polygon->area_ha,
-                    'results' => $polygonResults
-                ];
-            }
-            
-            // Si hay múltiples polígonos, redirigir a una página de resumen
-            if (count($results) > 1) {
-                return response()->json([
-                    'success' => true,
-                    'multiple' => true,
-                    'results' => $results
-                ]);
-            }
-            
-            // Si es un solo polígono, redirigir a la página de resultados normal
-            return response()->json([
-                'success' => true,
-                'multiple' => false,
-                'polygon_id' => $results[0]['polygon_id'],
-                'results' => $results[0]['results']
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al procesar el análisis: ' . $e->getMessage()
-            ], 500);
-        }
-    }
+        // 1. Obtener los datos del Request y asignarlos a variables
     
-    /**
-     * Muestra los resultados del análisis para múltiples polígonos
-     */
+        // Obtiene el valor del campo 'end_year' y lo guarda en $year
+        $year = $request->input('end_year'); 
+        
+        // Obtiene la cadena GeoJSON del campo 'geometry' y la guarda en $geometryString
+        $geometryString = $request->input('geometry');
+        
+        // 2. Decodificación y Estructuración del GeoJSON
+        try {
+            // A. Decodificar la cadena GeoJSON en un array asociativo de PHP
+            $geometryGeoJson = json_decode($geometryString, true); 
+            
+            // El segundo parámetro (true) es crucial:
+            // Si es TRUE, el objeto JSON se convierte en un array asociativo de PHP.
+            // Si es FALSE (por defecto), se convierte en un objeto estándar de PHP.
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // ... (Manejo de error de decodificación)
+            }
+
+            // ... (Lógica posterior)
+
+        } catch (\Exception $e) {
+            echo "error: " . $e->getMessage();
+        }
+        
+
+        $stats = $this->gfwService->getZonalStats($geometryGeoJson, $year);
+
+        // Creamos un array que contiene todas las variables que queremos mostrar en la vista
+        $dataToPass = [
+            'analysis_year' => $year,
+            'original_geojson' => $geometryString,
+            'type' => $geometryGeoJson['type'],
+            'geometry' => $geometryGeoJson['coordinates'][0],
+            'area__ha' => $stats['data'][0]['area__ha'],
+            'status' => $stats['status'],
+        ];
+
+        /* dd([$dataToPass]); */
+
+        return view('deforestation.results', compact('dataToPass'));
+
+    } /*################## fin de la funcion analyze #################*/
+        
     public function multipleResults(Request $request): View
     {
         $polygonIds = explode(',', $request->input('polygon_ids', ''));

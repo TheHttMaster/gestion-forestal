@@ -640,4 +640,6 @@ document.addEventListener('keydown', function(e) {
         closeCoordinateModal();
     }
 });
+
+
 </script>

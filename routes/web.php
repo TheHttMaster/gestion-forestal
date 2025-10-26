@@ -17,9 +17,9 @@ Route::get('/run-seeders', function() {
     try {
         \Artisan::call('db:seed', ['--force' => true]);
         $userCount = \App\Models\User::count();
-        return "✅ Seeders ejecutados exitosamente. Usuarios en la base de datos: $userCount";
+        return " Seeders ejecutados exitosamente. Usuarios en la base de datos: $userCount";
     } catch (\Exception $e) {
-        return "❌ Error: " . $e->getMessage();
+        return " Error: " . $e->getMessage();
     }
 }); 
 
@@ -84,7 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [DeforestationController::class, 'create'])
             ->name('create');
         
-        // Procesar análisis (AJAX)
+        // Procesar análisis 
         Route::post('/analyze', [DeforestationController::class, 'analyze'])
             ->name('analyze');
         
