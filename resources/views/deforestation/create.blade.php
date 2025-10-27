@@ -21,14 +21,17 @@
 
                                     <div class="relative">
                                         <button id="visibility-toggle-button" class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-lg flex items-center shadow-lg">
-                                            <span id="icon-eye-open">
+                                            
+                                            {{-- 1. OJO ABIERTO: AHORA OCULTO POR DEFECTO --}}
+                                            <span id="icon-eye-open" class="hidden"> 
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye w-6 h-6">
                                                     <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
                                                     <circle cx="12" cy="12" r="3"/>
                                                 </svg>
                                             </span>
                                             
-                                            <span id="icon-eye-closed" class="hidden">
+                                            {{-- 2. OJO CERRADO: AHORA VISIBLE POR DEFECTO --}}
+                                            <span id="icon-eye-closed"> 
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off w-6h-6">
                                                     <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
                                                     <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>

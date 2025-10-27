@@ -352,59 +352,47 @@ class DeforestationMap {
         document.getElementById('geometry').value = '';
     }
 
+    
     /**
      * Maneja el envío del formulario de análisis.
      * Valida que exista un polígono y permite el envío normal del formulario.
      * @param {Event} event
      */
     handleFormSubmit(event) {
-        // Obtenemos la geometría que ha sido guardada por dibujar o importar.
+        // 1. Detener el envío automático del formulario
+        event.preventDefault(); 
+
         const geometryInput = document.getElementById('geometry');
         
-        // 1. Obtener la Feature dibujada por el usuario
-    const drawnFeature = this.drawnFeature; // Asumiendo que el polígono dibujado está almacenado aquí
-    
-    if (!drawnFeature) {
-        // Mostrar un error si el usuario intenta enviar sin dibujar
-        this.showAlert('Debes dibujar un polígono en el mapa antes de iniciar el análisis.', 'error');
-        return; // Detener el envío del formulario
-    }
-
-    // 2. Crear el formateador GeoJSON
-    const geoJsonFormatter = new ol.format.GeoJSON();
-    
-    // 3. Convertir la Feature (ol.geom) a una cadena GeoJSON (string)
-    const dynamicGeoJSON = geoJsonFormatter.writeFeature(drawnFeature, {
-        // Especificamos que las coordenadas de salida deben ser EPSG:4326 (Lon/Lat)
-        dataProjection: 'EPSG:4326', 
-        featureProjection: 'EPSG:3857' // La proyección en la que se dibujó el polígono
-    });
-    
-    // 4. Inyectar la geometría dinámica en el campo oculto
-    geometryInput.value = dynamicGeoJSON;
-    
-    // 5. Continuar con el envío del formulario síncrono
-    document.getElementById('analysis-form').submit();
-
-        // 2. Validación de Geometría
+        // 2. VALIDACIÓN: Revisar si el campo de geometría (que fue llenado por convertToGeoJSON) tiene un valor
         if (!geometryInput.value) {
-            event.preventDefault(); // Detener el envío
             this.showAlert('Por favor, dibuja o importa un área de interés.', 'error');
-            return false;
+            return; // Detener la ejecución
         }
 
-        // 3. Envío Síncrono
-        // Aquí no hacemos nada más. El event.preventDefault() anterior fue comentado
-        // o eliminado, y al no haber lógica AJAX/Fetch, el formulario se envía
-        // de forma natural al servidor (Browser POST Request).
-        
-        // Desactivar el botón para evitar doble clic mientras el servidor responde
-        const submitButton = event.target.querySelector('button[type="submit"]');
+        const form = event.target;
+        // Selecciona el botón de tipo 'submit' dentro del formulario
+        const submitButton = form.querySelector('button[type="submit"]');
+        // Selecciona el elemento spinner (que debe estar oculto por defecto)
         const spinner = document.getElementById('loading-spinner');
         
-        if (submitButton) submitButton.disabled = true;
-        if (spinner) spinner.classList.remove('d-none');
+        // Deshabilita el botón
+        if (submitButton) {
+            submitButton.disabled = true;
+            // Opcional: Cambia el texto del botón
+            submitButton.textContent = 'Analizando...'; 
+        }
+
+        // Muestra el spinner (asumiendo que 'd-none' de Tailwind/Bootstrap lo oculta)
+        if (spinner) {
+            spinner.classList.remove('d-none');
+        }
+        
+        // 4. Enviar el formulario
+        // El campo 'geometry' ya fue llenado por convertToGeoJSON (si se dibujó) o por importGeoJSON/KML.
+        form.submit();
     }
+
 
     /**
      * Muestra una alerta al usuario.

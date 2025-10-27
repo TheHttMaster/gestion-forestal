@@ -46,7 +46,7 @@
 
                 <div>
                     <h3 class="font-semibold text-xl text-gray-900 dark:text-gray-100 mb-3">
-                        📊 Evolución de la Deforestación
+                        Evolución de la Deforestación
                     </h3>
                     <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
                         <canvas id="deforestation-chart"></canvas>
@@ -56,7 +56,7 @@
 
             <div class="mt-8">
                 <h3 class="font-semibold text-xl text-gray-900 dark:text-gray-100 mb-3">
-                    🔍 Datos Crudos del Servicio
+                    Datos del Servicio
                 </h3>
                 <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-inner">
                     <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-200">
@@ -80,7 +80,7 @@
 
 <script>
 // =======================================================
-// 🚨 Nota: Las variables del controlador original ($analyses y $polygon)
+// Nota: Las variables del controlador original ($analyses y $polygon)
 // no están disponibles. Usaremos $dataToPass['analysis_stats'] y la geometría
 // que el controlador ha incluido en el array $dataToPass.
 // =======================================================
@@ -156,19 +156,19 @@ function initResultMap() {
     // Añadir el polígono al mapa
     const format = new ol.format.GeoJSON();
     
-   // 🚩 Iniciaremos con la configuración estándar: Lon/Lat (EPSG:4326) -> EPSG:3857
+   // Iniciaremos con la configuración estándar: Lon/Lat (EPSG:4326) -> EPSG:3857
     let features = format.readFeatures(polygonGeojson, {
         dataProjection: 'EPSG:4326', 
         featureProjection: 'EPSG:3857'
     });
     
     // =======================================================
-    // 🧪 PASO 1: Depuración de la conversión
+    // PASO 1: Depuración de la conversión
     // =======================================================
     if (features.length === 0) {
         console.error("OpenLayers no pudo leer las features con la configuración estándar.");
         
-        // 🧪 PASO 2: Intentar invertir la proyección de datos a 'datos planos' 
+        // PASO 2: Intentar invertir la proyección de datos a 'datos planos' 
         //           (a veces necesario si el GeoJSON no sigue estrictamente el estándar)
         features = format.readFeatures(polygonGeojson, {
             dataProjection: 'EPSG:3857', // FINGIMOS que los datos ya están en la proyección del mapa
@@ -180,7 +180,7 @@ function initResultMap() {
         }
     }
     
-    // 🧪 PASO 3: Imprimir el resultado de la conversión
+    // PASO 3: Imprimir el resultado de la conversión
     console.log("GeoJSON de entrada:", polygonGeojson);
     console.log("Características generadas (features):", features);
     
