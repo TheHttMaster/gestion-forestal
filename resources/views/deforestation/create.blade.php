@@ -131,75 +131,75 @@
                         </div>
                     </div>
 
-                <!-- Modal moderno para coordenadas -->
-                    <div id="manual-polygon-modal" class=" hidden">
-                        <div class=" w-full max-w-md mx-4">
-                            <!-- Header -->
-                            <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-600">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Ingresar Coordenadas</h3>
-                                <button id="close-modal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
+               
+                <!-- Modal moderno para coordenadas - Versión ventana móvil -->
+                <div id="manual-polygon-modal" class="hidden">
+                    <div class="bg-white dark:bg-custom-gray rounded-xl shadow-2xl w-full max-w-md">
+                        <!-- Header -->
+                        <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-600">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Ingresar Coordenadas</h3>
+                            <button id="close-modal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Formulario (mantén el contenido actual) -->
+                        <form id="manual-polygon-form" class="p-6 space-y-4">
+                            <!-- Método de entrada -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de entrada:</label>
+                                <div class="flex space-x-2">
+                                    <button type="button" id="method-single" class="flex-1 py-2 px-3 bg-blue-600 text-white rounded-lg text-sm font-medium">Una por una</button>
+                                    <button type="button" id="method-bulk" class="flex-1 py-2 px-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">Lote</button>
+                                </div>
+                            </div>
+
+                            <!-- Entrada individual (por defecto) -->
+                            <div id="single-input" class="space-y-3">
+                                <div class="flex space-x-2">
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitud</label>
+                                        <input type="text" id="single-lat" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ej: 8.123">
+                                    </div>
+                                    <div class="flex-1">
+                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitud</label>
+                                        <input type="text" id="single-lon" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ej: -66.123">
+                                    </div>
+                                </div>
+                                <button type="button" id="add-coord" class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm">
+                                    + Agregar coordenada
                                 </button>
                             </div>
-                            
-                            <!-- Formulario -->
-                            <form id="manual-polygon-form" class="p-6 space-y-4">
-                                <!-- Método de entrada -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de entrada:</label>
-                                    <div class="flex space-x-2">
-                                        <button type="button" id="method-single" class="flex-1 py-2 px-3 bg-blue-600 text-white rounded-lg text-sm font-medium">Una por una</button>
-                                        <button type="button" id="method-bulk" class="flex-1 py-2 px-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">Lote</button>
-                                    </div>
-                                </div>
 
-                                <!-- Entrada individual (por defecto) -->
-                                <div id="single-input" class="space-y-3">
-                                    <div class="flex space-x-2">
-                                        <div class="flex-1">
-                                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitud</label>
-                                            <input type="text" id="single-lat" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ej: 8.123">
-                                        </div>
-                                        <div class="flex-1">
-                                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitud</label>
-                                            <input type="text" id="single-lon" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80  dark:text-gray-100 text-sm p-2" placeholder="Ej: -66.123">
-                                        </div>
-                                    </div>
-                                    <button type="button" id="add-coord" class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm">
-                                        + Agregar coordenada
-                                    </button>
-                                </div>
+                            <!-- Entrada por lote (oculta inicialmente) -->
+                            <div id="bulk-input" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas (lat,lon por línea):</label>
+                                <textarea id="bulk-coords" rows="4" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ejemplo:&#10;&#9;Latitud,Longitud&#10;&#9;8.123, -66.123&#10;&#9;8.124, -66.124&#10;&#9;8.125, -66.125"></textarea>
+                            </div>
 
-                                <!-- Entrada por lote (oculta inicialmente) -->
-                                <div id="bulk-input" class="hidden">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas (lat,lon por línea):</label>
-                                    <!-- En el modal de coordenadas (alrededor de línea 150) -->
-                                    <textarea id="bulk-coords" rows="4" class="w-full rounded-md border-gray-300 dark:border-gray-500 dark:bg-gray-800/80 dark:text-gray-100 text-sm p-2" placeholder="Ejemplo:&#10;&#9;Latitud,Longitud&#10;&#9;8.123, -66.123&#10;&#9;8.124, -66.124&#10;&#9;8.125, -66.125"></textarea>
+                            <!-- Lista de coordenadas agregadas -->
+                            <div id="coords-list" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas agregadas:</label>
+                                <div class="max-h-32 overflow-y-auto border border-gray-200 dark:border-gray-500 rounded-md p-2 bg-gray-50 dark:bg-gray-800/80">
+                                    <div id="coords-container" class="space-y-1"></div>
                                 </div>
+                                <button type="button" id="clear-list" class="text-red-600 hover:text-red-700 text-xs mt-1">Limpiar lista</button>
+                            </div>
 
-                                <!-- Lista de coordenadas agregadas -->
-                                <div id="coords-list" class="hidden">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Coordenadas agregadas:</label>
-                                    <div class="max-h-32 overflow-y-auto border border-gray-200 dark:border-gray-500 rounded-md p-2 bg-gray-50 dark:bg-gray-800/80">
-                                        <div id="coords-container" class="space-y-1"></div>
-                                    </div>
-                                    <button type="button" id="clear-list" class="text-red-600 hover:text-red-700 text-xs mt-1">Limpiar lista</button>
-                                </div>
-
-                                <!-- Botones -->
-                                <div class="flex space-x-3 pt-2">
-                                    <button type="button" id="cancel-modal" class="flex-1 py-2 px-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium">
-                                        Cancelar
-                                    </button>
-                                    <button type="submit" class="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
-                                        Dibujar
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                            <!-- Botones -->
+                            <div class="flex space-x-3 pt-2">
+                                <button type="button" id="cancel-modal" class="flex-1 py-2 px-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+                                    Dibujar
+                                </button>
+                            </div>
+                        </form>
                     </div>
+                </div>
                 </div>
             </div>
             
@@ -297,22 +297,53 @@
 // Variables globales para el modal de coordenadas
 let coordinatesList = [];
 
-// Mostrar/ocultar menú de cambio de mapa - CORREGIDO
+// Mostrar/ocultar menú de cambio de mapa
 document.getElementById('base-map-toggle').addEventListener('click', function(e) {
     e.stopPropagation();
     const menu = document.getElementById('base-map-menu');
     const isShowing = menu.classList.contains('show');
     
-    // Solo alternar el menú actual, no intentar cerrar menús que no existen
     toggleMenu('base-map-menu', !isShowing);
 });
 
-// Abrir modal de coordenadas - CORREGIDO
+// Función para abrir el modal con animación
+function openCoordinateModal() {
+    const modal = document.getElementById('manual-polygon-modal');
+    modal.classList.remove('hidden');
+    
+    // Forzar reflow para que la animación se ejecute
+    void modal.offsetWidth;
+    
+    setTimeout(() => {
+        const firstInput = document.getElementById('single-lat');
+        if (firstInput) firstInput.focus();
+    }, 100);
+}
+
+// Función para cerrar el modal con animación
+function closeCoordinateModal() {
+    const modal = document.getElementById('manual-polygon-modal');
+    
+    // Aplicar animación de salida
+    modal.classList.add('closing');
+    
+    // Esperar a que termine la animación antes de ocultar
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('closing');
+        coordinatesList = [];
+        updateCoordinatesList();
+        document.getElementById('bulk-coords').value = '';
+        document.getElementById('single-lat').value = '';
+        document.getElementById('single-lon').value = '';
+    }, 300); // Debe coincidir con la duración de la animación
+}
+
+// Abrir modal de coordenadas
 document.getElementById('manual-polygon-toggle').addEventListener('click', function(e) {
     e.stopPropagation();
-    // Cerrar el menú de mapas si está abierto
     closeMenu('base-map-menu');
-    document.getElementById('manual-polygon-modal').classList.remove('hidden');
+    openCoordinateModal();
 });
 
 // Cerrar modal de coordenadas
@@ -346,7 +377,6 @@ document.getElementById('add-coord').addEventListener('click', function() {
     coordinatesList.push({ lat: parseFloat(lat), lon: parseFloat(lon) });
     updateCoordinatesList();
     
-    // Limpiar inputs
     document.getElementById('single-lat').value = '';
     document.getElementById('single-lon').value = '';
     
@@ -365,16 +395,13 @@ document.getElementById('manual-polygon-form').addEventListener('submit', functi
     
     let coords = [];
     
-    // Determinar de dónde obtener las coordenadas
     if (document.getElementById('method-single').classList.contains('bg-blue-600')) {
-        // Método individual
         if (coordinatesList.length < 3) {
             showAlert('Se necesitan al menos 3 coordenadas', 'warning');
             return;
         }
         coords = coordinatesList.map(coord => [coord.lon, coord.lat]);
     } else {
-        // Método por lote
         const coordsText = document.getElementById('bulk-coords').value.trim();
         if (!coordsText) {
             showAlert('Debe ingresar coordenadas', 'warning');
@@ -394,12 +421,10 @@ document.getElementById('manual-polygon-form').addEventListener('submit', functi
         }
     }
     
-    // Cerrar polígono si no está cerrado
     if (coords.length > 0 && (coords[0][0] !== coords[coords.length-1][0] || coords[0][1] !== coords[coords.length-1][1])) {
         coords.push(coords[0]);
     }
     
-    // Dibujar en el mapa
     drawPolygonOnMap(coords);
     closeCoordinateModal();
 });
@@ -477,16 +502,7 @@ function drawPolygonOnMap(coords) {
     window.deforestationMapInstance.showAlert('Polígono dibujado exitosamente', 'success');
 }
 
-function closeCoordinateModal() {
-    document.getElementById('manual-polygon-modal').classList.add('hidden');
-    coordinatesList = [];
-    updateCoordinatesList();
-    document.getElementById('bulk-coords').value = '';
-    document.getElementById('single-lat').value = '';
-    document.getElementById('single-lon').value = '';
-}
-
-// Funciones para los menús desplegables - CORREGIDAS
+// Funciones para los menús desplegables
 function toggleMenu(menuId, show) {
     const menu = document.getElementById(menuId);
     if (show) {
@@ -502,15 +518,13 @@ function closeMenu(menuId) {
     toggleMenu(menuId, false);
 }
 
-// Cerrar menús al hacer clic fuera - VERSIÓN SIMPLIFICADA Y CORREGIDA
+// Cerrar menús al hacer clic fuera
 document.addEventListener('click', function(e) {
     const baseMapToggle = document.getElementById('base-map-toggle');
     const baseMapMenu = document.getElementById('base-map-menu');
     const modal = document.getElementById('manual-polygon-modal');
     
-    // Solo manejar menús si el modal está cerrado
     if (modal.classList.contains('hidden')) {
-        // Si se hace clic fuera del menú de mapas, cerrarlo
         if (!baseMapToggle.contains(e.target) && !baseMapMenu.contains(e.target)) {
             closeMenu('base-map-menu');
         }
@@ -522,19 +536,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Cambiar capa base - LLAMA A LA FUNCIÓN DEL map.js
-document.querySelectorAll('#base-map-menu button').forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.stopPropagation(); // Prevenir que el clic se propague
-        const layerKey = this.getAttribute('data-layer');
-        // Usar la función del map.js
-        if (window.deforestationMapInstance && window.deforestationMapInstance.changeBaseLayer) {
-            window.deforestationMapInstance.changeBaseLayer(layerKey);
-        }
-        closeMenu('base-map-menu');
-        
-        // Actualizar texto del botón
-        // Actualiza el objeto layerNames:
+// Nombres de capas para mostrar en el botón
 const layerNames = {
     'osm': 'OpenStreetMap',
     'satellite': 'Satélite Esri', 
@@ -542,6 +544,18 @@ const layerNames = {
     'terrain': 'Relieve',
     'dark': 'Oscuro'
 };
+
+// Cambiar capa base
+document.querySelectorAll('#base-map-menu button').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const layerKey = this.getAttribute('data-layer');
+        
+        if (window.deforestationMapInstance && window.deforestationMapInstance.changeBaseLayer) {
+            window.deforestationMapInstance.changeBaseLayer(layerKey);
+        }
+        
+        closeMenu('base-map-menu');
         
         const button = document.getElementById('base-map-toggle');
         const svg = button.querySelector('svg').cloneNode(true);
@@ -592,7 +606,6 @@ document.getElementById('import-area').addEventListener('change', async function
 
     const ext = file.name.split('.').pop().toLowerCase();
 
-    // GeoJSON
     if (ext === 'geojson' || ext === 'json') {
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -605,7 +618,6 @@ document.getElementById('import-area').addEventListener('change', async function
         };
         reader.readAsText(file);
     }
-    // KML
     else if (ext === 'kml') {
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -618,10 +630,8 @@ document.getElementById('import-area').addEventListener('change', async function
         };
         reader.readAsText(file);
     }
-    // SHP o ZIP (shapefile)
     else if (ext === 'shp' || ext === 'zip') {
         try {
-            // shpjs espera un ArrayBuffer
             const arrayBuffer = await file.arrayBuffer();
             shp(arrayBuffer).then(function(geojson) {
                 window.deforestationMapInstance.importGeoJSON(geojson);
@@ -644,5 +654,35 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// Event listeners para botones de dibujo y limpieza
+document.getElementById('draw-polygon').addEventListener('click', function() {
+    if (window.deforestationMapInstance) {
+        window.deforestationMapInstance.toggleDrawInteraction();
+    }
+});
 
+document.getElementById('clear-map').addEventListener('click', function() {
+    if (window.deforestationMapInstance) {
+        window.deforestationMapInstance.clearMap();
+    }
+});
+
+// Toggle visibilidad de áreas en deforestación
+document.getElementById('visibility-toggle-button').addEventListener('click', function() {
+    if (window.deforestationMapInstance) {
+        window.deforestationMapInstance.toggleDeforestationVisibility();
+        
+        // Alternar iconos de ojo abierto/cerrado
+        const iconOpen = document.getElementById('icon-eye-open');
+        const iconClosed = document.getElementById('icon-eye-closed');
+        
+        if (iconOpen.classList.contains('hidden')) {
+            iconOpen.classList.remove('hidden');
+            iconClosed.classList.add('hidden');
+        } else {
+            iconOpen.classList.add('hidden');
+            iconClosed.classList.remove('hidden');
+        }
+    }
+});
 </script>

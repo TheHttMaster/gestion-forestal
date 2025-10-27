@@ -125,9 +125,16 @@ function setActiveNavItem(item) {
  */
 function animateCardsOnLoad() {
     document.querySelectorAll('.bg-white.rounded-xl').forEach((card, idx) => {
+        // EXCLUIR el modal explícitamente
+        if (card.closest('#manual-polygon-modal')) {
+            return;
+        }
+        
+        // Usar transiciones MÁS ESPECÍFICAS, no "all"
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px)';
-        card.style.transition = 'all 0.6s ease';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease'; // ← Solo estas propiedades
+        
         setTimeout(() => {
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
