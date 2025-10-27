@@ -29,6 +29,32 @@ class DeforestationMap {
         this.initializeGfWLayerToggle();
     }
 
+    setGFWOpacity(opacity) {
+        if (this.gfwLossLayer) {
+            this.gfwLossLayer.setOpacity(opacity);
+        }
+    }
+
+    /**
+     * Obtiene la opacidad actual de la capa GFW
+     * @returns {number} Opacidad entre 0 y 1
+     */
+    getGFWOpacity() {
+        return this.gfwLossLayer ? this.gfwLossLayer.getOpacity() : 0.9;
+    }
+
+    /**
+     * Alterna la visibilidad de la capa GFW
+     */
+    toggleGFWVisibility() {
+        if (this.gfwLossLayer) {
+            const currentVisibility = this.gfwLossLayer.getVisible();
+            this.gfwLossLayer.setVisible(!currentVisibility);
+            return !currentVisibility;
+        }
+        return false;
+    }
+
     /**
      * Inicializa el mapa, las capas base y los estilos.
      * Nota: Mantén los estilos y capas bien organizados para facilitar el mantenimiento.
@@ -208,37 +234,58 @@ class DeforestationMap {
      * Nota: Útil para usuarios técnicos y para depuración.
      */
     setupCoordinateDisplay() {
-        this.coordinateDisplay = document.createElement('div');
-        this.coordinateDisplay.className = 'coordinate-display';
+    console.log('🟢 INICIANDO COORDINATE DISPLAY UTM...');
+    
+    // Eliminar cualquier display anterior
+    const existingDisplays = document.querySelectorAll('.coordinate-display');
+    existingDisplays.forEach(display => display.remove());
+    
+    this.coordinateDisplay = document.createElement('div');
+    this.coordinateDisplay.className = 'coordinate-display';
+    this.coordinateDisplay.style.display = 'none';
+    
+    const mapContainer = this.map.getTargetElement();
+    mapContainer.appendChild(this.coordinateDisplay);
+
+    // **SOLUCIÓN SIMPLIFICADA Y CONFIABLE**
+    this.map.on('pointermove', (evt) => {
+        if (evt.dragging) return;
         
+        const coordinate = evt.coordinate;
+        const lonLat = ol.proj.toLonLat(coordinate);
+        const lon = lonLat[0];
+        const lat = lonLat[1];
+        
+        // Calcular zona UTM
+        const zone = Math.floor((lon + 180) / 6) + 1;
+        const hemisphere = lat >= 0 ? 'north' : 'south';
+        
+        // **CONVERSIÓN MANUAL SIMPLIFICADA - SIN DEPENDER DE PROYECCIONES UTM**
+        // Fórmula aproximada para mostrar UTM (solo para display, no para cálculos precisos)
+        const earthRadius = 6378137; // Radio terrestre en metros
+        const scale = 0.9996; // Factor de escala UTM
+        
+        // Coordenadas relativas al meridiano central
+        const centralMeridian = (zone * 6 - 183) * (Math.PI / 180);
+        const lonRad = lon * (Math.PI / 180);
+        const latRad = lat * (Math.PI / 180);
+        
+        // Cálculo simplificado de UTM
+        const x = (lonRad - centralMeridian) * earthRadius * scale + 500000;
+        const y = Math.log(Math.tan(Math.PI/4 + latRad/2)) * earthRadius * scale;
+        const northing = hemisphere === 'north' ? y : 10000000 + y;
+        
+        // **MOSTRAR SOLO UTM**
+        this.coordinateDisplay.textContent = 
+            `Zona ${zone}${hemisphere === 'north' ? 'N' : 'S'} | ` +
+            `Este: ${x.toFixed(2)} m | ` +
+            `Norte: ${northing.toFixed(2)} m`;
+            
+        this.coordinateDisplay.style.display = 'block';
+    });
 
-        const mapContainer = this.map.getTargetElement();
-        mapContainer.appendChild(this.coordinateDisplay);
-
-        // Mostrar coordenadas al mover el mouse
-        this.map.on('pointermove', (evt) => {
-            if (evt.dragging) return;
-            const coordinate = evt.coordinate;
-            const lonLat = ol.proj.toLonLat(coordinate);
-            const zone = Math.floor((lonLat[0] + 180) / 6) + 1;
-            const hemisphere = lonLat[1] >= 0 ? 'north' : 'south';
-            const utmEpsg = hemisphere === 'north' ? `EPSG:326${zone.toString().padStart(2, '0')}` : `EPSG:327${zone.toString().padStart(2, '0')}`;
-            try {
-                const utm = ol.proj.transform(coordinate, 'EPSG:3857', utmEpsg);
-                this.coordinateDisplay.textContent = `UTM Zona ${zone}${hemisphere === 'north' ? 'N' : 'S'} | Este: ${utm[0].toFixed(2)} m | Norte: ${utm[1].toFixed(2)} m`;
-                this.coordinateDisplay.style.display = 'block';
-            } catch (error) {
-                const lon = lonLat[0].toFixed(6);
-                const lat = lonLat[1].toFixed(6);
-                this.coordinateDisplay.textContent = `Lon: ${lon} | Lat: ${lat}`;
-                this.coordinateDisplay.style.display = 'block';
-            }
-        });
-
-        // Ocultar coordenadas al salir del mapa
-        /* this.map.on('pointerout', () => this.coordinateDisplay.style.display = 'none');
-        this.map.getViewport().addEventListener('mouseleave', () => this.coordinateDisplay.style.display = 'none'); */
-    }
+    
+}
 
     /**
      * Activa la herramienta de dibujo de polígonos.
