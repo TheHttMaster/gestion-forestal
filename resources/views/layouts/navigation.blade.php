@@ -1,6 +1,6 @@
 <!-- Aqui se encuentra tanto el sideba del sistema como la cabecera del mismo -->
 
-       <aside id="sidebar" class="sidebar sidebar-expanded bg-stone-100/90 dark:bg-custom-gray ">
+       <aside id="sidebar" class="sidebar sidebar-expanded bg-stone-100/90 dark:bg-custom-gray " >
             
             <div class="sidebar-header flex items-center space-x-3" style="margin-bottom:0.3rem;">
             <div class="w-12 h-12 md:w-14 md:h-14 bg-[linear-gradient(135deg,_#3f2c1bdc_0%,_#30201b_100%)] rounded-xl flex items-center justify-center flex-shrink-0">
@@ -27,9 +27,9 @@
                     <h3 class="sidebar-text text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider" style="margin-bottom:1rem;">Aplicación</h3>
                     <ul style="list-style:none;padding:0;margin:0;">
                         <li>
-                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
+                             <div class="transition-all duration-300 hover:scale-[1.03] sidebar-hover-translate mb-2">
                                 <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
                                         <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
                                         <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                                     </svg>
@@ -42,7 +42,7 @@
                         <li>
                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2" >
                                 <a href="{{ route('deforestation.create') }}" class="nav-item {{ request()->routeIs('deforestation.create') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column-icon lucide-chart-column transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column-icon lucide-chart-column transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
                                         <path d="M3 3v16a2 2 0 0 0 2 2h16"/>
                                         <path d="M18 17V9"/>
                                         <path d="M13 17V5"/>
@@ -57,7 +57,7 @@
                         <li>
                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
                                 <a href="{{ route('providers.index') }}" class="nav-item {{ request()->routeIs('providers.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
                                         <path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>
                                     </svg>
                                     <span class="sidebar-text">Proveedores</span>
@@ -67,7 +67,7 @@
                         <li>
                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
                                 <a href="{{ route('areas.index') }}" class="nav-item {{ request()->routeIs('areas.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
                                         <path d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 0 1-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0 1 12 0"/><circle cx="12" cy="8" r="2"/><path d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712"/>
                                     </svg>
                                     <span class="sidebar-text whitespace-nowrap">Areas de cultivo</span>
@@ -81,7 +81,7 @@
                         <li>
                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
                                 <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-icon lucide-users transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-icon lucide-users transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
                                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/>
                                     </svg>
                                     <span class="sidebar-text">Usuarios</span>
@@ -91,7 +91,7 @@
                         <li>
                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
                                 <a href="{{ route('admin.audit') }}" class="nav-item {{ request()->routeIs('admin.audit') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-clock-icon lucide-file-clock transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-clock-icon lucide-file-clock transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
                                         <path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M8 14v2.2l1.6 1"/><circle cx="8" cy="16" r="6"/>
                                     </svg>
                                     <span class="sidebar-text">Historial</span>
@@ -107,7 +107,7 @@
             <!-- Sidebar Footer -->
             <div class="sidebar-header" style="padding-bottom:2rem;">
                 <a href="#" class="nav-item transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-icon lucide-settings transition-all duration-500 group-hover:scale-[1.15] group-hover:ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-icon lucide-settings transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
                         <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>
                     </svg>
                     <span class="sidebar-text">Configuración.X</span>
@@ -137,7 +137,7 @@
         <header class="headi bg-stone-100/90 dark:bg-custom-gray px-4 md:px-6 lg:px-8 py-1 md:py-1  shadow-soft">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3 md:space-x-6">
-                    <button id="sidebarToggle" class="p-2 md:p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/70 hover-lift">
+                    <button id="sidebarToggle" class="p-2 md:p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/70 transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_25px_rgba(0,0,0,0.4)]">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu w-4 h-4 md:w-5 md:h-5">
                             <path d="M4 12h16"/><path d="M4 18h16"/><path d="M4 6h16"/>
                         </svg>
@@ -170,7 +170,7 @@
                     </div>
 
                     <div class="relative">
-                        <button id="userMenuToggle" class="flex items-center space-x-2 md:space-x-3 p-1 md:p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700/50 hover-lift">
+                        <button id="userMenuToggle" class="flex items-center space-x-2 md:space-x-3 p-1 md:p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700/50 transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_25px_rgba(0,0,0,0.4)]">
                             <img 
                                 src="{{ Vite::asset('resources/img/user.jpg') }}" 
                                 alt="Foto de perfil"
@@ -185,21 +185,24 @@
                             </svg>
                         </button>
 
-                        <div id="userMenu" class="dropdown-menu absolute right-0 mt-2 w-48 md:w-64 bg-stone-100 dark:bg-custom-gray rounded-xl shadow-soft py-2 z-[1000001]">
+                        <!-- Menú de usuario con animación mejorada -->
+                        <div id="userMenu" class="absolute right-0 mt-2 w-48 md:w-64 bg-stone-50 dark:bg-custom-gray rounded-xl shadow-soft py-2 z-[1000001] hidden transition-all duration-400 ease-out transform origin-top-right scale-95 opacity-0">
                             <div class="px-4 md:px-6 py-3 md:py-4">
                                 <p class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ Auth::user()->name }}</p>
                                 <p class="text-sm text-gray-500">{{ Auth::user()->email }}</p>
                             </div>
                             <div class="border-t border-gray-400/70 dark:border-gray-700 my-2"></div>
-                            <a href="{{ route('profile.edit') }}" class="block px-4 md:px-6 py-2 md:py-3 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-200 rounded-lg mx-2">Perfil</a>
-                            <a href="#" class="block px-4 md:px-6 py-2 md:py-3 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-200 rounded-lg mx-2">Configuración</a>
-                            <a href="#" class="block px-4 md:px-6 py-2 md:py-3 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-200 rounded-lg mx-2">Soporte</a>
+                           
+                            <a href="{{ route('profile.edit') }}" class="block px-4 md:px-6 py-2 md:py-3 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-200 rounded-lg mx-2 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-1">Perfil</a>
+                                                    
+                            <a href="#" class="block px-4 md:px-6 py-2 md:py-3 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-200 rounded-lg mx-2 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-1">Configuración</a>
+                            <a href="#" class="block px-4 md:px-6 py-2 md:py-3 text-sm text-gray-700 dark:text-gray-400 hover:bg-gray-200 rounded-lg mx-2 transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-1">Soporte</a>
                             <div class="border-t border-gray-400/70 dark:border-gray-700 my-2"></div>
                             <form method="POST" action="{{ route('logout') }}" class="mx-2">
                                 @csrf
                                 <a href="{{ route('logout') }}" 
                                 onclick="event.preventDefault(); this.closest('form').submit();"
-                                class="block px-4 md:px-6 py-2 md:py-3 text-sm text-red-600 hover:bg-red-100 rounded-lg">
+                                class="block px-4 md:px-6 py-2 md:py-3 text-sm text-red-600 hover:bg-red-100 rounded-lg transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-1">
                                     {{ __('Cerrar Sección') }}
                                 </a>
                             </form>
@@ -208,6 +211,7 @@
                     
                 </div>
             </div>
+          
         </header>
 
 

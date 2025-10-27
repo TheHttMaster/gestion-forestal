@@ -77,7 +77,7 @@
 }
 
  .sidebar .nav-item.active {
-    background: linear-gradient(135deg, #9b5932e8 0%, #1d0e04d2 100%);
+    background: linear-gradient(135deg, #884722e8 0%, #1d0e04da 100%);
     color: #fff;
     box-shadow: 0 4px 15px rgba(92, 63, 30, 0.219);
 } 
@@ -92,7 +92,7 @@
 }
 
 .sidebar .nav-item:hover {
-    background: linear-gradient(135deg, #a5633069 0%, #27160b94 100%);
+    background: linear-gradient(135deg, #954e1770 0%, #522306b1 100%);
     color: #fafafa;
 }
 
@@ -290,19 +290,7 @@
 }
 
 
-/* Hover effects */
-.hover-lift {
-    transition: all 0.3s ease;
-}
 
-.hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.dark .hover-lift:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-}
 
 /* Progress bars with moderately rounded ends */
 .progress-bar {
@@ -664,34 +652,33 @@ li .h23 a:hover{
 }
 
 /* ======================= */
-/* MODAL COMO VENTANA MÓVIL */
+/* MODAL COMO VENTANA MÓVIL - CORREGIDO */
 /* ======================= */
 
-/* Fondo del modal - translúcido pero no bloqueante */
+/* Fondo del modal - posición fija en esquina superior derecha */
 #manual-polygon-modal {
     position: fixed;
-    top: 20px;
+    top: 80px; /* Ajustado para que no quede detrás de los controles del mapa */
     right: 20px;
     left: auto;
     bottom: auto;
-    width: 420px;
+    width: 380px;
     max-width: calc(100vw - 40px);
     height: auto;
-    max-height: calc(100vh - 40px);
+    max-height: calc(100vh - 100px);
     transform: none;
     margin: 0;
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    z-index: 10000;
-    background-color: transparent !important;
+    z-index: 1000; /* Asegura que esté sobre el mapa */
     backdrop-filter: none;
 }
 
 /* Contenedor principal del modal */
 #manual-polygon-modal > div {
     width: 100%;
-    max-height: 85vh;
+    max-height: 75vh;
     overflow-y: auto;
     border-radius: 16px;
     animation: slideInFromRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -701,7 +688,53 @@ li .h23 a:hover{
         0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
 
-/* Animación de entrada desde la derecha */
+/* Estados del modal - CORREGIDO */
+#manual-polygon-modal.hidden {
+    display: none !important;
+}
+
+#manual-polygon-modal:not(.hidden) {
+    display: flex !important;
+}
+
+/* Asegurar que el z-index sea mayor que los controles del mapa */
+#map-controls {
+    z-index: 10 !important;
+}
+
+#manual-polygon-modal {
+    z-index: 1000 !important;
+}
+
+
+/* Mejoras de scroll para el modal */
+#manual-polygon-modal > div::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Responsive mejorado */
+@media (max-width: 768px) {
+    #manual-polygon-modal {
+        width: 380px;
+        right: 10px;
+        top: 70px;
+    }
+}
+
+@media (max-width: 480px) {
+    #manual-polygon-modal {
+        width: calc(100vw - 20px);
+        right: 10px;
+        left: 10px;
+        top: 70px;
+    }
+    
+    #manual-polygon-modal > div {
+        max-height: 80vh;
+    }
+}
+
+/* ANIMACIONES DEL MODAL - VERSIÓN CORREGIDA */
 @keyframes slideInFromRight {
     from {
         opacity: 0;
@@ -713,7 +746,6 @@ li .h23 a:hover{
     }
 }
 
-/* Animación de salida */
 @keyframes slideOutToRight {
     from {
         opacity: 1;
@@ -725,213 +757,53 @@ li .h23 a:hover{
     }
 }
 
-/* Header más compacto y elegante */
-#manual-polygon-modal .flex.justify-between {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid;
-    position: sticky;
-    top: 0;
-    background: inherit;
-    border-radius: 16px 16px 0 0;
-    backdrop-filter: blur(10px);
+/* Estado inicial - completamente oculto */
+#manual-polygon-modal {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1000;
+    display: none; /* Oculto por defecto */
 }
 
-/* Modo claro - Header */
-#manual-polygon-modal .flex.justify-between {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border-bottom-color: #e2e8f0;
-}
-
-/* Modo oscuro - Header */
-.dark #manual-polygon-modal .flex.justify-between {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-bottom-color: #334155;
-}
-
-/* Botón de cerrar más compacto y atractivo */
-#close-modal {
-    padding: 6px;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    background: rgba(0, 0, 0, 0.05);
-}
-
-#close-modal:hover {
-    background: rgba(0, 0, 0, 0.1);
-    transform: rotate(90deg);
-}
-
-.dark #close-modal {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.dark #close-modal:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* Contenido del formulario más compacto */
-#manual-polygon-form {
-    padding: 1.5rem;
-}
-
-/* Ajustes para los botones de método */
-#method-single, #method-bulk {
-    transition: all 0.3s ease;
-    border-radius: 8px;
-    font-weight: 500;
-}
-
-/* Inputs más compactos */
-#single-input input,
-#bulk-input textarea {
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-#single-input input:focus,
-#bulk-input textarea:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Lista de coordenadas */
-#coords-container {
-    max-height: 120px;
-    overflow-y: auto;
-}
-
-#coords-container::-webkit-scrollbar {
-    width: 4px;
-}
-
-#coords-container::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 2px;
-}
-
-#coords-container::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 2px;
-}
-
-.dark #coords-container::-webkit-scrollbar-track {
-    background: #334155;
-}
-
-.dark #coords-container::-webkit-scrollbar-thumb {
-    background: #475569;
-}
-
-/* Botones de acción en el modal */
-#manual-polygon-form button[type="submit"],
-#cancel-modal {
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-#manual-polygon-form button[type="submit"] {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-}
-
-#manual-polygon-form button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
-}
-
-/* Efectos de hover para botones secundarios */
-#cancel-modal:hover {
-    transform: translateY(-1px);
-}
-
-/* Responsive para tablets */
-@media (max-width: 768px) {
-    #manual-polygon-modal {
-        width: 380px;
-        right: 10px;
-        top: 10px;
-    }
-}
-
-/* Responsive para móviles */
-@media (max-width: 480px) {
-    #manual-polygon-modal {
-        width: calc(100vw - 20px);
-        right: 10px;
-        left: 10px;
-        top: 10px;
-    }
-    
-    #manual-polygon-modal > div {
-        max-height: 90vh;
-    }
-}
-
-/* Estados del modal */
-#manual-polygon-modal.hidden {
-    display: none;
-}
-
+/* Cuando el modal está visible */
 #manual-polygon-modal:not(.hidden) {
-    display: flex;
+    display: flex !important;
+    align-items: flex-start;
+    justify-content: flex-end;
 }
 
-/* Asegurar que el modal tenga buena legibilidad */
-#manual-polygon-modal h3 {
-    font-weight: 700;
-    font-size: 1.25rem;
+/* Cuando el modal está visible y no está en estado de cierre */
+#manual-polygon-modal:not(.hidden):not(.closing) > div {
+    animation: slideInFromRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Efecto de glassmorphism para el modal */
-#manual-polygon-modal > div {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+/* Cuando el modal está en estado de cierre */
+#manual-polygon-modal.closing > div {
+    animation: slideOutToRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Modo claro - Fondo del modal */
-#manual-polygon-modal > div {
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+/* IMPORTANTE: Evitar que se muestre durante la animación de salida */
+#manual-polygon-modal.hidden {
+    display: none !important;
 }
 
-/* Modo oscuro - Fondo del modal */
-.dark #manual-polygon-modal > div {
-    background: rgba(15, 23, 42, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+/* Hover translate solo cuando sidebar expandido */
+.sidebar:not(.collapsed) .sidebar-hover-translate:hover {
+    transform: scale(1.03) translateY(-0.125rem);
 }
 
-/* Mejoras visuales para los botones de método activos */
-#method-single.bg-blue-600,
-#method-bulk.bg-blue-600 {
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+/* Cuando colapsado, solo scale */
+.sidebar.collapsed .sidebar-hover-translate:hover {
+    transform: scale(1.03);
 }
 
-/* Estilo para la lista de coordenadas */
-#coords-container div {
-    padding: 6px 8px;
-    margin: 2px 0;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.03);
-    transition: background 0.2s ease;
+/* group-hover:ml-2 solo cuando el sidebar está expandido */
+.sidebar:not(.collapsed) .group:hover .group-hover-ml-2 {
+    margin-left: 0.5rem; /* ml-2 */
 }
 
-.dark #coords-container div {
-    background: rgba(255, 255, 255, 0.05);
+/* Cuando el sidebar está colapsado, eliminar el margin-left en hover */
+.sidebar.collapsed .group:hover .group-hover-ml-2 {
+    margin-left: 0 !important;
 }
-
-#coords-container div:hover {
-    background: rgba(0, 0, 0, 0.06);
-}
-
-.dark #coords-container div:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-
-
-
