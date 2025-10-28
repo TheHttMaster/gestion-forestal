@@ -46,7 +46,7 @@ class CreateProvider extends Component
             'city' => 'ciudad',
             'country' => 'país',
             'notes' => 'notas',
-            'is_active' => 'proveedor activo'
+            'is_active' => 'productor activo'
         ];
     }
 
@@ -56,7 +56,7 @@ class CreateProvider extends Component
         $this->validateOnly($propertyName);
     }
 
-    // Método para guardar el nuevo proveedor
+    // Método para guardar el nuevo productor
     public function store()
     {
         $validatedData = $this->validate();
@@ -67,7 +67,7 @@ class CreateProvider extends Component
         return redirect()->route('providers.index')->with('swal', [
             'icon' => 'success',
             'title' => 'Éxito',
-            'text' => 'Proveedor creado exitosamente.'
+            'text' => 'productor creado exitosamente.'
         ]);
     }
 

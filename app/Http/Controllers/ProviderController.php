@@ -10,7 +10,7 @@ use App\Http\Requests\UpdateProviderRequest;
 class ProviderController extends Controller
 {
     /**
-     * Muestra la lista de proveedores con filtros.
+     * Muestra la lista de productores con filtros.
      */
     public function index(Request $request)
     {
@@ -41,7 +41,7 @@ class ProviderController extends Controller
     }
 
     /**
-     * Muestra el formulario para crear un nuevo proveedor.
+     * Muestra el formulario para crear un nuevo productor.
      */
     public function create()
     {
@@ -49,7 +49,7 @@ class ProviderController extends Controller
     }
 
     /**
-     * Guarda un nuevo proveedor en la base de datos.
+     * Guarda un nuevo productor en la base de datos.
      */
     public function store(StoreProviderRequest $request)
     {
@@ -61,7 +61,7 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
-                    'text' => 'Proveedor creado exitosamente.'
+                    'text' => 'productor creado exitosamente.'
                 ]);
         } catch (\Exception $e) {
             // Alerta de error con SweetAlert2
@@ -70,13 +70,13 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'error',
                     'title' => 'Error',
-                    'text' => 'Error al crear el proveedor: ' . $e->getMessage()
+                    'text' => 'Error al crear el productor: ' . $e->getMessage()
                 ]);
         }
     }
 
     /**
-     * Muestra los detalles de un proveedor.
+     * Muestra los detalles de un productor.
      */
     public function show(Provider $provider)
     {
@@ -84,7 +84,7 @@ class ProviderController extends Controller
     }
 
     /**
-     * Muestra el formulario para editar un proveedor.
+     * Muestra el formulario para editar un productor.
      */
     public function edit(Provider $provider)
     {
@@ -92,7 +92,7 @@ class ProviderController extends Controller
     }
 
     /**
-     * Actualiza un proveedor existente.
+     * Actualiza un productor existente.
      */
     public function update(UpdateProviderRequest $request, Provider $provider)
     {
@@ -104,7 +104,7 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
-                    'text' => 'Proveedor actualizado exitosamente.'
+                    'text' => 'productor actualizado exitosamente.'
                 ]);
         } catch (\Exception $e) {
             // Alerta de error con SweetAlert2
@@ -113,13 +113,13 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'error',
                     'title' => 'Error',
-                    'text' => 'Error al actualizar el proveedor: ' . $e->getMessage()
+                    'text' => 'Error al actualizar el productor: ' . $e->getMessage()
                 ]);
         }
     }
 
     /**
-     * Elimina (soft delete) un proveedor.
+     * Elimina (soft delete) un productor.
      */
     public function destroy(Provider $provider)
     {
@@ -131,7 +131,7 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
-                    'text' => 'Proveedor eliminado exitosamente.'
+                    'text' => 'productor eliminado exitosamente.'
                 ]);
         } catch (\Exception $e) {
             // Alerta de error con SweetAlert2
@@ -139,13 +139,13 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'error',
                     'title' => 'Error',
-                    'text' => 'Error al eliminar el proveedor: ' . $e->getMessage()
+                    'text' => 'Error al eliminar el productor: ' . $e->getMessage()
                 ]);
         }
     }
 
     /**
-     * Restaura un proveedor eliminado.
+     * Restaura un productor eliminado.
      */
     public function restore($id)
     {
@@ -158,7 +158,7 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
-                    'text' => 'Proveedor restaurado exitosamente.'
+                    'text' => 'productor restaurado exitosamente.'
                 ]);
         } catch (\Exception $e) {
             // Alerta de error con SweetAlert2
@@ -166,13 +166,13 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'error',
                     'title' => 'Error',
-                    'text' => 'Error al restaurar el proveedor: ' . $e->getMessage()
+                    'text' => 'Error al restaurar el productor: ' . $e->getMessage()
                 ]);
         }
     }
 
     /**
-     * Elimina permanentemente un proveedor.
+     * Elimina permanentemente un productor.
      */
     public function forceDelete($id)
     {
@@ -185,7 +185,7 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
-                    'text' => 'Proveedor eliminado permanentemente.'
+                    'text' => 'productor eliminado permanentemente.'
                 ]);
         } catch (\Exception $e) {
             // Alerta de error con SweetAlert2
@@ -193,13 +193,13 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'error',
                     'title' => 'Error',
-                    'text' => 'Error al eliminar permanentemente el proveedor: ' . $e->getMessage()
+                    'text' => 'Error al eliminar permanentemente el productor: ' . $e->getMessage()
                 ]);
         }
     }
 
     /**
-     * Cambia el estado (activo/inactivo) de un proveedor.
+     * Cambia el estado (activo/inactivo) de un productor.
      */
     public function toggleStatus(Provider $provider)
     {
@@ -213,7 +213,7 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
-                    'text' => "Proveedor {$status} exitosamente."
+                    'text' => "productor {$status} exitosamente."
                 ]);
         } catch (\Exception $e) {
             // Alerta de error con SweetAlert2
@@ -221,7 +221,7 @@ class ProviderController extends Controller
                 ->with('swal', [
                     'icon' => 'error',
                     'title' => 'Error',
-                    'text' => 'Error al cambiar el estado del proveedor: ' . $e->getMessage()
+                    'text' => 'Error al cambiar el estado del productor: ' . $e->getMessage()
                 ]);
         }
     }

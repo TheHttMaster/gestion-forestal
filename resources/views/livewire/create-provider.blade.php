@@ -3,7 +3,7 @@
         @csrf
 
         <div>
-            <x-input-label for="name" :value="__('Nombre del Proveedor *')" />
+            <x-input-label for="name" :value="__('Nombre del productor *')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" wire:model.live.debounce.250ms="name" autofocus />
             <x-input-error :messages="$errors->first('name')" class="mt-2" />
         </div>
@@ -47,13 +47,13 @@
 
         <div class="mt-4 flex items-center">
             <input type="checkbox" id="is_active" wire:model="is_active" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-            <label for="is_active" class="ml-2 block text-sm text-gray-900 dark:text-gray-100">Proveedor activo</label>
+            <label for="is_active" class="ml-2 block text-sm text-gray-900 dark:text-gray-100">productor activo</label>
         </div>
 
         <div class="flex items-center justify-end mt-6 space-x-4">
             <x-go-back-button />
             <x-primary-button>
-                {{ __('Guardar Proveedor') }}
+                {{ __('Guardar productor') }}
             </x-primary-button>
         </div>
     </form>
