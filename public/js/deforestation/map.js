@@ -111,7 +111,7 @@ class DeforestationMap {
         const initialZoom = 12; // Ajusta según necesites
 
         // Resto del código de GFW y capas vectoriales permanece igual...
-        const GFW_LOSS_URL = 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png';
+        const GFW_LOSS_URL = 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png?date=2015-01-01';
 
         this.gfwLossLayer = new ol.layer.Tile({
             source: new ol.source.XYZ({
@@ -234,7 +234,7 @@ class DeforestationMap {
      * Nota: Útil para usuarios técnicos y para depuración.
      */
     setupCoordinateDisplay() {
-    console.log('🟢 INICIANDO COORDINATE DISPLAY UTM...');
+    console.log('INICIANDO COORDINATE DISPLAY UTM...');
     
     // Eliminar cualquier display anterior
     const existingDisplays = document.querySelectorAll('.coordinate-display');

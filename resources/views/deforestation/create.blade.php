@@ -329,13 +329,13 @@
                         
                         <input type="hidden" name="geometry" id="geometry">
                         
-                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center">
-                            <span id="loading-spinner" class="d-none">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="submit" id="submit-button" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center">
+                            <span id="loading-spinner" class="hidden mr-2">
+                                <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                 </svg>
                             </span>
-                            Analizar Deforestación
+                            <span id="button-text">Analizar Deforestación</span>
                         </button>
                     </form>
                     <!-- create.blade.php - Añadir después del formulario -->
@@ -358,6 +358,27 @@
                     </div>
                     
                     <div id="results" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loader overlay -->
+    <div id="loader-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+            <div class="flex flex-col items-center">
+                <!-- Spinner -->
+                <div class="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mb-4"></div>
+                
+                <!-- Texto -->
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Procesando análisis</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-center text-sm">
+                    Estamos analizando la deforestación en el área seleccionada. Esto puede tomar unos momentos...
+                </p>
+                
+                <!-- Indicador de progreso opcional -->
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-4">
+                    <div id="progress-bar" class="bg-green-600 h-2 rounded-full w-0 transition-all duration-300"></div>
                 </div>
             </div>
         </div>
@@ -1032,4 +1053,175 @@ document.getElementById('visibility-toggle-button').addEventListener('click', fu
         }
     }
 });
+
+// ===== LOADER DURANTE LA CONSULTA =====
+
+// Función para mostrar el loader
+function showLoader() {
+    const loaderOverlay = document.getElementById('loader-overlay');
+    const progressBar = document.getElementById('progress-bar');
+    
+    // Mostrar el overlay
+    loaderOverlay.classList.remove('hidden');
+    
+    // Simular progreso inicial
+    setTimeout(() => {
+        progressBar.style.width = '30%';
+    }, 500);
+    
+    // Simular progreso intermedio
+    setTimeout(() => {
+        progressBar.style.width = '60%';
+    }, 1500);
+    
+    // Simular progreso final (no llega al 100% hasta que termine la consulta)
+    setTimeout(() => {
+        progressBar.style.width = '85%';
+    }, 3000);
+}
+
+// Función para ocultar el loader
+function hideLoader() {
+    const loaderOverlay = document.getElementById('loader-overlay');
+    const progressBar = document.getElementById('progress-bar');
+    
+    // Completar la barra de progreso
+    progressBar.style.width = '100%';
+    
+    // Ocultar el overlay después de un breve delay para que se vea el 100%
+    setTimeout(() => {
+        loaderOverlay.classList.add('hidden');
+        // Resetear la barra de progreso
+        setTimeout(() => {
+            progressBar.style.width = '0%';
+        }, 300);
+    }, 500);
+}
+
+// Manejar el envío del formulario con AJAX
+document.getElementById('analysis-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitButton = document.getElementById('submit-button');
+    const buttonText = document.getElementById('button-text');
+    const spinner = document.getElementById('loading-spinner');
+    const resultsDiv = document.getElementById('results');
+    
+    // Validar que haya un polígono dibujado
+    const geometry = document.getElementById('geometry').value;
+    if (!geometry) {
+        window.deforestationMapInstance.showAlert('Debe dibujar un polígono en el mapa antes de analizar.', 'warning');
+        return;
+    }
+    
+    // Mostrar loader
+    showLoader();
+    
+    // Deshabilitar el botón y mostrar spinner en el botón
+    submitButton.disabled = true;
+    spinner.classList.remove('hidden');
+    buttonText.textContent = 'Analizando...';
+    
+    // Recoger datos del formulario
+    const formData = new FormData(this);
+    
+    // Enviar con fetch
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la red');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Ocultar loader
+        hideLoader();
+        
+        // Habilitar el botón y ocultar spinner en el botón
+        submitButton.disabled = false;
+        spinner.classList.add('hidden');
+        buttonText.textContent = 'Analizar Deforestación';
+        
+        if (data.success) {
+            resultsDiv.innerHTML = `<div class="mt-4 p-4 bg-green-100 text-green-800 rounded-md">${data.message}</div>`;
+            
+            // Si hay datos de productores, mostrarlos
+            if (data.producers && data.producers.length > 0) {
+                const producersInfo = document.getElementById('producers-info');
+                const producersList = document.getElementById('producers-list');
+                
+                producersList.innerHTML = '';
+                data.producers.forEach(producer => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${producer.name}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${producer.location}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900 dark:text-gray-100">${producer.area_ha.toFixed(2)}</td>
+                    `;
+                    producersList.appendChild(row);
+                });
+                
+                producersInfo.classList.remove('hidden');
+            }
+        } else {
+            resultsDiv.innerHTML = `<div class="mt-4 p-4 bg-red-100 text-red-800 rounded-md">${data.message}</div>`;
+        }
+    })
+    .catch(error => {
+        // Ocultar loader
+        hideLoader();
+        
+        // Habilitar el botón y ocultar spinner en el botón
+        submitButton.disabled = false;
+        spinner.classList.add('hidden');
+        buttonText.textContent = 'Analizar Deforestación';
+        
+        resultsDiv.innerHTML = `<div class="mt-4 p-4 bg-red-100 text-red-800 rounded-md">Error: ${error.message}</div>`;
+    });
+});
 </script>
+
+<style>
+/* Estilos para el loader */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Estilos para el slider de opacidad */
+.slider-thumb::-webkit-slider-thumb {
+    appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #4f46e5;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.slider-thumb::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #4f46e5;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+</style>
