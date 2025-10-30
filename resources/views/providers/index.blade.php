@@ -3,18 +3,18 @@
         <div class="bg-stone-100/90 dark:bg-custom-gray overflow-hidden shadow-sm sm:rounded-2xl shadow-soft p-4 md:p-6 lg:p-8">
             <div class="text-gray-900 dark:text-gray-100">
                 <h2 class="font-semibold text-xl leading-tight mb-4">
-                    {{ __('Lista de Proveedores') }}
+                    {{ __('Lista de productores') }}
                 </h2>
                 <div class="flex justify-end mb-4 space-x-4">
                     <a href="{{ route('providers.create') }}" class="px-4 py-2 bg-lime-600/90 text-white rounded-md hover:bg-lime-600">
-                        {{ __('Nuevo Proveedor') }}
+                        {{ __('Nuevo productor') }}
                     </a>
                 </div>
 
                 <!-- Filtros -->
                 <form method="GET" action="{{ route('providers.index') }}" class="mb-6">
                     <div class="flex flex-wrap gap-4">
-                        <input type="text" name="search" class="form-input rounded-md border-gray-300" placeholder="Buscar proveedores..." value="{{ $search ?? '' }}">
+                        <input type="text" name="search" class="form-input rounded-md border-gray-300" placeholder="Buscar productores..." value="{{ $search ?? '' }}">
                         <select name="status" class="form-select rounded-md border-gray-300">
                             <option value="all" {{ ($status ?? '') == 'all' ? 'selected' : '' }}>Todos</option>
                             <option value="active" {{ ($status ?? '') == 'active' ? 'selected' : '' }}>Activos</option>
@@ -135,7 +135,7 @@
                     </div>
                 @else
                     <div class="alert alert-info">
-                        No se encontraron proveedores.
+                        No se encontraron productores.
                     </div>
                 @endif
             </div>

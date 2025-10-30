@@ -41,7 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/forest-stats', [ForestController::class, 'showStats'])->name('forest.stats');
     Route::get('/radd-alerts', [ForestController::class, 'showRADDAlerts']);
 
-   // RUTAS DE PROVEEDORES 
+   // RUTAS DE productorES 
     Route::resource('providers', ProviderController::class)->names([
         'index' => 'providers.index',
         'create' => 'providers.create', 
@@ -49,7 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'update' => 'providers.update',
     ]);
 
-    // Rutas adicionales para funcionalidades extra de proveedores
+    // Rutas adicionales para funcionalidades extra de productores
     Route::prefix('providers')->group(function () {
         Route::post('{provider}/toggle-status', [ProviderController::class, 'toggleStatus'])
             ->name('providers.toggle-status');

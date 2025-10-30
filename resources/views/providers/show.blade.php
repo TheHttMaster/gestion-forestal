@@ -4,7 +4,7 @@
             <div class="flex-1">
                 <div class="bg-stone-100/90 dark:bg-custom-gray rounded-2xl shadow-soft p-6 mb-6">
                     <h2 class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight mb-4">
-                        Detalles del Proveedor
+                        Detalles del productor
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -42,7 +42,7 @@
                     <div class="flex flex-col gap-4">
                         <a href="{{ route('providers.edit', $provider) }}"
                            class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
-                            <i class="fas fa-edit mr-2"></i> Editar Proveedor
+                            <i class="fas fa-edit mr-2"></i> Editar productor
                         </a>
                         <form action="{{ route('providers.toggle-status', $provider) }}" method="POST">
                             @csrf

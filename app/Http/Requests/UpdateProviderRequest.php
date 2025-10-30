@@ -31,10 +31,10 @@ class UpdateProviderRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => 'El nombre del proveedor es obligatorio.',
-            'name.unique' => 'Ya existe un proveedor con este nombre.',
+            'name.required' => 'El nombre del productor es obligatorio.',
+            'name.unique' => 'Ya existe un productor con este nombre.',
             'email.email' => 'El email debe ser una dirección válida.',
-            'email.unique' => 'Ya existe un proveedor con este email.',
+            'email.unique' => 'Ya existe un productor con este email.',
         ];
     }
 }

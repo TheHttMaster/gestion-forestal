@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 class EditProvider extends Component
 {
-    // Propiedad para el proveedor que se va a editar
+    // Propiedad para el productor que se va a editar
     public Provider $provider;
 
     // Propiedades para los campos del formulario
@@ -61,7 +61,7 @@ class EditProvider extends Component
             'city' => 'ciudad',
             'country' => 'país',
             'notes' => 'notas',
-            'is_active' => 'proveedor activo'
+            'is_active' => 'productor activo'
         ];
     }
 
@@ -71,7 +71,7 @@ class EditProvider extends Component
         $this->validateOnly($propertyName);
     }
 
-    // Método para actualizar el proveedor
+    // Método para actualizar el productor
     public function update()
     {
         $validatedData = $this->validate();
@@ -82,7 +82,7 @@ class EditProvider extends Component
         return redirect()->route('providers.index')->with('swal', [
             'icon' => 'success',
             'title' => 'Éxito',
-            'text' => 'Proveedor actualizado exitosamente.'
+            'text' => 'productor actualizado exitosamente.'
         ]);
     }
 
