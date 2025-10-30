@@ -36,53 +36,46 @@ class DeforestationController extends Controller
     /**
      * Procesa el análisis de deforestación
      */
-    public function analyze(Request $request)
-    {
-        // 1. Obtener los datos del Request y asignarlos a variables
-    
-        // Obtiene el valor del campo 'end_year' y lo guarda en $year
-        $year = $request->input('end_year'); 
+    /**
+ * Procesa el análisis de deforestación
+ */
+public function analyze(Request $request)
+{
+    // 1. Obtener los datos del Request y asignarlos a variables
+    $year = $request->input('end_year'); 
+    $geometryString = $request->input('geometry');
+    $areaHa = $request->input('area_ha'); // NUEVO: Área en hectáreas
+
+    // 2. Decodificación y Estructuración del GeoJSON
+    try {
+        $geometryGeoJson = json_decode($geometryString, true); 
         
-        // Obtiene la cadena GeoJSON del campo 'geometry' y la guarda en $geometryString
-        $geometryString = $request->input('geometry');
-        
-        // 2. Decodificación y Estructuración del GeoJSON
-        try {
-            // A. Decodificar la cadena GeoJSON en un array asociativo de PHP
-            $geometryGeoJson = json_decode($geometryString, true); 
-            
-            // El segundo parámetro (true) es crucial:
-            // Si es TRUE, el objeto JSON se convierte en un array asociativo de PHP.
-            // Si es FALSE (por defecto), se convierte en un objeto estándar de PHP.
-
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // ... (Manejo de error de decodificación)
-            }
-
-            // ... (Lógica posterior)
-
-        } catch (\Exception $e) {
-            echo "error: " . $e->getMessage();
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return back()->withErrors(['geometry' => 'Formato GeoJSON inválido']);
         }
-        
 
-        $stats = $this->gfwService->getZonalStats($geometryGeoJson, $year);
+    } catch (\Exception $e) {
+        return back()->withErrors(['error' => 'Error procesando la geometría: ' . $e->getMessage()]);
+    }
 
-        // Creamos un array que contiene todas las variables que queremos mostrar en la vista
-        $dataToPass = [
-            'analysis_year' => $year,
-            'original_geojson' => $geometryString,
-            'type' => $geometryGeoJson['type'],
-            'geometry' => $geometryGeoJson['coordinates'][0],
-            'area__ha' => $stats['data'][0]['area__ha'],
-            'status' => $stats['status'],
-        ];
+    $stats = $this->gfwService->getZonalStats($geometryGeoJson, $year);
 
-        /* dd([$dataToPass]); */
+    // Creamos un array que contiene todas las variables que queremos mostrar en la vista
+    $dataToPass = [
+        'analysis_year' => $year,
+        'original_geojson' => $geometryString,
+        'type' => $geometryGeoJson['type'],
+        'geometry' => $geometryGeoJson['coordinates'][0],
+        'area__ha' => $stats['data'][0]['area__ha'] ?? 0, // Área deforestada del servicio GFW
+        'polygon_area_ha' => floatval($areaHa), // NUEVO: Área total del polígono
+        'status' => $stats['status'],
+        'polygon_name' => $request->input('name', 'Área de Estudio'), // Nombre del área
+        'description' => $request->input('description', ''), // Descripción
+    ];
 
-        return view('deforestation.results', compact('dataToPass'));
+    return view('deforestation.results', compact('dataToPass'));
 
-    } /*################## fin de la funcion analyze #################*/
+} /*################## fin de la funcion analyze #################*/
         
     public function multipleResults(Request $request): View
     {

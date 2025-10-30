@@ -174,15 +174,27 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-line-icon w-6 h-6 lucide-clear">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
-                                        
                                     </button>
-
-                                    
-                                    
-                                
+                                </div>
 
                                 {{-- ///////////////////////////////////////////////////// --}}
                                 
+                            <div class="flex space-x-2">
+                                <!-- Display del área en hectáreas -->
+                                <div id="area-display" class="hidden bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-lg shadow-lg">
+                                    <div class="flex items-center space-x-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ruler">
+                                            <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/>
+                                            <path d="m14.5 12.5 2-2"/>
+                                            <path d="m11.5 9.5 2-2"/>
+                                            <path d="m8.5 6.5 2-2"/>
+                                            <path d="m17.5 15.5 2-2"/>
+                                        </svg>
+                                        <span class="text-sm font-medium">Área:</span>
+                                        <span id="area-value" class="text-sm font-bold">0.00</span>
+                                        <span class="text-sm">ha</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -328,6 +340,7 @@
                         </div>
                         
                         <input type="hidden" name="geometry" id="geometry">
+                        <input type="hidden" name="area_ha" id="area_ha">
                         
                         <button type="submit" id="submit-button" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center">
                             <span id="loading-spinner" class="hidden mr-2">
@@ -694,71 +707,10 @@ function removeCoordinate(index) {
 }
 
 // FUNCIÓN CLAVE: Dibujar polígono UTM universal
+
 function drawUniversalUTMPolygon(utmCoordinates) {
-    try {
-        // 1. Convertir todas las coordenadas UTM a WGS84
-        const wgs84Coordinates = utmCoordinates.map(coord => {
-            const [easting, northing, zone, hemisphere] = coord;
-            
-            // Configurar la proyección UTM dinámicamente
-            const sourceEpsg = setupUTMProjection(zone, hemisphere);
-            
-            // Convertir UTM a WGS84 (lat/lon)
-            const [longitude, latitude] = proj4(sourceEpsg, 'EPSG:4326', [easting, northing]);
-            
-            return [longitude, latitude];
-        });
-        
-        // 2. Verificar que las conversiones sean válidas
-        const invalidCoords = wgs84Coordinates.filter(coord => 
-            isNaN(coord[0]) || isNaN(coord[1]) || 
-            Math.abs(coord[0]) > 180 || Math.abs(coord[1]) > 90
-        );
-        
-        if (invalidCoords.length > 0) {
-            showAlert('Algunas coordenadas UTM son inválidas o están fuera de rango', 'error');
-            return;
-        }
-        
-        // 3. Cerrar el polígono si no está cerrado
-        const firstCoord = wgs84Coordinates[0];
-        const lastCoord = wgs84Coordinates[wgs84Coordinates.length - 1];
-        
-        if (firstCoord[0] !== lastCoord[0] || firstCoord[1] !== lastCoord[1]) {
-            wgs84Coordinates.push(firstCoord);
-        }
-        
-        // 4. Crear y dibujar el polígono
-        const feature = new ol.Feature({
-            geometry: new ol.geom.Polygon([wgs84Coordinates]).transform('EPSG:4326', 'EPSG:3857')
-        });
-        
-        window.deforestationMapInstance.clearMap();
-        window.deforestationMapInstance.source.addFeature(feature);
-        
-        // 5. Ajustar la vista al polígono
-        window.deforestationMapInstance.map.getView().fit(
-            feature.getGeometry().getExtent(),
-            { padding: [50, 50, 50, 50], duration: 1000 }
-        );
-        
-        // 6. Guardar como GeoJSON
-        window.deforestationMapInstance.convertToGeoJSON(feature);
-        
-        // 7. Mostrar información de zonas utilizadas
-        const zonesUsed = [...new Set(utmCoordinates.map(coord => 
-            `Zona ${coord[2]}${coord[3]}`
-        ))];
-        const zonesText = zonesUsed.sort().join(', ');
-        
-        window.deforestationMapInstance.showAlert(
-            `Polígono dibujado exitosamente (${zonesText})`, 
-            'success'
-        );
-        
-    } catch (error) {
-        console.error('Error al procesar coordenadas UTM:', error);
-        showAlert('Error al procesar coordenadas UTM. Verifique los valores y formatos.', 'error');
+    if (window.deforestationMapInstance) {
+        window.deforestationMapInstance.drawFromUTMCoordinates(utmCoordinates);
     }
 }
 
@@ -1025,7 +977,7 @@ document.addEventListener('keydown', function(e) {
 // Event listeners para botones de dibujo y limpieza
 document.getElementById('draw-polygon').addEventListener('click', function() {
     if (window.deforestationMapInstance) {
-        window.deforestationMapInstance.toggleDrawInteraction();
+        window.deforestationMapInstance.activateDrawing();
     }
 });
 
@@ -1038,7 +990,7 @@ document.getElementById('clear-map').addEventListener('click', function() {
 // Toggle visibilidad de áreas en deforestación
 document.getElementById('visibility-toggle-button').addEventListener('click', function() {
     if (window.deforestationMapInstance) {
-        window.deforestationMapInstance.toggleDeforestationVisibility();
+        window.deforestationMapInstance.toggleGFWVisibility();
         
         // Alternar iconos de ojo abierto/cerrado
         const iconOpen = document.getElementById('icon-eye-open');
@@ -1186,6 +1138,79 @@ document.getElementById('analysis-form').addEventListener('submit', function(e) 
         resultsDiv.innerHTML = `<div class="mt-4 p-4 bg-red-100 text-red-800 rounded-md">Error: ${error.message}</div>`;
     });
 });
+
+// Función para calcular área en hectáreas desde coordenadas WGS84
+function calculateAreaHectares(coordinates) {
+    if (!coordinates || coordinates.length < 3) return 0;
+    
+    try {
+        // Usar la fórmula del shoelace para calcular área en metros cuadrados
+        let area = 0;
+        const n = coordinates.length;
+        
+        for (let i = 0; i < n; i++) {
+            const j = (i + 1) % n;
+            const xi = coordinates[i][0];
+            const yi = coordinates[i][1];
+            const xj = coordinates[j][0];
+            const yj = coordinates[j][1];
+            
+            area += xi * yj - xj * yi;
+        }
+        
+        // El área está en grados², necesitamos convertir a metros²
+        // Aproximación: 1 grado ≈ 111,320 metros (para latitud)
+        area = Math.abs(area) / 2;
+        
+        // Conversión más precisa considerando la latitud media
+        const avgLat = coordinates.reduce((sum, coord) => sum + coord[1], 0) / n;
+        const metersPerDegreeLat = 111320; // metros por grado de latitud
+        const metersPerDegreeLon = 111320 * Math.cos(avgLat * Math.PI / 180);
+        
+        // Convertir a metros cuadrados
+        const areaM2 = area * metersPerDegreeLat * metersPerDegreeLon;
+        
+        // Convertir a hectáreas (1 ha = 10,000 m²)
+        const areaHa = areaM2 / 10000;
+        
+        return Math.abs(areaHa);
+    } catch (error) {
+        console.error('Error calculando área:', error);
+        return 0;
+    }
+}
+
+// Función para actualizar el display del área
+function updateAreaDisplay(areaHa) {
+    const areaDisplay = document.getElementById('area-display');
+    const areaValue = document.getElementById('area-value');
+    
+    if (areaHa > 0) {
+        areaValue.textContent = areaHa.toFixed(2);
+        areaDisplay.classList.remove('hidden');
+    } else {
+        areaDisplay.classList.add('hidden');
+    }
+}
+
+// Función para calcular área desde un polígono OpenLayers
+function calculatePolygonArea(feature) {
+    if (!feature || !feature.getGeometry()) return 0;
+    
+    const geometry = feature.getGeometry();
+    if (geometry.getType() !== 'Polygon') return 0;
+    
+    try {
+        // Obtener coordenadas en WGS84
+        const polygon = geometry.clone().transform('EPSG:3857', 'EPSG:4326');
+        const coordinates = polygon.getCoordinates()[0]; // Primer anillo (exterior)
+        
+        return calculateAreaHectares(coordinates);
+    } catch (error) {
+        console.error('Error calculando área del polígono:', error);
+        return 0;
+    }
+}
 </script>
 
 <style>
