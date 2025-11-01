@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'), // CAMBIAR 'log' por env() o 'smtp'
+    'default' => env(key: 'MAIL_MAILER', default: 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
