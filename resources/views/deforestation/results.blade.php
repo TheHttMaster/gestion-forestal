@@ -187,7 +187,7 @@
                         <h3 class="font-semibold text-xl text-gray-900 dark:text-gray-100 mb-3">
                             Distribución del Área
                         </h3>
-                        <div class="bg-gray-100 dark:bg-gray-800/40 p-4 rounded-lg shadow-inner">
+                        <div class="bg-gray-100 dark:bg-gray-800/40 p-4 rounded-lg shadow-inner" style="height: 430px;">
                             <canvas id="area-distribution-chart"></canvas>
                         </div>
                     </div>
@@ -262,6 +262,7 @@ new Chart(ctx, {
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,  // ← ESTA LÍNEA ES LA CLAVE
         plugins: {
             legend: {
                 position: 'bottom',

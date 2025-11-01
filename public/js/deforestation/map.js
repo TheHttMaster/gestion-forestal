@@ -226,60 +226,88 @@ class DeforestationMap {
     }
 
     /**
-     * Configura el display de coordenadas UTM/geográficas en el mapa.
-     * Nota: Útil para usuarios técnicos y para depuración.
-     */
-    setupCoordinateDisplay() {
-        console.log('INICIANDO COORDINATE DISPLAY UTM...');
-        
-        // Eliminar cualquier display anterior
-        const existingDisplays = document.querySelectorAll('.coordinate-display');
-        existingDisplays.forEach(display => display.remove());
-        
-        this.coordinateDisplay = document.createElement('div');
-        this.coordinateDisplay.className = 'coordinate-display';
-        this.coordinateDisplay.style.display = 'none';
-        
-        const mapContainer = this.map.getTargetElement();
-        mapContainer.appendChild(this.coordinateDisplay);
+ * Configura el display de coordenadas UTM/geográficas en el mapa.
+ * Versión CORREGIDA con conversión UTM precisa.
+ */
+setupCoordinateDisplay() {
+    console.log('INICIANDO COORDINATE DISPLAY UTM PRECISO...');
+    
+    // Eliminar cualquier display anterior
+    const existingDisplays = document.querySelectorAll('.coordinate-display');
+    existingDisplays.forEach(display => display.remove());
+    
+    this.coordinateDisplay = document.createElement('div');
+    this.coordinateDisplay.className = 'coordinate-display';
+    this.coordinateDisplay.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 12px;
+        border: 1px solid #ccc;
+        z-index: 1000;
+        display: none;
+    `;
+    
+    const mapContainer = this.map.getTargetElement();
+    mapContainer.style.position = 'relative';
+    mapContainer.appendChild(this.coordinateDisplay);
 
-        // **SOLUCIÓN SIMPLIFICADA Y CONFIABLE**
-        this.map.on('pointermove', (evt) => {
-            if (evt.dragging) return;
+    // **CONVERSIÓN UTM PRECISA - REEMPLAZANDO LA VERSIÓN ANTERIOR**
+    this.map.on('pointermove', (evt) => {
+        if (evt.dragging) return;
+        
+        const coordinate = evt.coordinate;
+        const lonLat = ol.proj.toLonLat(coordinate);
+        const lon = lonLat[0];
+        const lat = lonLat[1];
+        
+        // Calcular zona UTM precisa
+        const zone = Math.floor((lon + 180) / 6) + 1;
+        const hemisphere = lat >= 0 ? 'N' : 'S';
+        
+        try {
+            // **USAR PROJ4 PARA CONVERSIÓN PRECISA**
+            const epsgCode = this.setupUTMProjection(zone, hemisphere);
+            const [easting, northing] = proj4('EPSG:4326', epsgCode, [lon, lat]);
             
-            const coordinate = evt.coordinate;
-            const lonLat = ol.proj.toLonLat(coordinate);
-            const lon = lonLat[0];
-            const lat = lonLat[1];
+            // **VALIDAR RANGOS UTM CORRECTOS**
+            if (this.isValidUTM(easting, northing, zone, hemisphere)) {
+                this.coordinateDisplay.textContent = 
+                    `Zona ${zone}${hemisphere} | ` +
+                    `Este: ${easting.toFixed(2)} | ` +
+                    `Norte: ${northing.toFixed(2)}`;
+                    
+                this.coordinateDisplay.style.display = 'block';
+            } else {
+                this.coordinateDisplay.style.display = 'none';
+            }
             
-            // Calcular zona UTM
-            const zone = Math.floor((lon + 180) / 6) + 1;
-            const hemisphere = lat >= 0 ? 'north' : 'south';
-            
-            // **CONVERSIÓN MANUAL SIMPLIFICADA - SIN DEPENDER DE PROYECCIONES UTM**
-            // Fórmula aproximada para mostrar UTM (solo para display, no para cálculos precisos)
-            const earthRadius = 6378137; // Radio terrestre en metros
-            const scale = 0.9996; // Factor de escala UTM
-            
-            // Coordenadas relativas al meridiano central
-            const centralMeridian = (zone * 6 - 183) * (Math.PI / 180);
-            const lonRad = lon * (Math.PI / 180);
-            const latRad = lat * (Math.PI / 180);
-            
-            // Cálculo simplificado de UTM
-            const x = (lonRad - centralMeridian) * earthRadius * scale + 500000;
-            const y = Math.log(Math.tan(Math.PI/4 + latRad/2)) * earthRadius * scale;
-            const northing = hemisphere === 'north' ? y : 10000000 + y;
-            
-            // **MOSTRAR SOLO UTM**
-            this.coordinateDisplay.textContent = 
-                `Zona ${zone}${hemisphere === 'north' ? 'N' : 'S'} | ` +
-                `Este: ${x.toFixed(2)} m | ` +
-                `Norte: ${northing.toFixed(2)} m`;
-                
-            this.coordinateDisplay.style.display = 'block';
-        });
+        } catch (error) {
+            console.warn('Error en conversión UTM:', error);
+            this.coordinateDisplay.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * Valida que las coordenadas UTM estén dentro de rangos razonables
+ */
+isValidUTM(easting, northing, zone, hemisphere) {
+    // Validar easting (0-1,000,000 m)
+    if (easting < 0 || easting > 1000000) return false;
+    
+    // Validar northing según hemisferio
+    if (hemisphere === 'N') {
+        return northing >= 0 && northing <= 10000000;
+    } else {
+        return northing >= 1000000 && northing <= 10000000;
     }
+}
+  
 
     /**
      * Activa la herramienta de dibujo de polígonos con cálculo de área en tiempo real.
