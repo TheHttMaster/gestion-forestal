@@ -226,87 +226,91 @@ class DeforestationMap {
     }
 
     /**
- * Configura el display de coordenadas UTM/geográficas en el mapa.
- * Versión CORREGIDA con conversión UTM precisa.
- */
-setupCoordinateDisplay() {
-    console.log('INICIANDO COORDINATE DISPLAY UTM PRECISO...');
-    
-    // Eliminar cualquier display anterior
-    const existingDisplays = document.querySelectorAll('.coordinate-display');
-    existingDisplays.forEach(display => display.remove());
-    
-    this.coordinateDisplay = document.createElement('div');
-    this.coordinateDisplay.className = 'coordinate-display';
-    this.coordinateDisplay.style.cssText = `
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 8px 12px;
-        border-radius: 4px;
-        font-family: monospace;
-        font-size: 12px;
-        border: 1px solid #ccc;
-        z-index: 1000;
-        display: none;
-    `;
-    
-    const mapContainer = this.map.getTargetElement();
-    mapContainer.style.position = 'relative';
-    mapContainer.appendChild(this.coordinateDisplay);
+     * Configura el display de coordenadas UTM/geográficas en el mapa.
+     * Versión CORREGIDA con conversión UTM precisa.
+     */
 
-    // **CONVERSIÓN UTM PRECISA - REEMPLAZANDO LA VERSIÓN ANTERIOR**
-    this.map.on('pointermove', (evt) => {
-        if (evt.dragging) return;
-        
-        const coordinate = evt.coordinate;
-        const lonLat = ol.proj.toLonLat(coordinate);
-        const lon = lonLat[0];
-        const lat = lonLat[1];
-        
-        // Calcular zona UTM precisa
-        const zone = Math.floor((lon + 180) / 6) + 1;
-        const hemisphere = lat >= 0 ? 'N' : 'S';
-        
-        try {
-            // **USAR PROJ4 PARA CONVERSIÓN PRECISA**
-            const epsgCode = this.setupUTMProjection(zone, hemisphere);
-            const [easting, northing] = proj4('EPSG:4326', epsgCode, [lon, lat]);
+    setupCoordinateDisplay() {
+        // Limpiar cualquier display previo
+        const existingDisplays = document.querySelectorAll('.coordinate-display');
+        existingDisplays.forEach(display => display.remove());
+        // Crear nuevo display
+        this.coordinateDisplay = document.createElement('div');
+        this.coordinateDisplay.className = 'coordinate-display';
+        this.coordinateDisplay.style.cssText = `
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            z-index: 1000;
+            display: none;
+        `;
+        // Añadir al contenedor del mapa
+        const mapContainer = this.map.getTargetElement();
+        mapContainer.style.position = 'relative';
+        mapContainer.appendChild(this.coordinateDisplay);
+
+        // **CONVERSIÓN UTM PRECISA - REEMPLAZANDO LA VERSIÓN ANTERIOR**
+        this.map.on('pointermove', (evt) => {
+            if (evt.dragging) return;
             
-            // **VALIDAR RANGOS UTM CORRECTOS**
-            if (this.isValidUTM(easting, northing, zone, hemisphere)) {
-                this.coordinateDisplay.textContent = 
-                    `Zona ${zone}${hemisphere} | ` +
-                    `Este: ${easting.toFixed(2)} | ` +
-                    `Norte: ${northing.toFixed(2)}`;
-                    
-                this.coordinateDisplay.style.display = 'block';
-            } else {
+            // Obtener coordenadas en lon/lat
+            const coordinate = evt.coordinate;
+            const lonLat = ol.proj.toLonLat(coordinate);
+            const lon = lonLat[0];
+            const lat = lonLat[1];
+            
+            // Calcular zona UTM precisa
+            const zone = Math.floor((lon + 180) / 6) + 1;
+            const hemisphere = lat >= 0 ? 'N' : 'S';
+            
+            try {
+                // **USAR PROJ4 PARA CONVERSIÓN PRECISA**
+                const epsgCode = this.setupUTMProjection(zone, hemisphere);
+                const [easting, northing] = proj4('EPSG:4326', epsgCode, [lon, lat]);
+                
+                // **VALIDAR RANGOS UTM CORRECTOS**
+                if (this.isValidUTM(easting, northing, zone, hemisphere)) {
+                    this.coordinateDisplay.textContent = 
+                        `Zona ${zone}${hemisphere} | ` +
+                        `Este: ${easting.toFixed(2)} | ` +
+                        `Norte: ${northing.toFixed(2)}`;
+                        
+                    this.coordinateDisplay.style.display = 'block';
+                } else {
+                    // Coordenadas UTM fuera de rango razonable
+                    this.coordinateDisplay.style.display = 'none';
+                }
+                
+            } catch (error) {
+                // Error en conversión UTM
+                console.warn('Error en conversión UTM:', error);
                 this.coordinateDisplay.style.display = 'none';
             }
-            
-        } catch (error) {
-            console.warn('Error en conversión UTM:', error);
-            this.coordinateDisplay.style.display = 'none';
-        }
-    });
-}
-
-/**
- * Valida que las coordenadas UTM estén dentro de rangos razonables
- */
-isValidUTM(easting, northing, zone, hemisphere) {
-    // Validar easting (0-1,000,000 m)
-    if (easting < 0 || easting > 1000000) return false;
-    
-    // Validar northing según hemisferio
-    if (hemisphere === 'N') {
-        return northing >= 0 && northing <= 10000000;
-    } else {
-        return northing >= 1000000 && northing <= 10000000;
+        });
     }
-}
+
+    /**
+     * Valida que las coordenadas UTM estén dentro de rangos razonables
+     */
+    isValidUTM(easting, northing, zone, hemisphere) {
+        // Validar easting (0-1,000,000 m)
+        if (easting < 0 || easting > 1000000) return false;
+        
+        // Validar northing según hemisferio
+        if (hemisphere === 'N') {
+            // Hemisferio Norte
+            return northing >= 0 && northing <= 10000000;
+        } else {
+            // Hemisferio Sur
+            return northing >= 1000000 && northing <= 10000000;
+        }
+    }
   
 
     /**
