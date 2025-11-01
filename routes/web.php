@@ -34,6 +34,19 @@ Route::get('/check-mail-config', function() {
     ];
 });
 
+// En routes/web.php
+Route::get('/test-email', function() {
+    try {
+        \Mail::raw('Email de prueba', function($message) {
+            $message->to('diperishilla2468@gmail.com')
+                    ->subject('Prueba de correo');
+        });
+        return 'Email enviado correctamente';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
 // Rutas públicas
 Route::get('/', function () {
     return view('auth.login');
