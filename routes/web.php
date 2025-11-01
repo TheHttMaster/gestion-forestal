@@ -11,7 +11,7 @@ use App\Http\Controllers\DeforestationController;
 use App\Http\Controllers\ForestController;
 
 
-// 🔥 RUTA TEMPORAL PARA EJECUTAR SEEDERS - ELIMINAR DESPUÉS
+//  RUTA TEMPORAL PARA EJECUTAR SEEDERS - ELIMINAR DESPUÉS
 //CODIGO PARA EJECUTAR LOS SEEDER EN LA BASE DE DATOS
 Route::get('/run-seeders', function() {
     try {
@@ -23,11 +23,21 @@ Route::get('/run-seeders', function() {
     }
 }); 
 
+
+// RUTA PARA VERIFICAR CONFIGURACIÓN DE CORREO
+Route::get('/check-mail-config', function() {
+    return [
+        'mail_mailer' => config('mail.default'),
+        'mail_host' => config('mail.mailers.smtp.host'),
+        'mail_timeout' => config('mail.mailers.smtp.timeout'),
+        'env_mailer' => env('MAIL_MAILER'),
+    ];
+});
+
 // Rutas públicas
 Route::get('/', function () {
     return view('auth.login');
 });
-
 
 
 // Rutas accesibles para cualquier usuario autenticado (básico o administrador)
@@ -124,12 +134,12 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admi
         'destroy' => 'users.destroy',
     ]);
 
-    // 🔥 MOVER AQUÍ las rutas personalizadas de usuarios
+    //MOVER AQUÍ las rutas personalizadas de usuarios
     Route::get('users/disabled', [UserController::class, 'listDisabledUsers'])->name('users.disabled');
     Route::patch('users/{user}/update-role', [UserController::class, 'updateUserRole'])->name('users.update-role');
     Route::post('users/{user}/enable', [UserController::class, 'enableUser'])->name('users.enable');
     
-    // 🔥 MOVER también la ruta de auditoría aquí
+    //MOVER también la ruta de auditoría aquí
     Route::get('/audit', [AuditLogController::class, 'showAuditLog'])->name('audit');
 });
 
