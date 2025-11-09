@@ -293,7 +293,7 @@
             </div>
             
             <!-- Columna del Formulario -->
-            <div class="bg-stone-100/90 dark:bg-custom-gray overflow-hidden shadow-sm sm:rounded-2xl shadow-soft p-4 md:p-6 lg:p-8 ">
+            <div class="bg-stone-100/90 dark:bg-custom-gray overflow-hidden  sm:rounded-2xl  p-4 md:p-6 lg:p-8 ">
                 <div class="text-gray-900 dark:text-gray-100 ">
                     <h2 class="text-lg font-semibold mb-4">Configuración del Análisis</h2>
                     
