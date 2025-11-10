@@ -14,12 +14,12 @@
                 </h2>
 
                 <!-- Información del Área de Estudio -->
-                <div class="mb-8 p-4 bg-blue-50 dark:bg-gray-600/10 rounded-lg">
-                    <h3 class="font-semibold text-xl text-blue-800 dark:text-blue-200 mb-2">
+                <div class="mb-8 p-4 bg-grey-300 dark:bg-gray-600/10 rounded-lg">
+                    <h3 class="font-semibold text-xl text-grey-800 dark:text-grey-100 mb-2">Nombre del Polígono:
                         {{ $dataToPass['polygon_name'] }}
                     </h3>
                     @if($dataToPass['description'])
-                        <p class="text-blue-700 dark:text-blue-300">{{ $dataToPass['description'] }}</p>
+                        <p class="text-grey-800 dark:text-grey-100">Descripción del Polígono: {{ $dataToPass['description'] }}</p>
                     @endif
                 </div>
 
