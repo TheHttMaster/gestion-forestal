@@ -1008,46 +1008,61 @@ document.getElementById('visibility-toggle-button').addEventListener('click', fu
 
 // ===== LOADER DURANTE LA CONSULTA =====
 
-// Función para mostrar el loader
-function showLoader() {
+function showLoader(estimatedTime = 30) {
     const loaderOverlay = document.getElementById('loader-overlay');
     const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    
+    // Crear elemento de texto de progreso si no existe
+    if (!progressText) {
+        const progressContainer = document.querySelector('.flex.flex-col.items-center');
+        const newProgressText = document.createElement('p');
+        newProgressText.id = 'progress-text';
+        newProgressText.className = 'text-gray-600 dark:text-gray-300 text-center text-sm mt-2';
+        progressContainer.appendChild(newProgressText);
+    }
     
     // Mostrar el overlay
     loaderOverlay.classList.remove('hidden');
     
-    // Simular progreso inicial
-    setTimeout(() => {
-        progressBar.style.width = '30%';
-    }, 500);
-    
-    // Simular progreso intermedio
-    setTimeout(() => {
-        progressBar.style.width = '60%';
-    }, 1500);
-    
-    // Simular progreso final (no llega al 100% hasta que termine la consulta)
-    setTimeout(() => {
-        progressBar.style.width = '85%';
-    }, 3000);
+    // Iniciar progreso
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += (100 / estimatedTime);
+        if (progress > 95) progress = 95; // No llegar al 100% hasta que termine
+        
+        progressBar.style.width = `${progress}%`;
+        document.getElementById('progress-text').textContent = 
+            `Procesando... ${Math.round(progress)}%`;
+            
+        window.loaderProgressInterval = interval;
+    }, 1000);
 }
 
-// Función para ocultar el loader
 function hideLoader() {
     const loaderOverlay = document.getElementById('loader-overlay');
     const progressBar = document.getElementById('progress-bar');
     
-    // Completar la barra de progreso
+    // Completar al 100%
     progressBar.style.width = '100%';
+    document.getElementById('progress-text').textContent = 'Procesando... 100%';
     
-    // Ocultar el overlay después de un breve delay para que se vea el 100%
+    // Limpiar intervalo
+    if (window.loaderProgressInterval) {
+        clearInterval(window.loaderProgressInterval);
+    }
+    
+    // Ocultar después de un breve delay
     setTimeout(() => {
         loaderOverlay.classList.add('hidden');
-        // Resetear la barra de progreso
+        // Resetear
         setTimeout(() => {
             progressBar.style.width = '0%';
+            if (document.getElementById('progress-text')) {
+                document.getElementById('progress-text').textContent = '';
+            }
         }, 300);
-    }, 500);
+    }, 800);
 }
 
 // Manejar el envío del formulario con AJAX
