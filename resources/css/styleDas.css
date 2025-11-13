@@ -807,3 +807,35 @@ li .h23 a:hover{
 .sidebar.collapsed .group:hover .group-hover-ml-2 {
     margin-left: 0 !important;
 }
+
+/* SOLUCIÓN DEFINITIVA PARA CONTROLES DEL MAPA */
+#map-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+#map-controls > *,
+#map-controls .flex,
+#map-controls .relative,
+#map-controls button {
+    pointer-events: auto;
+}
+
+/* Asegurar que los menús desplegables no interfieran */
+#base-map-menu,
+#opacity-control-panel {
+    pointer-events: auto;
+}
+
+/* El mapa debe capturar todos los eventos excepto en los botones */
+#map {
+    position: relative;
+    
+}
+
+#map:active {
+    cursor: grabbing;
+}
