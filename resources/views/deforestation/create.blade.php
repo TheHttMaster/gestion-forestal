@@ -377,25 +377,43 @@
     </div>
     
     <!-- Loader overlay -->
-    <div id="loader-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl">
-            <div class="flex flex-col items-center">
-                <!-- Spinner -->
-                <div class="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mb-4"></div>
-                
-                <!-- Texto -->
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Procesando análisis</h3>
-                <p class="text-gray-600 dark:text-gray-300 text-center text-sm">
-                    Estamos analizando la deforestación en el área seleccionada. Esto puede tomar unos momentos...
-                </p>
-                
-                <!-- Indicador de progreso opcional -->
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-4">
-                    <div id="progress-bar" class="bg-green-600 h-2 rounded-full w-0 transition-all duration-300"></div>
+    
+<div id="loader-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all duration-300">
+        <div class="flex flex-col items-center">
+            <!-- Spinner mejorado -->
+            <div class="relative mb-6">
+                <div class="w-20 h-20 border-4 border-green-100 dark:border-green-900 rounded-full"></div>
+                <div class="absolute top-0 left-0 w-20 h-20 border-4 border-transparent border-t-green-600 rounded-full animate-spin"></div>
+                <div class="absolute top-2 left-2 w-16 h-16 border-4 border-transparent border-b-green-400 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s"></div>
+            </div>
+            
+            <!-- Texto principal -->
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 text-center">Analizando Deforestación</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-center mb-6">
+                Procesando el área seleccionada. Esto puede tomar unos segundos...
+            </p>
+            
+            <!-- Barra de progreso mejorada -->
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full w-0 transition-all duration-500 ease-out relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
                 </div>
+            </div>
+            
+            <!-- Información de progreso -->
+            <div class="flex justify-between w-full text-xs text-gray-500 dark:text-gray-400 mb-1">
+                <span id="progress-text">Iniciando...</span>
+                <span id="progress-percentage">0%</span>
+            </div>
+            
+            <!-- Tiempo estimado -->
+            <div class="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                <span id="time-estimate">Tiempo estimado: 15-30 segundos</span>
             </div>
         </div>
     </div>
+</div>
 </x-app-layout>
 
 <!-- Incluir OpenLayers -->
@@ -1008,44 +1026,58 @@ document.getElementById('visibility-toggle-button').addEventListener('click', fu
 
 // ===== LOADER DURANTE LA CONSULTA =====
 
-function showLoader(estimatedTime = 30) {
+
+function showEnhancedLoader() {
     const loaderOverlay = document.getElementById('loader-overlay');
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('progress-text');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const timeEstimate = document.getElementById('time-estimate');
     
-    // Crear elemento de texto de progreso si no existe
-    if (!progressText) {
-        const progressContainer = document.querySelector('.flex.flex-col.items-center');
-        const newProgressText = document.createElement('p');
-        newProgressText.id = 'progress-text';
-        newProgressText.className = 'text-gray-600 dark:text-gray-300 text-center text-sm mt-2';
-        progressContainer.appendChild(newProgressText);
-    }
-    
-    // Mostrar el overlay
+    // Mostrar loader con animación
     loaderOverlay.classList.remove('hidden');
     
-    // Iniciar progreso
+    // Configurar progreso
     let progress = 0;
-    const interval = setInterval(() => {
-        progress += (100 / estimatedTime);
-        if (progress > 95) progress = 95; // No llegar al 100% hasta que termine
-        
-        progressBar.style.width = `${progress}%`;
-        document.getElementById('progress-text').textContent = 
-            `Procesando... ${Math.round(progress)}%`;
+    const messages = [
+        "Preparando análisis...",
+        "Calculando área de estudio...", 
+        "Consultando datos de deforestación...",
+        "Procesando imágenes satelitales...",
+        "Generando resultados..."
+    ];
+    
+    window.loaderProgressInterval = setInterval(() => {
+        if (progress < 85) { // No pasar del 85% hasta que termine realmente
+            progress += (85 / 25); // 25 segundos para llegar al 85%
+            progressBar.style.width = `${progress}%`;
+            progressPercentage.textContent = `${Math.round(progress)}%`;
             
-        window.loaderProgressInterval = interval;
+            // Cambiar mensaje según progreso
+            const messageIndex = Math.floor(progress / (100 / messages.length));
+            if (messageIndex < messages.length) {
+                progressText.textContent = messages[messageIndex];
+            }
+            
+            // Actualizar tiempo estimado
+            const remaining = Math.max(1, Math.round((100 - progress) / 3));
+            timeEstimate.textContent = `Tiempo estimado: ${remaining} segundos`;
+        }
     }, 1000);
 }
 
-function hideLoader() {
-    const loaderOverlay = document.getElementById('loader-overlay');
+// Función para ocultar el loader mejorado
+function hideEnhancedLoader() {
     const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const timeEstimate = document.getElementById('time-estimate');
     
     // Completar al 100%
     progressBar.style.width = '100%';
-    document.getElementById('progress-text').textContent = 'Procesando... 100%';
+    progressPercentage.textContent = '100%';
+    progressText.textContent = '¡Completado!';
+    timeEstimate.textContent = 'Finalizando...';
     
     // Limpiar intervalo
     if (window.loaderProgressInterval) {
@@ -1054,15 +1086,16 @@ function hideLoader() {
     
     // Ocultar después de un breve delay
     setTimeout(() => {
-        loaderOverlay.classList.add('hidden');
-        // Resetear
+        document.getElementById('loader-overlay').classList.add('hidden');
+        
+        // Resetear después de ocultar
         setTimeout(() => {
             progressBar.style.width = '0%';
-            if (document.getElementById('progress-text')) {
-                document.getElementById('progress-text').textContent = '';
-            }
-        }, 300);
-    }, 800);
+            progressPercentage.textContent = '0%';
+            progressText.textContent = 'Iniciando...';
+            timeEstimate.textContent = 'Tiempo estimado: 15-30 segundos';
+        }, 500);
+    }, 1500);
 }
 
 // Manejar el envío del formulario con AJAX
@@ -1082,7 +1115,7 @@ document.getElementById('analysis-form').addEventListener('submit', function(e) 
     }
     
     // Mostrar loader
-    showLoader();
+    showEnhancedLoader();
     
     // Deshabilitar el botón y mostrar spinner en el botón
     submitButton.disabled = true;
@@ -1109,7 +1142,7 @@ document.getElementById('analysis-form').addEventListener('submit', function(e) 
     })
     .then(data => {
         // Ocultar loader
-        hideLoader();
+        hideEnhancedLoader();
         
         // Habilitar el botón y ocultar spinner en el botón
         submitButton.disabled = false;
@@ -1143,7 +1176,7 @@ document.getElementById('analysis-form').addEventListener('submit', function(e) 
     })
     .catch(error => {
         // Ocultar loader
-        hideLoader();
+        hideEnhancedLoader();
         
         // Habilitar el botón y ocultar spinner en el botón
         submitButton.disabled = false;
@@ -1263,5 +1296,27 @@ function calculatePolygonArea(feature) {
     cursor: pointer;
     border: 2px solid #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Estilos adicionales para el loader mejorado */
+.backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+}
+
+.bg-black\/70 {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.from-green-500 {
+    --tw-gradient-from: #10b981;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(16, 185, 129, 0));
+}
+
+.to-green-600 {
+    --tw-gradient-to: #059669;
+}
+
+.via-white\/30 {
+    --tw-gradient-stops: var(--tw-gradient-from), rgba(255, 255, 255, 0.3), var(--tw-gradient-to, rgba(255, 255, 255, 0.3));
 }
 </style>
