@@ -236,9 +236,21 @@
 <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.15.1/build/ol.js"></script>
 
 <script>
+    // Mostrar datos de debug en consola
+console.log('Yearly Data from PHP:', @json($dataToPass['yearly_results'] ?? []));
+console.log('Debug Info:', @json($dataToPass['debug_info'] ?? []));
+
+// Mostrar en pantalla (opcional)
+document.addEventListener('DOMContentLoaded', function() {
+    const debugInfo = @json($dataToPass['debug_info'] ?? []);
+    if (debugInfo.years_count > 0) {
+        document.getElementById('debug-data').textContent = JSON.stringify(debugInfo, null, 2);
+        document.getElementById('debug-info').classList.remove('hidden');
+    }
+});
 // Datos para el gráfico de distribución
-const polygonArea = @json($dataToPass['polygon_area_ha']);
-const deforestedArea = @json($dataToPass['area__ha']);
+const polygonArea = {{ $dataToPass['polygon_area_ha'] ?? 0 }};
+const deforestedArea = {{ $dataToPass['area__ha'] ?? 0 }};
 const conservedArea = polygonArea - deforestedArea;
 
 // Gráfico de distribución del área
@@ -468,6 +480,181 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 500);
 });
+
+// Gráfica de evolución de la deforestación - VERSIÓN CORREGIDA
+let evolutionChart = null;
+let yearlyData = @json($dataToPass['yearly_results'] ?? []);
+let completedYears = 0;
+const totalYears = 5; // 2020-2024
+
+function initEvolutionChart() {
+    const ctx = document.getElementById('deforestation-evolution-chart').getContext('2d');
+    
+    // Preparar datos CORREGIDOS
+    const chartData = getChartData();
+    
+    console.log('Datos para gráfico:', chartData); // Debug
+    
+    evolutionChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Evolución de la Deforestación por Año'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed.y;
+                            const year = context.label;
+                            const yearData = yearlyData[year];
+                            const status = yearData?.status || 'unknown';
+                            
+                            let tooltipText = `${context.dataset.label}: ${value.toFixed(6)} ha`;
+                            if (status === 'error') {
+                                tooltipText += ' (Error en consulta)';
+                            }
+                            return tooltipText;
+                        }
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Área Deforestada (hectáreas)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            if (value === 0) return '0 ha';
+                            // Mostrar más decimales para valores pequeños
+                            if (value < 0.01) return value.toFixed(6) + ' ha';
+                            if (value < 1) return value.toFixed(4) + ' ha';
+                            return value.toFixed(2) + ' ha';
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Años'
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+    
+    // Actualizar barra de progreso
+    updateProgress(Object.keys(yearlyData).length);
+}
+
+// FUNCIÓN CORREGIDA - Maneja correctamente la estructura de datos
+function getChartData() {
+    const allYears = [2020, 2021, 2022, 2023, 2024];
+    const labels = [];
+    const data = [];
+    const backgroundColors = [];
+    const borderColors = [];
+    
+    console.log('Yearly Data recibido:', yearlyData); // Debug
+    
+    allYears.forEach(year => {
+        labels.push(year.toString());
+        
+        // VERIFICAR SI EXISTEN DATOS PARA ESTE AÑO
+        if (yearlyData[year] && yearlyData[year].area__ha !== undefined) {
+            const areaValue = parseFloat(yearlyData[year].area__ha) || 0;
+            data.push(areaValue);
+            
+            // Color según el estado
+            if (yearlyData[year].status === 'success') {
+                backgroundColors.push('rgba(34, 197, 94, 0.8)'); // Verde
+                borderColors.push('rgba(34, 197, 94, 1)');
+            } else {
+                backgroundColors.push('rgba(239, 68, 68, 0.8)'); // Rojo
+                borderColors.push('rgba(239, 68, 68, 1)');
+            }
+        } else {
+            // No hay datos para este año
+            data.push(0);
+            backgroundColors.push('rgba(156, 163, 175, 0.5)'); // Gris
+            borderColors.push('rgba(156, 163, 175, 0.5)');
+        }
+    });
+    
+    console.log('Labels generados:', labels); // Debug
+    console.log('Data generado:', data); // Debug
+    
+    return {
+        labels: labels,
+        datasets: [{
+            label: 'Área Deforestada Acumulada',
+            data: data,
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: backgroundColors,
+            pointBorderColor: borderColors,
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+        }]
+    };
+}
+
+function updateProgress(loadedCount) {
+    const progress = (loadedCount / totalYears) * 100;
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    
+    if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+    }
+    
+    if (progressText) {
+        if (progress >= 100) {
+            progressText.textContent = 'Completado ✓';
+            progressText.classList.remove('text-blue-600');
+            progressText.classList.add('text-green-600');
+        } else {
+            progressText.textContent = `${loadedCount}/${totalYears} años cargados`;
+        }
+    }
+}
+
+// Inicializar gráfica de evolución cuando el DOM esté listo - VERSIÓN MEJORADA
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('deforestation-evolution-chart')) {
+        console.log('Inicializando gráfico de evolución...');
+        
+        // Pequeño delay para asegurar que el canvas esté listo
+        setTimeout(() => {
+            initEvolutionChart();
+            
+            // Forzar redibujado después de un breve momento
+            setTimeout(() => {
+                if (evolutionChart) {
+                    evolutionChart.update('active');
+                }
+            }, 500);
+        }, 100);
+    }
+});
 </script>
 
 <style>
@@ -491,5 +678,27 @@ document.addEventListener('DOMContentLoaded', function() {
     cursor: pointer;
     border: 2px solid #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Animaciones para la gráfica */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Transiciones suaves */
+.progress-transition {
+    transition: all 0.5s ease-in-out;
+}
+
+/* Mejoras para la gráfica */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
 }
 </style>
