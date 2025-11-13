@@ -64,16 +64,16 @@
                                 </a>
                             </div>
                         </li>
-                        <li>
+                      <!--   <li>
                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
-                                <a href="{{ route('areas.index') }}" class="nav-item {{ request()->routeIs('areas.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                <a href="#" class="nav-item {{ request()->routeIs('areas.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
                                         <path d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 0 1-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0 1 12 0"/><circle cx="12" cy="8" r="2"/><path d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712"/>
                                     </svg>
-                                    <span class="sidebar-text whitespace-nowrap">Areas de cultivo</span>
+                                    <span class="sidebar-text whitespace-nowrap">Areas de cultivo X</span>
                                 </a>
                             </div>
-                        </li>
+                        </li> -->
 
                         {{-- Este enlace solo se mostrará para los administradores --}}
                         @if (auth()->check() && auth()->user()->role === 'administrador')
@@ -95,6 +95,16 @@
                                         <path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M8 14v2.2l1.6 1"/><circle cx="8" cy="16" r="6"/>
                                     </svg>
                                     <span class="sidebar-text">Historial</span>
+                                </a>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
+                                <a href="#" class="nav-item transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-clock-icon lucide-file-clock transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
+                                        <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>
+                                    </svg>
+                                    <span class="sidebar-text">Reportes X</span>
                                 </a>
                             </div>
                         </li>

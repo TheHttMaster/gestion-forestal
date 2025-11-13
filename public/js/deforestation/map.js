@@ -320,6 +320,9 @@ class DeforestationMap {
     activateDrawing() {
         if (this.draw) this.map.removeInteraction(this.draw);
 
+        // ALERTA INICIAL - Mostrar inmediatamente al activar
+        this.showAlert('Dibujando... Agrega vértices haciendo clic. Doble clic para terminar.');
+
         this.draw = new ol.interaction.Draw({
             source: this.source,
             type: 'Polygon',
@@ -345,7 +348,6 @@ class DeforestationMap {
             this.source.clear();
             this.updateAreaDisplay(0);
             
-            this.showAlert('Dibujando... Agrega vértices haciendo clic. Doble clic para terminar.');
         });
 
         // Evento cuando se agrega un punto (actualización en tiempo real)
