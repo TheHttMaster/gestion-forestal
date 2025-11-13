@@ -317,7 +317,7 @@
                                 <label for="start_year" class="block text-sm font-medium text-gray-700 mb-1">Año Inicio:</label>
                                 <select class="block w-full bg-gray-200 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
                                         id="start_year" name="start_year" required>
-                                    @for($i = 2018; $i <= 2023; $i++)
+                                    @for($i = 2020; $i <= 2024; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
                                 </select>
@@ -327,8 +327,8 @@
                                 <label for="end_year" class="block text-sm font-medium text-gray-700 mb-1">Año Fin:</label>
                                 <select class="block w-full bg-gray-200 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
                                         id="end_year" name="end_year" required>
-                                    @for($i = 2018; $i <= 2023; $i++)
-                                        <option value="{{ $i }}" {{ $i == 2023 ? 'selected' : '' }}>{{ $i }}</option>
+                                    @for($i = 2020; $i <= 2024; $i++)
+                                        <option value="{{ $i }}" {{ $i == 2024 ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
                                 </select>
                             </div>
