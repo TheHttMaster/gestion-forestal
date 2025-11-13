@@ -15,13 +15,16 @@ use App\Http\Controllers\ForestController;
 //CODIGO PARA EJECUTAR LOS SEEDER EN LA BASE DE DATOS
 Route::get('/run-seeders', function() {
     try {
+        // Eliminar todos los usuarios existentes antes de sembrar
+        \App\Models\User::truncate();
+        
         \Artisan::call('db:seed', ['--force' => true]);
         $userCount = \App\Models\User::count();
         return " Seeders ejecutados exitosamente. Usuarios en la base de datos: $userCount";
     } catch (\Exception $e) {
         return " Error: " . $e->getMessage();
     }
-}); 
+});
 
 
 // RUTA PARA VERIFICAR CONFIGURACIÓN DE CORREO
