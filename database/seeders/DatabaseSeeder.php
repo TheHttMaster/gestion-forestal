@@ -28,5 +28,14 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('12345679'), // Hash con mayúscula
             'role' => 'administrador',
         ]);
+
+        User::create([
+            'name' => 'basico',
+            'email' => 'basico@gmail.com',
+            'password' => Hash::make('12345670'), // Hash con mayúscula
+            'role' => 'administrador',
+            'email_verified_at' => now(), // ← AGREGAR ESTA LÍNEA
+        ]);
+        
     }
 }
