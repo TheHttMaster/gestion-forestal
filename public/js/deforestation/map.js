@@ -8,20 +8,24 @@
 class DeforestationMap {
     constructor() {
         // Instancias y configuraciones principales
-        this.map = null;                // Instancia OpenLayers Map
-        this.draw = null;               // Interacción de dibujo
-        this.source = null;             // Fuente vectorial para features
-       
-        this.polygonStyle = null;       // Estilo para polígonos
-        this.pointStyle = null;         // Estilo para puntos/vértices
-        this.labelStyle = null;         // Estilo para etiquetas
-        this.coordinateDisplay = null;  // Elemento para mostrar coordenadas
-        this.baseLayers = {};           // Capas base disponibles
-        this.currentBaseLayer = null;   // Capa base actual
-
-        this.gfwLossLayer = null; // La instancia de la capa GFW de OpenLayers
-        this.STORAGE_KEY = 'gfwLossLayerState'; // Clave para localStorage
+        this.map = null;
+        this.draw = null;
+        this.source = null;
+        this.polygonStyle = null;
+        this.pointStyle = null;
+        this.labelStyle = null;
+        this.coordinateDisplay = null;
+        this.baseLayers = {};
+        this.currentBaseLayer = null;
+        this.gfwLossLayer = null;
+        this.drawingFeature = null;
         
+        // Constantes
+        this.STORAGE_KEY = 'gfwLossLayerState';
+        this.INITIAL_CENTER = [-63.26716, 10.63673]; // Venezuela
+        this.INITIAL_ZOOM = 12;
+        this.GFW_LOSS_URL = 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png';
+
         // Inicialización
         this.initializeMap();
         this.setupEventListeners();
@@ -29,38 +33,24 @@ class DeforestationMap {
         this.initializeGfWLayerToggle();
     }
 
-    setGFWOpacity(opacity) {
-        if (this.gfwLossLayer) {
-            this.gfwLossLayer.setOpacity(opacity);
-        }
-    }
+    // =============================================
+    // 1. CONFIGURACIÓN INICIAL DEL MAPA
+    // =============================================
 
     /**
-     * Obtiene la opacidad actual de la capa GFW
-     * @returns {number} Opacidad entre 0 y 1
-     */
-    getGFWOpacity() {
-        return this.gfwLossLayer ? this.gfwLossLayer.getOpacity() : 0.9;
-    }
-
-    /**
-     * Alterna la visibilidad de la capa GFW
-     */
-    toggleGFWVisibility() {
-        if (this.gfwLossLayer) {
-            const currentVisibility = this.gfwLossLayer.getVisible();
-            this.gfwLossLayer.setVisible(!currentVisibility);
-            return !currentVisibility;
-        }
-        return false;
-    }
-
-    /**
-     * Inicializa el mapa, las capas base y los estilos.
-     * Nota: Mantén los estilos y capas bien organizados para facilitar el mantenimiento.
+     * Inicializa el mapa, las capas base y los estilos
      */
     initializeMap() {
-        // Definir capas base
+        this.setupBaseLayers();
+        this.setupGFWLayer();
+        this.setupVectorLayer();
+        this.setupMapInstance();
+    }
+
+    /**
+     * Configura las capas base del mapa
+     */
+    setupBaseLayers() {
         this.baseLayers = {
             osm: new ol.layer.Tile({
                 source: new ol.source.OSM(),
@@ -91,7 +81,6 @@ class DeforestationMap {
                 visible: false,
                 title: 'Oscuro'
             }),
-            // CAPA MAPTILER SATELLITE CON TU API KEY
             maptiler_satellite: new ol.layer.Tile({
                 source: new ol.source.XYZ({
                     url: 'https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=scUozK4fig7bE6jg7TPi',
@@ -103,121 +92,211 @@ class DeforestationMap {
                 title: 'MapTiler Satélite'
             })
         };
+    }
 
-        // También puedes ajustar la vista inicial a tu ubicación de Venezuela
-        const initialCenter = ol.proj.fromLonLat([-63.26716, 10.63673]); // [lon, lat]
-        const initialZoom = 12; // Ajusta según necesites
-
-        // Resto del código de GFW y capas vectoriales permanece igual...
-        const GFW_LOSS_URL = 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/latest/dynamic/{z}/{x}/{y}.png';
-
+    /**
+     * Configura la capa de pérdida forestal GFW
+     */
+    setupGFWLayer() {
         this.gfwLossLayer = new ol.layer.Tile({
             source: new ol.source.XYZ({
-                url: GFW_LOSS_URL,
+                url: this.GFW_LOSS_URL,
                 attributions: 'Hansen/UMD/Google/USGS/NASA | GFW',
             }),
-            opacity: 0.9, 
+            opacity: 0.9,
             visible: false,
             title: 'Pérdida Arbórea GFW'
         });
+    }
 
-        // Fuente vectorial para geometrías dibujadas/importadas
+    /**
+     * Configura la capa vectorial y estilos
+     */
+    setupVectorLayer() {
         this.source = new ol.source.Vector();
+        this.setupStyles();
 
-        // Estilo para polígonos
-        this.polygonStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'rgba(26, 166, 30, 0.63)',
-                width: 3
-            }),
-            fill: new ol.style.Fill({
-                color: 'rgba(0, 255, 55, 0.2)'
-            })
-        });
-
-        // Estilo para puntos/vértices
-        this.pointStyle = new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 6,
-                fill: new ol.style.Fill({ color: 'red' }),
-                stroke: new ol.style.Stroke({ color: 'white', width: 2 })
-            })
-        });
-
-        // Estilo para etiquetas sobre los polígonos
-        this.labelStyle = new ol.style.Style({
-            text: new ol.style.Text({
-                text: '', // Se asigna dinámicamente
-                font: 'bold 14px Arial',
-                fill: new ol.style.Fill({ color: '#000000' }),
-                stroke: new ol.style.Stroke({ color: '#04a3072b', width: 3 }),
-                offsetY: -20,
-                overflow: true,
-                backgroundFill: new ol.style.Fill({
-                    color: 'rgba(242, 242, 242, 0.52)'
-                }),
-                padding: [3, 8, 3, 8]
-            })
-        });
-
-        // Capa vectorial con soporte para etiquetas
-        const vectorLayer = new ol.layer.Vector({
+        this.vectorLayer = new ol.layer.Vector({
             source: this.source,
-            style: (feature) => {
-                const geometry = feature.getGeometry();
-                const styles = [this.polygonStyle];
-
-                // Si la feature tiene 'label', mostrarla como etiqueta sobre el polígono
-                const label = feature.get('label');
-                if (label && geometry.getType() !== 'Point') {
-                    const labelStyle = this.labelStyle.clone();
-                    labelStyle.getText().setText(label);
-
-                    // Ubicar la etiqueta en el centro del polígono
-                    const center = ol.extent.getCenter(geometry.getExtent());
-                    const pointFeature = new ol.Feature({
-                        geometry: new ol.geom.Point(center)
-                    });
-                    pointFeature.setStyle(labelStyle);
-
-                    // Añadir la etiqueta como feature separada (no afecta el backend)
-                    this.source.addFeature(pointFeature);
-                }
-                return styles;
-            }
+            style: (feature) => this.getFeatureStyle(feature)
         });
+    }
 
-        // Grupo de capas base
+    /**
+     * Configura la instancia principal del mapa
+     */
+    setupMapInstance() {
         const baseLayerGroup = new ol.layer.Group({
             layers: Object.values(this.baseLayers)
         });
 
-        // Inicializar el mapa con la nueva ubicación
+        const initialCenter = ol.proj.fromLonLat(this.INITIAL_CENTER);
+
         this.map = new ol.Map({
             target: 'map',
-            layers: [baseLayerGroup, vectorLayer, this.gfwLossLayer],
+            layers: [baseLayerGroup, this.vectorLayer, this.gfwLossLayer],
             view: new ol.View({
-                center: initialCenter, // Usa la nueva ubicación
-                zoom: initialZoom      // Usa el nuevo zoom
+                center: initialCenter,
+                zoom: this.INITIAL_ZOOM
             })
         });
 
         this.currentBaseLayer = this.baseLayers.osm;
     }
 
+    // =============================================
+    // 2. CONFIGURACIÓN DE ESTILOS
+    // =============================================
+
     /**
-     * Permite cambiar la capa base del mapa.
-     * @param {string} layerKey - Clave de la capa base ('osm', 'satellite', etc.)
+     * Configura todos los estilos utilizados en el mapa
      */
-    changeBaseLayer(layerKey) {
-        Object.values(this.baseLayers).forEach(layer => layer.setVisible(false));
-        this.baseLayers[layerKey].setVisible(true);
-        this.currentBaseLayer = this.baseLayers[layerKey];
+    setupStyles() {
+        this.polygonStyle = this.getPolygonStyle('default');
+        
+        this.pointStyle = new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 7,
+                fill: new ol.style.Fill({ 
+                    color: '#ffffff'
+                }),
+                stroke: new ol.style.Stroke({ 
+                    color: '#10b981',
+                    width: 3 
+                })
+            })
+        });
+
+        this.labelStyle = new ol.style.Style({
+            text: new ol.style.Text({
+                text: '',
+                font: 'bold 14px "Arial", sans-serif',
+                fill: new ol.style.Fill({ 
+                    color: '#1f2937'
+                }),
+                stroke: new ol.style.Stroke({ 
+                    color: '#ffffff',
+                    width: 2 
+                }),
+                offsetY: -20,
+                overflow: true,
+                backgroundFill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 255, 0.85)'
+                }),
+                padding: [4, 8, 4, 8],
+                textBaseline: 'middle',
+                textAlign: 'center'
+            })
+        });
     }
 
     /**
-     * Configura los listeners de los botones y el formulario.
-     * Nota: Mantén los IDs consistentes en el HTML.
+     * Obtiene los estilos para polígonos según el estado
+     * @param {string} state - Estado del polígono: 'drawing', 'finished', 'default'
+     * @returns {ol.style.Style} Estilo correspondiente
+     */
+    getPolygonStyle(state = 'default') {
+        const styles = {
+            drawing: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: '#3b82f6',
+                    width: 3,
+                    lineDash: [5, 5],
+                    lineCap: 'round'
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(59, 130, 246, 0.2)'
+                }),
+                image: new ol.style.Circle({
+                    radius: 6,
+                    fill: new ol.style.Fill({ color: '#ffffff' }),
+                    stroke: new ol.style.Stroke({ color: '#3b82f6', width: 2 })
+                })
+            }),
+            
+            finished: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: '#10b981',
+                    width: 3,
+                    lineDash: null,
+                    lineCap: 'round'
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(16, 185, 129, 0.3)'
+                }),
+                image: new ol.style.Circle({
+                    radius: 5,
+                    fill: new ol.style.Fill({ color: '#10b981' }),
+                    stroke: new ol.style.Stroke({ color: '#ffffff', width: 2 })
+                })
+            }),
+            
+            default: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: '#10b981',
+                    width: 3,
+                    lineDash: [8, 4],
+                    lineCap: 'round'
+                }),
+                fill: new ol.style.Fill({
+                    color: 'rgba(16, 185, 129, 0.25)'
+                })
+            })
+        };
+
+        return styles[state] || styles.default;
+    }
+
+    /**
+     * Obtiene el estilo para una feature específica
+     * @param {ol.Feature} feature 
+     * @returns {Array<ol.style.Style>}
+     */
+    getFeatureStyle(feature) {
+        const geometry = feature.getGeometry();
+        const styles = [];
+
+        // Usar estilo personalizado si existe, sino usar el por defecto
+        const customStyle = feature.getStyle();
+        if (customStyle) {
+            styles.push(customStyle);
+        } else {
+            styles.push(this.polygonStyle);
+        }
+
+        // Agregar etiqueta si existe
+        this.addLabelToFeature(feature, geometry);
+
+        return styles;
+    }
+
+    /**
+     * Agrega etiqueta a una feature si tiene label
+     * @param {ol.Feature} feature 
+     * @param {ol.geom.Geometry} geometry 
+     */
+    addLabelToFeature(feature, geometry) {
+        const label = feature.get('label');
+        if (label && geometry.getType() !== 'Point') {
+            const labelStyle = this.labelStyle.clone();
+            labelStyle.getText().setText(label);
+
+            const center = ol.extent.getCenter(geometry.getExtent());
+            const pointFeature = new ol.Feature({
+                geometry: new ol.geom.Point(center)
+            });
+            pointFeature.setStyle(labelStyle);
+
+            this.source.addFeature(pointFeature);
+        }
+    }
+
+    // =============================================
+    // 3. MANEJO DE EVENTOS E INTERACCIONES
+    // =============================================
+
+    /**
+     * Configura los event listeners
      */
     setupEventListeners() {
         document.getElementById('draw-polygon').addEventListener('click', () => this.activateDrawing());
@@ -226,15 +305,24 @@ class DeforestationMap {
     }
 
     /**
-     * Configura el display de coordenadas UTM/geográficas en el mapa.
-     * Versión CORREGIDA con conversión UTM precisa.
+     * Configura el display de coordenadas
      */
-
     setupCoordinateDisplay() {
-        // Limpiar cualquier display previo
+        this.createCoordinateDisplayElement();
+        
+        this.map.on('pointermove', (evt) => {
+            if (evt.dragging) return;
+            this.updateCoordinateDisplay(evt.coordinate);
+        });
+    }
+
+    /**
+     * Crea el elemento para mostrar coordenadas
+     */
+    createCoordinateDisplayElement() {
         const existingDisplays = document.querySelectorAll('.coordinate-display');
         existingDisplays.forEach(display => display.remove());
-        // Crear nuevo display
+        
         this.coordinateDisplay = document.createElement('div');
         this.coordinateDisplay.className = 'coordinate-display';
         this.coordinateDisplay.style.cssText = `
@@ -250,107 +338,74 @@ class DeforestationMap {
             z-index: 1000;
             display: none;
         `;
-        // Añadir al contenedor del mapa
+        
         const mapContainer = this.map.getTargetElement();
         mapContainer.style.position = 'relative';
         mapContainer.appendChild(this.coordinateDisplay);
+    }
 
-        // **CONVERSIÓN UTM PRECISA - REEMPLAZANDO LA VERSIÓN ANTERIOR**
-        this.map.on('pointermove', (evt) => {
-            if (evt.dragging) return;
+    /**
+     * Actualiza el display de coordenadas
+     * @param {Array} coordinate - Coordenadas del mapa
+     */
+    updateCoordinateDisplay(coordinate) {
+        const lonLat = ol.proj.toLonLat(coordinate);
+        const lon = lonLat[0];
+        const lat = lonLat[1];
+        
+        const zone = Math.floor((lon + 180) / 6) + 1;
+        const hemisphere = lat >= 0 ? 'N' : 'S';
+        
+        try {
+            const epsgCode = this.setupUTMProjection(zone, hemisphere);
+            const [easting, northing] = proj4('EPSG:4326', epsgCode, [lon, lat]);
             
-            // Obtener coordenadas en lon/lat
-            const coordinate = evt.coordinate;
-            const lonLat = ol.proj.toLonLat(coordinate);
-            const lon = lonLat[0];
-            const lat = lonLat[1];
-            
-            // Calcular zona UTM precisa
-            const zone = Math.floor((lon + 180) / 6) + 1;
-            const hemisphere = lat >= 0 ? 'N' : 'S';
-            
-            try {
-                // **USAR PROJ4 PARA CONVERSIÓN PRECISA**
-                const epsgCode = this.setupUTMProjection(zone, hemisphere);
-                const [easting, northing] = proj4('EPSG:4326', epsgCode, [lon, lat]);
-                
-                // **VALIDAR RANGOS UTM CORRECTOS**
-                if (this.isValidUTM(easting, northing, zone, hemisphere)) {
-                    this.coordinateDisplay.textContent = 
-                        `Zona ${zone}${hemisphere} | ` +
-                        `Este: ${easting.toFixed(2)} | ` +
-                        `Norte: ${northing.toFixed(2)}`;
-                        
-                    this.coordinateDisplay.style.display = 'block';
-                } else {
-                    // Coordenadas UTM fuera de rango razonable
-                    this.coordinateDisplay.style.display = 'none';
-                }
-                
-            } catch (error) {
-                // Error en conversión UTM
-                console.warn('Error en conversión UTM:', error);
+            if (this.isValidUTM(easting, northing, zone, hemisphere)) {
+                this.coordinateDisplay.textContent = 
+                    `Zona ${zone}${hemisphere} | ` +
+                    `Este: ${easting.toFixed(2)} | ` +
+                    `Norte: ${northing.toFixed(2)}`;
+                this.coordinateDisplay.style.display = 'block';
+            } else {
                 this.coordinateDisplay.style.display = 'none';
             }
-        });
-    }
-
-    /**
-     * Valida que las coordenadas UTM estén dentro de rangos razonables
-     */
-    isValidUTM(easting, northing, zone, hemisphere) {
-        // Validar easting (0-1,000,000 m)
-        if (easting < 0 || easting > 1000000) return false;
-        
-        // Validar northing según hemisferio
-        if (hemisphere === 'N') {
-            // Hemisferio Norte
-            return northing >= 0 && northing <= 10000000;
-        } else {
-            // Hemisferio Sur
-            return northing >= 1000000 && northing <= 10000000;
+        } catch (error) {
+            console.warn('Error en conversión UTM:', error);
+            this.coordinateDisplay.style.display = 'none';
         }
     }
-  
+
+    // =============================================
+    // 4. FUNCIONALIDADES DE DIBUJO Y GEOMETRÍA
+    // =============================================
 
     /**
-     * Activa la herramienta de dibujo de polígonos con cálculo de área en tiempo real.
-     * Limpia interacciones previas y muestra instrucciones.
+     * Activa la herramienta de dibujo de polígonos
      */
     activateDrawing() {
-        if (this.draw) this.map.removeInteraction(this.draw);
-
-        // ALERTA INICIAL - Mostrar inmediatamente al activar
+        this.removeExistingDrawInteraction();
         this.showAlert('Dibujando... Agrega vértices haciendo clic. Doble clic para terminar.');
 
         this.draw = new ol.interaction.Draw({
             source: this.source,
             type: 'Polygon',
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(26, 166, 30, 0.63)',
-                    width: 3
-                }),
-                fill: new ol.style.Fill({
-                    color: 'rgba(0, 255, 55, 0.2)'
-                })
-            })
+            style: this.getPolygonStyle('drawing')
         });
 
-        // Variable para almacenar la feature que se está dibujando
-        this.drawingFeature = null;
+        this.setupDrawEvents();
+        this.map.addInteraction(this.draw);
+    }
 
-        // Evento al iniciar el dibujo
+    /**
+     * Configura los eventos de dibujo
+     */
+    setupDrawEvents() {
         this.draw.on('drawstart', (evt) => {
             this.drawingFeature = evt.feature;
-            
-            // Limpiar features anteriores
             this.source.clear();
             this.updateAreaDisplay(0);
-            
         });
 
-        // Evento cuando se agrega un punto (actualización en tiempo real)
         this.draw.on('drawadd', (evt) => {
             if (this.drawingFeature) {
                 const areaHa = this.calculateArea(this.drawingFeature);
@@ -358,63 +413,339 @@ class DeforestationMap {
             }
         });
 
-        // Evento cuando se aborta el dibujo
         this.draw.on('drawabort', () => {
             this.updateAreaDisplay(0);
             this.drawingFeature = null;
             this.showAlert('Dibujo cancelado.');
         });
 
-        // Evento al terminar de dibujar el polígono
         this.draw.on('drawend', (event) => {
-            const feature = event.feature;
-            const areaHa = this.calculateArea(feature);
-
-            // =======================================================
-            //  MODIFICACIÓN CLAVE PARA INSPECCIÓN POR CONSOLA
-            // =======================================================
-            console.group(' Feature OpenLayers Capturada (Draw End)');
-            console.log('Objeto Feature:', feature);
-            
-            // 1. Mostrar Geometría (en EPSG:3857)
-            const geometry = feature.getGeometry();
-            console.log('Tipo de Geometría:', geometry.getType());
-            console.log('Coordenadas (EPSG:3857):', geometry.getCoordinates());
-            
-            // 2. Convertir y mostrar en Lat/Lon (EPSG:4326)
-            const geojsonFormat = new ol.format.GeoJSON();
-            const geojsonString = geojsonFormat.writeFeature(feature, {
-                dataProjection: 'EPSG:4326',
-                featureProjection: 'EPSG:3857'
-            });
-            const geojsonObj = JSON.parse(geojsonString);
-            console.log('Coordenadas GeoJSON (EPSG:4326):', geojsonObj.geometry.coordinates);
-            
-            console.groupEnd();
-            // =======================================================
-
-            // Mostrar área final
-            this.updateAreaDisplay(areaHa);
-            
-            // Guardar la geometría
-            this.convertToGeoJSON(feature);
-            
-            // Mostrar mensaje con el área
-            this.showAlert(`Polígono completado. Área: ${areaHa.toFixed(2)} hectáreas`, 'success');
-            
-            this.drawingFeature = null;
-            
-            // Desactivar la interacción de dibujo
-            this.map.removeInteraction(this.draw);
-            this.draw = null;
+            this.finalizeDrawing(event.feature);
         });
-
-        this.map.addInteraction(this.draw);
     }
 
     /**
-     * Actualiza el display del área en la interfaz
-     * @param {number} areaHa - Área en hectáreas
+     * Finaliza el proceso de dibujo
+     * @param {ol.Feature} feature 
+     */
+    finalizeDrawing(feature) {
+        const areaHa = this.calculateArea(feature);
+        
+        feature.setStyle(this.getPolygonStyle('finished'));
+        this.updateAreaDisplay(areaHa);
+        this.convertToGeoJSON(feature);
+        
+        this.showAlert(`Polígono completado. Área: ${areaHa.toFixed(2)} hectáreas`, 'success');
+        this.drawingFeature = null;
+        
+        this.map.removeInteraction(this.draw);
+        this.draw = null;
+    }
+
+    /**
+     * Elimina la interacción de dibujo existente
+     */
+    removeExistingDrawInteraction() {
+        if (this.draw) {
+            this.map.removeInteraction(this.draw);
+        }
+    }
+
+    // =============================================
+    // 5. CÁLCULOS Y CONVERSIONES GEOGRÁFICAS
+    // =============================================
+
+    /**
+     * Calcula el área de un polígono en hectáreas
+     * @param {ol.Feature} feature
+     * @returns {number}
+     */
+    calculateArea(feature) {
+        try {
+            const geometry = feature.getGeometry();
+            if (!geometry || geometry.getType() !== 'Polygon') return 0;
+            
+            const polygon = geometry.clone().transform('EPSG:3857', 'EPSG:4326');
+            const coordinates = polygon.getCoordinates()[0];
+            
+            if (coordinates.length < 3) return 0;
+            
+            let area = 0;
+            const n = coordinates.length;
+            
+            for (let i = 0; i < n; i++) {
+                const j = (i + 1) % n;
+                const xi = coordinates[i][0];
+                const yi = coordinates[i][1];
+                const xj = coordinates[j][0];
+                const yj = coordinates[j][1];
+                
+                area += xi * yj - xj * yi;
+            }
+            
+            area = Math.abs(area) / 2;
+            
+            const avgLat = coordinates.reduce((sum, coord) => sum + coord[1], 0) / n;
+            const metersPerDegreeLat = 111320;
+            const metersPerDegreeLon = 111320 * Math.cos(avgLat * Math.PI / 180);
+            
+            const areaM2 = area * metersPerDegreeLat * metersPerDegreeLon;
+            const areaHa = areaM2 / 10000;
+            
+            return Math.abs(areaHa);
+        } catch (error) {
+            console.error('Error calculando área:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * Convierte la geometría a GeoJSON y la guarda en el input oculto
+     * @param {ol.Feature} feature
+     */
+    convertToGeoJSON(feature) {
+        try {
+            const format = new ol.format.GeoJSON();
+            const geojson = format.writeFeature(feature, {
+                dataProjection: 'EPSG:4326',
+                featureProjection: 'EPSG:3857'
+            });
+            const geojsonObj = JSON.parse(geojson);
+            
+            if (!geojsonObj.geometry) {
+                throw new Error('El polígono no tiene geometría válida');
+            }
+            
+            document.getElementById('geometry').value = JSON.stringify(geojsonObj.geometry);
+            
+            const areaHa = this.calculateArea(feature);
+            document.getElementById('area_ha').value = areaHa.toFixed(2);
+            
+            this.showAlert(`Polígono guardado. Área: ${areaHa.toFixed(2)} ha`);
+        } catch (error) {
+            console.error('Error al convertir GeoJSON:', error);
+            this.showAlert('Error al guardar el polígono: ' + error.message, 'error');
+        }
+    }
+
+    // =============================================
+    // 6. IMPORTACIÓN Y EXPORTACIÓN DE DATOS
+    // =============================================
+
+    /**
+     * Importa uno o varios polígonos desde GeoJSON
+     * @param {Object} geojson
+     */
+    importGeoJSON(geojson) {
+        try {
+            this.clearMap();
+            const format = new ol.format.GeoJSON();
+            const features = format.readFeatures(geojson, {
+                featureProjection: 'EPSG:3857'
+            });
+
+            if (features.length === 0) {
+                this.showAlert('El archivo no contiene geometría válida.', 'error');
+                return;
+            }
+
+            const totalArea = this.processImportedFeatures(features);
+            this.finalizeImport(features, geojson, totalArea, 'GeoJSON');
+            
+        } catch (error) {
+            this.showAlert('Error al importar el área: ' + error.message, 'error');
+        }
+    }
+
+    /**
+     * Importa uno o varios polígonos desde KML
+     * @param {string} kmlText
+     */
+    importKML(kmlText) {
+        try {
+            this.clearMap();
+            const format = new ol.format.KML();
+            const features = format.readFeatures(kmlText, {
+                featureProjection: 'EPSG:3857'
+            });
+
+            if (features.length === 0) {
+                this.showAlert('El archivo KML no contiene geometría válida.', 'error');
+                return;
+            }
+
+            const totalArea = this.processImportedFeatures(features, 'kml');
+            const featureCollection = this.createFeatureCollection(features);
+            
+            this.finalizeImport(features, featureCollection, totalArea, 'KML');
+            
+        } catch (error) {
+            this.showAlert('Error al importar el área KML: ' + error.message, 'error');
+        }
+    }
+
+    /**
+     * Procesa features importadas
+     * @param {Array} features 
+     * @param {string} type 
+     * @returns {number}
+     */
+    processImportedFeatures(features, type = 'geojson') {
+        let totalArea = 0;
+        
+        features.forEach(feature => {
+            if (type === 'kml') {
+                const productor = this.extractKMLData(feature);
+                if (productor) {
+                    feature.set('label', productor);
+                    feature.set('productor', productor);
+                }
+            } else {
+                const name = feature.get('name') || feature.get('Nombre') || 
+                            feature.get('NOMBRE') || feature.get('title') || 
+                            feature.get('Productor');
+                if (name) {
+                    feature.set('label', name);
+                    feature.set('productor', name);
+                }
+            }
+            
+            this.source.addFeature(feature);
+            
+            if (feature.getGeometry().getType() === 'Polygon') {
+                totalArea += this.calculateArea(feature);
+            }
+        });
+        
+        return totalArea;
+    }
+
+    /**
+     * Finaliza el proceso de importación
+     * @param {Array} features 
+     * @param {Object} data 
+     * @param {number} totalArea 
+     * @param {string} type 
+     */
+    finalizeImport(features, data, totalArea, type) {
+        const extent = this.source.getExtent();
+        this.map.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 1000 });
+
+        document.getElementById('geometry').value = JSON.stringify(data);
+        this.updateAreaDisplay(totalArea);
+        this.processMultiPolygonInfo(features);
+
+        this.showAlert(
+            `${type === 'KML' ? features.length + ' áreas' : 'Áreas'} importadas correctamente. Área total: ${totalArea.toFixed(2)} ha`, 
+            'success'
+        );
+    }
+
+    // =============================================
+    // 7. MANEJO DE CAPAS Y VISUALIZACIÓN
+    // =============================================
+
+    /**
+     * Permite cambiar la capa base del mapa
+     * @param {string} layerKey - Clave de la capa base
+     */
+    changeBaseLayer(layerKey) {
+        Object.values(this.baseLayers).forEach(layer => layer.setVisible(false));
+        this.baseLayers[layerKey].setVisible(true);
+        this.currentBaseLayer = this.baseLayers[layerKey];
+    }
+
+    /**
+     * Configura el toggle de la capa GFW
+     */
+    initializeGfWLayerToggle() {
+        const toggleButton = document.getElementById('visibility-toggle-button');
+        
+        if (!toggleButton) return;
+
+        let storedState = localStorage.getItem(this.STORAGE_KEY);
+        let isLayerVisible = storedState === 'false' ? false : true;
+        
+        this.applyGfwLayerState(isLayerVisible);
+        toggleButton.classList.remove('invisible');
+
+        toggleButton.addEventListener('click', () => {
+            isLayerVisible = !isLayerVisible;
+            this.applyGfwLayerState(isLayerVisible);
+            localStorage.setItem(this.STORAGE_KEY, isLayerVisible.toString());
+        });
+    }
+
+    /**
+     * Aplica el estado de visibilidad a la capa GFW
+     * @param {boolean} isVisible 
+     */
+    applyGfwLayerState(isVisible) {
+        const iconVisible = document.getElementById('icon-eye-open');
+        const iconHidden = document.getElementById('icon-eye-closed');
+        
+        if (iconVisible && iconHidden) {
+            iconVisible.style.display = isVisible ? 'inline-block' : 'none';
+            iconHidden.style.display = isVisible ? 'none' : 'inline-block';
+        }
+
+        if (this.gfwLossLayer) {
+            this.gfwLossLayer.setVisible(isVisible);
+        }
+    }
+
+    setGFWOpacity(opacity) {
+        if (this.gfwLossLayer) {
+            this.gfwLossLayer.setOpacity(opacity);
+        }
+    }
+
+    getGFWOpacity() {
+        return this.gfwLossLayer ? this.gfwLossLayer.getOpacity() : 0.9;
+    }
+
+    toggleGFWVisibility() {
+        if (this.gfwLossLayer) {
+            const currentVisibility = this.gfwLossLayer.getVisible();
+            this.gfwLossLayer.setVisible(!currentVisibility);
+            return !currentVisibility;
+        }
+        return false;
+    }
+
+    // =============================================
+    // 8. UTILIDADES Y HELPERS
+    // =============================================
+
+    /**
+     * Valida coordenadas UTM
+     */
+    isValidUTM(easting, northing, zone, hemisphere) {
+        if (easting < 0 || easting > 1000000) return false;
+        
+        if (hemisphere === 'N') {
+            return northing >= 0 && northing <= 10000000;
+        } else {
+            return northing >= 1000000 && northing <= 10000000;
+        }
+    }
+
+    /**
+     * Configura Proj4 para UTM
+     */
+    setupUTMProjection(zone, hemisphere) {
+        const epsgCode = hemisphere === 'N' ? `EPSG:326${zone}` : `EPSG:327${zone}`;
+        
+        if (!proj4.defs(epsgCode)) {
+            const proj4String = `+proj=utm +zone=${zone} +${hemisphere === 'S' ? '+south ' : ''}datum=WGS84 +units=m +no_defs`;
+            proj4.defs(epsgCode, proj4String);
+        }
+        
+        return epsgCode;
+    }
+
+    /**
+     * Actualiza el display del área
      */
     updateAreaDisplay(areaHa) {
         const areaDisplay = document.getElementById('area-display');
@@ -431,146 +762,211 @@ class DeforestationMap {
     }
 
     /**
-     * Calcula el área de un polígono en hectáreas.
-     * @param {ol.Feature} feature
-     * @returns {number}
+     * Limpia el mapa
      */
-    calculateArea(feature) {
-        try {
-            const geometry = feature.getGeometry();
-            if (!geometry || geometry.getType() !== 'Polygon') return 0;
-            
-            // Convertir a WGS84 para cálculo preciso
-            const polygon = geometry.clone().transform('EPSG:3857', 'EPSG:4326');
-            const coordinates = polygon.getCoordinates()[0]; // Primer anillo (exterior)
-            
-            if (coordinates.length < 3) return 0;
-            
-            // Usar la fórmula del shoelace para calcular área en metros cuadrados
-            let area = 0;
-            const n = coordinates.length;
-            
-            for (let i = 0; i < n; i++) {
-                const j = (i + 1) % n;
-                const xi = coordinates[i][0];
-                const yi = coordinates[i][1];
-                const xj = coordinates[j][0];
-                const yj = coordinates[j][1];
-                
-                area += xi * yj - xj * yi;
-            }
-            
-            // El área está en grados², convertir a metros²
-            area = Math.abs(area) / 2;
-            
-            // Conversión más precisa considerando la latitud media
-            const avgLat = coordinates.reduce((sum, coord) => sum + coord[1], 0) / n;
-            const metersPerDegreeLat = 111320; // metros por grado de latitud
-            const metersPerDegreeLon = 111320 * Math.cos(avgLat * Math.PI / 180);
-            
-            // Convertir a metros cuadrados
-            const areaM2 = area * metersPerDegreeLat * metersPerDegreeLon;
-            
-            // Convertir a hectáreas (1 ha = 10,000 m²)
-            const areaHa = areaM2 / 10000;
-            
-            return Math.abs(areaHa);
-        } catch (error) {
-            console.error('Error calculando área:', error);
-            return 0;
-        }
-    }
-
-    /**
- * Convierte la geometría a GeoJSON y la guarda en el input oculto.
- * @param {ol.Feature} feature
- */
-convertToGeoJSON(feature) {
-    try {
-        const format = new ol.format.GeoJSON();
-        const geojson = format.writeFeature(feature, {
-            dataProjection: 'EPSG:4326',
-            featureProjection: 'EPSG:3857'
-        });
-        const geojsonObj = JSON.parse(geojson);
-        if (!geojsonObj.geometry) throw new Error('El polígono no tiene geometría válida');
-        
-        // Guardar geometría
-        document.getElementById('geometry').value = JSON.stringify(geojsonObj.geometry);
-        
-        // CALCULAR Y GUARDAR ÁREA
-        const areaHa = this.calculateArea(feature);
-        document.getElementById('area_ha').value = areaHa.toFixed(2);
-        
-        this.showAlert(`Polígono guardado. Área: ${areaHa.toFixed(2)} ha`);
-    } catch (error) {
-        console.error('Error al convertir GeoJSON:', error);
-        this.showAlert('Error al guardar el polígono: ' + error.message, 'error');
-    }
-}
-
-    /**
-    * Limpia todas las geometrías del mapa y el input oculto.
-    */
     clearMap() {
         this.source.clear();
         document.getElementById('geometry').value = '';
-        document.getElementById('area_ha').value = ''; // LIMPIAR ÁREA
+        document.getElementById('area_ha').value = '';
         this.updateAreaDisplay(0);
         
-        // Limpiar también cualquier interacción de dibujo activa
-        if (this.draw) {
-            this.map.removeInteraction(this.draw);
-            this.draw = null;
-        }
+        this.removeExistingDrawInteraction();
         this.drawingFeature = null;
     }
 
+    // =============================================
+    // 9. MANEJO DE FORMULARIOS Y DATOS
+    // =============================================
+
     /**
-     * Maneja el envío del formulario de análisis.
-     * Valida que exista un polígono y permite el envío normal del formulario.
-     * @param {Event} event
+     * Maneja el envío del formulario
      */
     handleFormSubmit(event) {
-        // 1. Detener el envío automático del formulario
-        event.preventDefault(); 
+        event.preventDefault();
 
         const geometryInput = document.getElementById('geometry');
         
-        // 2. VALIDACIÓN: Revisar si el campo de geometría (que fue llenado por convertToGeoJSON) tiene un valor
         if (!geometryInput.value) {
             this.showAlert('Por favor, dibuja o importa un área de interés.', 'error');
-            return; // Detener la ejecución
+            return;
         }
 
-        const form = event.target;
-        // Selecciona el botón de tipo 'submit' dentro del formulario
-        const submitButton = form.querySelector('button[type="submit"]');
-        // Selecciona el elemento spinner (que debe estar oculto por defecto)
-        const spinner = document.getElementById('loading-spinner');
-        
-        // Deshabilita el botón
-        if (submitButton) {
-            submitButton.disabled = true;
-            // Opcional: Cambia el texto del botón
-            submitButton.textContent = 'Analizando...'; 
-        }
-
-        // Muestra el spinner (asumiendo que 'd-none' de Tailwind/Bootstrap lo oculta)
-        if (spinner) {
-            spinner.classList.remove('d-none');
-        }
-        
-        // 4. Enviar el formulario
-        // El campo 'geometry' ya fue llenado por convertToGeoJSON (si se dibujó) o por importGeoJSON/KML.
-        form.submit();
+        this.disableFormDuringSubmission();
+        event.target.submit();
     }
 
     /**
-     * Muestra una alerta al usuario.
-     * Usa SweetAlert2 si está disponible, si no usa alert nativo.
-     * @param {string} message
-     * @param {string} [icon='info']
+     * Deshabilita el formulario durante el envío
+     */
+    disableFormDuringSubmission() {
+        const form = document.getElementById('analysis-form');
+        const submitButton = form.querySelector('button[type="submit"]');
+        const spinner = document.getElementById('loading-spinner');
+        
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Analizando...';
+        }
+
+        if (spinner) {
+            spinner.classList.remove('d-none');
+        }
+    }
+
+    /**
+     * Extrae datos de KML
+     */
+    extractKMLData(feature) {
+        try {
+            const kmlDescription = feature.get('description');
+            if (!kmlDescription) return null;
+            
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(kmlDescription, 'text/html');
+            const simpleDataElements = doc.querySelectorAll('simpledata');
+            const data = {};
+            
+            simpleDataElements.forEach(el => {
+                const name = el.getAttribute('name');
+                const value = el.textContent;
+                if (name && value) data[name.toLowerCase()] = value;
+            });
+            
+            return data.productor || data.name || data.nombre || null;
+        } catch (error) {
+            console.warn('Error extrayendo datos KML:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Procesa información de múltiples polígonos
+     */
+    processMultiPolygonInfo(features) {
+        const polygonsInfo = features
+            .filter(feature => feature.getGeometry().getType() === 'Polygon')
+            .map(feature => ({
+                productor: feature.get('productor') || feature.get('name') || 'Propietario desconocido',
+                localidad: feature.get('localidad') || feature.get('municipio') || 'No especificado',
+                area: this.calculateArea(feature)
+            }));
+
+        this.displayPolygonsInfo(polygonsInfo);
+    }
+
+    /**
+     * Muestra información de polígonos en tabla
+     */
+    displayPolygonsInfo(polygonsInfo) {
+        const container = document.getElementById('producers-info');
+        const list = document.getElementById('producers-list');
+        
+        if (polygonsInfo.length > 0) {
+            list.innerHTML = polygonsInfo.map(info => `
+                <tr>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.productor}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.localidad}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.area.toFixed(2)} Ha</td>
+                </tr>
+            `).join('');
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Crea FeatureCollection desde features
+     */
+    createFeatureCollection(features) {
+        return {
+            type: 'FeatureCollection',
+            features: features.map(feature => {
+                const geoJSONFormat = new ol.format.GeoJSON();
+                return JSON.parse(geoJSONFormat.writeFeature(feature, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+                }));
+            })
+        };
+    }
+
+    /**
+     * Dibuja polígono desde coordenadas UTM
+     */
+    drawFromUTMCoordinates(utmCoordinates) {
+        try {
+            const wgs84Coordinates = utmCoordinates.map(coord => {
+                const [easting, northing, zone, hemisphere] = coord;
+                const sourceEpsg = this.setupUTMProjection(zone, hemisphere);
+                return proj4(sourceEpsg, 'EPSG:4326', [easting, northing]);
+            });
+
+            const invalidCoords = wgs84Coordinates.filter(coord => 
+                isNaN(coord[0]) || isNaN(coord[1]) || 
+                Math.abs(coord[0]) > 180 || Math.abs(coord[1]) > 90
+            );
+            
+            if (invalidCoords.length > 0) {
+                this.showAlert('Algunas coordenadas UTM son inválidas o están fuera de rango', 'error');
+                return;
+            }
+
+            this.closePolygonIfNeeded(wgs84Coordinates);
+            this.createPolygonFromCoordinates(wgs84Coordinates, utmCoordinates);
+            
+        } catch (error) {
+            console.error('Error al procesar coordenadas UTM:', error);
+            this.showAlert('Error al procesar coordenadas UTM. Verifique los valores y formatos.', 'error');
+        }
+    }
+
+    /**
+     * Cierra el polígono si no está cerrado
+     */
+    closePolygonIfNeeded(coordinates) {
+        const firstCoord = coordinates[0];
+        const lastCoord = coordinates[coordinates.length - 1];
+        
+        if (firstCoord[0] !== lastCoord[0] || firstCoord[1] !== lastCoord[1]) {
+            coordinates.push(firstCoord);
+        }
+    }
+
+    /**
+     * Crea polígono desde coordenadas
+     */
+    createPolygonFromCoordinates(wgs84Coordinates, utmCoordinates) {
+        const feature = new ol.Feature({
+            geometry: new ol.geom.Polygon([wgs84Coordinates]).transform('EPSG:4326', 'EPSG:3857')
+        });
+        
+        this.clearMap();
+        this.source.addFeature(feature);
+        
+        const areaHa = this.calculateArea(feature);
+        this.updateAreaDisplay(areaHa);
+        
+        this.map.getView().fit(
+            feature.getGeometry().getExtent(),
+            { padding: [50, 50, 50, 50], duration: 1000 }
+        );
+        
+        this.convertToGeoJSON(feature);
+        
+        const zonesUsed = [...new Set(utmCoordinates.map(coord => 
+            `Zona ${coord[2]}${coord[3]}`
+        ))];
+        const zonesText = zonesUsed.sort().join(', ');
+        
+        this.showAlert(
+            `Polígono dibujado exitosamente (${zonesText}). Área: ${areaHa.toFixed(2)} ha`, 
+            'success'
+        );
+    }
+
+    /**
+     * Muestra alertas al usuario
      */
     showAlert(message, icon = 'info') {
         if (window.Swal) {
@@ -591,339 +987,6 @@ convertToGeoJSON(feature) {
             alert(message);
         }
     }
-
-    /**
-     * Importa uno o varios polígonos desde un objeto GeoJSON y los dibuja en el mapa.
-     * Si las features tienen nombre, lo muestra como etiqueta.
-     * @param {Object} geojson
-     */
-    importGeoJSON(geojson) {
-        try {
-            this.clearMap();
-            const format = new ol.format.GeoJSON();
-            const features = format.readFeatures(geojson, {
-                featureProjection: 'EPSG:3857'
-            });
-
-            if (features.length === 0) {
-                this.showAlert('El archivo no contiene geometría válida.', 'error');
-                return;
-            }
-
-            let totalArea = 0;
-            features.forEach(feature => {
-                this.source.addFeature(feature);
-                const name = feature.get('name') || feature.get('Nombre') || feature.get('NOMBRE') || feature.get('title') || feature.get('Productor');
-                if (name) {
-                    feature.set('label', name);
-                    feature.set('productor', name);
-                }
-                
-                // Calcular área para esta feature
-                if (feature.getGeometry().getType() === 'Polygon') {
-                    totalArea += this.calculateArea(feature);
-                }
-            });
-
-            const extent = this.source.getExtent();
-            this.map.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 1000 });
-
-            document.getElementById('geometry').value = JSON.stringify(geojson);
-
-            // Actualizar display de área
-            this.updateAreaDisplay(totalArea);
-
-            this.processMultiPolygonInfo(features);
-
-            this.showAlert(`Áreas importadas correctamente. Área total: ${totalArea.toFixed(2)} ha`, 'success');
-        } catch (error) {
-            this.showAlert('Error al importar el área: ' + error.message, 'error');
-        }
-    }
-
-    /**
-     * Importa uno o varios polígonos desde un string KML y los dibuja en el mapa.
-     * Extrae nombres/productores si existen.
-     * @param {string} kmlText
-     */
-    importKML(kmlText) {
-        try {
-            this.clearMap();
-            const format = new ol.format.KML();
-            const features = format.readFeatures(kmlText, {
-                featureProjection: 'EPSG:3857'
-            });
-
-            if (features.length === 0) {
-                this.showAlert('El archivo KML no contiene geometría válida.', 'error');
-                return;
-            }
-
-            let totalArea = 0;
-            features.forEach(feature => {
-                const productor = this.extractKMLData(feature);
-                if (productor) {
-                    feature.set('label', productor);
-                    feature.set('productor', productor);
-                }
-                this.source.addFeature(feature);
-                
-                // Calcular área para esta feature
-                if (feature.getGeometry().getType() === 'Polygon') {
-                    totalArea += this.calculateArea(feature);
-                }
-            });
-
-            const extent = this.source.getExtent();
-            this.map.getView().fit(extent, { padding: [50, 50, 50, 50], duration: 1000 });
-
-            // Guardar como FeatureCollection
-            const featureCollection = {
-                type: 'FeatureCollection',
-                features: features.map(feature => {
-                    const geoJSONFormat = new ol.format.GeoJSON();
-                    return JSON.parse(geoJSONFormat.writeFeature(feature, {
-                        dataProjection: 'EPSG:4326',
-                        featureProjection: 'EPSG:3857'
-                    }));
-                })
-            };
-            document.getElementById('geometry').value = JSON.stringify(featureCollection);
-
-            // Actualizar display de área
-            this.updateAreaDisplay(totalArea);
-
-            this.processMultiPolygonInfo(features);
-
-            this.showAlert(`${features.length} áreas importadas correctamente. Área total: ${totalArea.toFixed(2)} ha`, 'success');
-        } catch (error) {
-            this.showAlert('Error al importar el área KML: ' + error.message, 'error');
-        }
-    }
-
-    /**
-     * Extrae el nombre/productor de una feature KML.
-     * Nota: Adapta según la estructura de tus archivos KML.
-     * @param {ol.Feature} feature
-     * @returns {string|null}
-     */
-    extractKMLData(feature) {
-        try {
-            const kmlDescription = feature.get('description');
-            if (!kmlDescription) return null;
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(kmlDescription, 'text/html');
-            const simpleDataElements = doc.querySelectorAll('simpledata');
-            const data = {};
-            simpleDataElements.forEach(el => {
-                const name = el.getAttribute('name');
-                const value = el.textContent;
-                if (name && value) data[name.toLowerCase()] = value;
-            });
-            return data.productor || data.name || data.nombre || null;
-        } catch (error) {
-            console.warn('Error extrayendo datos KML:', error);
-            return null;
-        }
-    }
-
-    /**
-     * Procesa información de múltiples polígonos y la muestra en una tabla.
-     * Nota: Útil para mostrar resumen de productores, localidad y área.
-     * @param {Array<ol.Feature>} features
-     */
-    processMultiPolygonInfo(features) {
-        const polygonsInfo = [];
-        features.forEach(feature => {
-            const geometry = feature.getGeometry();
-            if (geometry.getType() === 'Polygon') {
-                const productor = feature.get('productor') || feature.get('name') || 'Propietario desconocido';
-                const areaHa = this.calculateArea(feature);
-                const localidad = feature.get('localidad') || feature.get('municipio') || 'No especificado';
-                polygonsInfo.push({
-                    productor: productor,
-                    localidad: localidad,
-                    area: areaHa
-                });
-            }
-        });
-        this.displayPolygonsInfo(polygonsInfo);
-    }
-
-    /**
-     * Muestra la información de los polígonos en una tabla HTML.
-     * Nota: El contenedor y la tabla deben existir en el HTML.
-     * @param {Array<Object>} polygonsInfo
-     */
-    displayPolygonsInfo(polygonsInfo) {
-        const container = document.getElementById('producers-info');
-        const list = document.getElementById('producers-list');
-        if (polygonsInfo.length > 0) {
-            list.innerHTML = '';
-            polygonsInfo.forEach(info => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.productor}</td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.localidad}</td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">${info.area.toFixed(2)} Ha</td>
-                `;
-                list.appendChild(row);
-            });
-            container.classList.remove('hidden');
-        } else {
-            container.classList.add('hidden');
-        }
-    }
-
-    /**
-     * Aplica el estado de visibilidad a los íconos del botón y a la capa GFW.
-     * @param {boolean} isVisible - Si la capa debe ser visible (true) u oculta (false).
-     */
-    applyGfwLayerState(isVisible) {
-        const iconVisible = document.getElementById('icon-eye-open');
-        const iconHidden = document.getElementById('icon-eye-closed');
-        
-        // 1. Lógica de ÍCONOS (Ojo Abierto o Cerrado)
-        if (iconVisible && iconHidden) {
-            // Mostrar ojo abierto si es visible
-            iconVisible.style.display = isVisible ? 'inline-block' : 'none';
-            // Mostrar ojo tachado si está oculta
-            iconHidden.style.display = isVisible ? 'none' : 'inline-block';
-        }
-
-        // 2. Lógica del MAPA (Alternar visibilidad en OpenLayers)
-        if (this.gfwLossLayer) {
-            // Usamos el método nativo de OpenLayers para controlar la visibilidad
-            this.gfwLossLayer.setVisible(isVisible);
-            console.log(`Capa GFW: ${isVisible ? 'VISIBLE' : 'OCULTA'}`);
-        }
-    }
-
-    /**
-     * Configura el botón de alternancia, la persistencia con localStorage y previene el parpadeo.
-     */
-    initializeGfWLayerToggle() {
-        // Usamos DOMContentLoaded para garantizar que el botón existe, aunque ya estamos en el constructor.
-        // Lo incluimos aquí por seguridad. Si usas un patrón de módulo, esto podría ir fuera del constructor.
-        
-        const toggleButton = document.getElementById('visibility-toggle-button');
-        
-        if (!toggleButton) return;
-
-        // 1. Obtener el estado guardado (Persistencia)
-        let storedState = localStorage.getItem(this.STORAGE_KEY);
-        // Si el estado guardado es 'false', isLayerVisible será false; de lo contrario, true.
-        let isLayerVisible = storedState === 'false' ? false : true;
-        
-        // 2. Aplicar el estado inicial
-        // Se llama a la función de control para ajustar los íconos y la visibilidad de la capa ANTES de mostrar el botón.
-        this.applyGfwLayerState(isLayerVisible);
-        
-        // 3. Revelar el botón (Previene el Parpadeo)
-        // Se remueve la clase 'invisible' de Tailwind CSS.
-        toggleButton.classList.remove('invisible');
-
-        // 4. Asignar el evento click
-        toggleButton.addEventListener('click', () => {
-            isLayerVisible = !isLayerVisible; // Invertir el estado
-            this.applyGfwLayerState(isLayerVisible); // Aplicar el nuevo estado
-            // Guardar el nuevo estado en localStorage
-            localStorage.setItem(this.STORAGE_KEY, isLayerVisible.toString()); 
-        });
-    }
-    
-    /**
-     * Maneja el dibujo de polígonos desde coordenadas UTM (para uso desde el modal)
-     * @param {Array} utmCoordinates - Array de coordenadas UTM [easting, northing, zone, hemisphere]
-     */
-    drawFromUTMCoordinates(utmCoordinates) {
-        try {
-            // Convertir todas las coordenadas UTM a WGS84
-            const wgs84Coordinates = utmCoordinates.map(coord => {
-                const [easting, northing, zone, hemisphere] = coord;
-                
-                // Configurar la proyección UTM dinámicamente
-                const sourceEpsg = this.setupUTMProjection(zone, hemisphere);
-                
-                // Convertir UTM a WGS84 (lat/lon)
-                const [longitude, latitude] = proj4(sourceEpsg, 'EPSG:4326', [easting, northing]);
-                
-                return [longitude, latitude];
-            });
-            
-            // Verificar que las conversiones sean válidas
-            const invalidCoords = wgs84Coordinates.filter(coord => 
-                isNaN(coord[0]) || isNaN(coord[1]) || 
-                Math.abs(coord[0]) > 180 || Math.abs(coord[1]) > 90
-            );
-            
-            if (invalidCoords.length > 0) {
-                this.showAlert('Algunas coordenadas UTM son inválidas o están fuera de rango', 'error');
-                return;
-            }
-            
-            // Cerrar el polígono si no está cerrado
-            const firstCoord = wgs84Coordinates[0];
-            const lastCoord = wgs84Coordinates[wgs84Coordinates.length - 1];
-            
-            if (firstCoord[0] !== lastCoord[0] || firstCoord[1] !== lastCoord[1]) {
-                wgs84Coordinates.push(firstCoord);
-            }
-            
-            // Crear y dibujar el polígono
-            const feature = new ol.Feature({
-                geometry: new ol.geom.Polygon([wgs84Coordinates]).transform('EPSG:4326', 'EPSG:3857')
-            });
-            
-            this.clearMap();
-            this.source.addFeature(feature);
-            
-            // Calcular y mostrar área
-            const areaHa = this.calculateArea(feature);
-            this.updateAreaDisplay(areaHa);
-            
-            // Ajustar la vista al polígono
-            this.map.getView().fit(
-                feature.getGeometry().getExtent(),
-                { padding: [50, 50, 50, 50], duration: 1000 }
-            );
-            
-            // Guardar como GeoJSON
-            this.convertToGeoJSON(feature);
-            
-            // Mostrar información de zonas utilizadas
-            const zonesUsed = [...new Set(utmCoordinates.map(coord => 
-                `Zona ${coord[2]}${coord[3]}`
-            ))];
-            const zonesText = zonesUsed.sort().join(', ');
-            
-            this.showAlert(
-                `Polígono dibujado exitosamente (${zonesText}). Área: ${areaHa.toFixed(2)} ha`, 
-                'success'
-            );
-            
-        } catch (error) {
-            console.error('Error al procesar coordenadas UTM:', error);
-            this.showAlert('Error al procesar coordenadas UTM. Verifique los valores y formatos.', 'error');
-        }
-    }
-
-    /**
-     * Configura Proj4 para UTM dinámicamente
-     * @param {number} zone - Zona UTM
-     * @param {string} hemisphere - Hemisferio ('N' o 'S')
-     * @returns {string} Código EPSG
-     */
-    setupUTMProjection(zone, hemisphere) {
-        const epsgCode = hemisphere === 'N' ? `EPSG:326${zone}` : `EPSG:327${zone}`;
-        
-        if (!proj4.defs(epsgCode)) {
-            const proj4String = `+proj=utm +zone=${zone} +${hemisphere === 'S' ? '+south ' : ''}datum=WGS84 +units=m +no_defs`;
-            proj4.defs(epsgCode, proj4String);
-        }
-        
-        return epsgCode;
-    }
 }
 
 // Inicializar el mapa cuando el documento esté listo
@@ -932,15 +995,3 @@ document.addEventListener('DOMContentLoaded', function() {
         window.deforestationMapInstance = new DeforestationMap();
     }
 });
-
-/**
- * NOTAS:
- * - Mantén los IDs y clases del HTML consistentes con los usados en el JS.
- * - Para soporte SHP, asegúrate de incluir la librería shpjs y llamar a importGeoJSON con el resultado.
- * - El método displayPolygonsInfo requiere un contenedor y una tabla en el HTML:
- *   <div id="producers-info" class="hidden">
- *     <table><tbody id="producers-list"></tbody></table>
- *   </div>
- * - Puedes personalizar los estilos y campos según tus necesidades.
- * - El código está ampliamente comentado para facilitar el mantenimiento y la extensión.
- */

@@ -637,7 +637,7 @@ function updateProgress(loadedCount) {
     }
 }
 
-// Inicializar gráfica de evolución cuando el DOM esté listo - VERSIÓN MEJORADA
+// Inicializar gráfica de evolución cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('deforestation-evolution-chart')) {
         console.log('Inicializando gráfico de evolución...');
