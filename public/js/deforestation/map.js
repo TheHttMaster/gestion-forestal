@@ -193,15 +193,16 @@ class DeforestationMap {
     /**
      * Obtiene los estilos para polígonos según el estado
      * @param {string} state - Estado del polígono: 'drawing', 'finished', 'default'
+     * @param {number} areaHa - Área en hectáreas para mostrar en el texto
      * @returns {ol.style.Style} Estilo correspondiente
      */
-    getPolygonStyle(state = 'default') {
+    getPolygonStyle(state = 'default', areaHa = 0) {
         const styles = {
             drawing: new ol.style.Style({
                 stroke: new ol.style.Stroke({
                     color: '#3b82f6',
                     width: 3,
-                    lineDash: [5, 5],
+                    lineDash: [5, 10],
                     lineCap: 'round'
                 }),
                 fill: new ol.style.Fill({
@@ -228,6 +229,25 @@ class DeforestationMap {
                     radius: 5,
                     fill: new ol.style.Fill({ color: '#10b981' }),
                     stroke: new ol.style.Stroke({ color: '#ffffff', width: 2 })
+                }),
+                // TEXTO DINÁMICO CON EL ÁREA
+                text: new ol.style.Text({
+                    text: areaHa > 0 ? `${areaHa.toFixed(2)} ha` : '',
+                    font: 'bold 14px Arial, sans-serif',
+                    fill: new ol.style.Fill({
+                        color: '#1f2937' // Color de texto oscuro
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#ffffff', // Borde blanco para mejor contraste
+                        width: 3
+                    }),
+                    backgroundFill: new ol.style.Fill({
+                        color: 'rgba(255, 255, 255, 0.7)' // Fondo semitransparente
+                    }),
+                    padding: [4, 8, 4, 8],
+                    textBaseline: 'middle',
+                    textAlign: 'center',
+                    offsetY: 0
                 })
             }),
             
@@ -256,15 +276,23 @@ class DeforestationMap {
         const geometry = feature.getGeometry();
         const styles = [];
 
+        // Obtener el área de la feature si existe
+        const areaHa = feature.get('area') || 0;
+        
         // Usar estilo personalizado si existe, sino usar el por defecto
         const customStyle = feature.getStyle();
         if (customStyle) {
             styles.push(customStyle);
         } else {
-            styles.push(this.polygonStyle);
+            // Para polígonos finalizados, usar estilo con área
+            if (geometry.getType() === 'Polygon' && areaHa > 0) {
+                styles.push(this.getPolygonStyle('finished', areaHa));
+            } else {
+                styles.push(this.polygonStyle);
+            }
         }
 
-        // Agregar etiqueta si existe
+        // Agregar etiqueta si existe (para nombres de productores)
         this.addLabelToFeature(feature, geometry);
 
         return styles;
@@ -302,6 +330,7 @@ class DeforestationMap {
         document.getElementById('draw-polygon').addEventListener('click', () => this.activateDrawing());
         document.getElementById('clear-map').addEventListener('click', () => this.clearMap());
         document.getElementById('analysis-form').addEventListener('submit', (e) => this.handleFormSubmit(e));
+        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
     }
 
     /**
@@ -384,7 +413,6 @@ class DeforestationMap {
      */
     activateDrawing() {
         this.removeExistingDrawInteraction();
-        this.showAlert('Dibujando... Agrega vértices haciendo clic. Doble clic para terminar.');
 
         this.draw = new ol.interaction.Draw({
             source: this.source,
@@ -416,7 +444,7 @@ class DeforestationMap {
         this.draw.on('drawabort', () => {
             this.updateAreaDisplay(0);
             this.drawingFeature = null;
-            this.showAlert('Dibujo cancelado.');
+            
         });
 
         this.draw.on('drawend', (event) => {
@@ -431,7 +459,11 @@ class DeforestationMap {
     finalizeDrawing(feature) {
         const areaHa = this.calculateArea(feature);
         
-        feature.setStyle(this.getPolygonStyle('finished'));
+        // Guardar el área en la feature para mostrarla en el texto
+        feature.set('area', areaHa);
+        
+        // Aplicar estilo final con el área
+        feature.setStyle(this.getPolygonStyle('finished', areaHa));
         this.updateAreaDisplay(areaHa);
         this.convertToGeoJSON(feature);
         
@@ -610,11 +642,17 @@ class DeforestationMap {
                 }
             }
             
-            this.source.addFeature(feature);
-            
+            // Calcular y guardar área para mostrar en el texto
             if (feature.getGeometry().getType() === 'Polygon') {
-                totalArea += this.calculateArea(feature);
+                const areaHa = this.calculateArea(feature);
+                feature.set('area', areaHa);
+                totalArea += areaHa;
+                
+                // Aplicar estilo con área
+                feature.setStyle(this.getPolygonStyle('finished', areaHa));
             }
+            
+            this.source.addFeature(feature);
         });
         
         return totalArea;
@@ -942,9 +980,15 @@ class DeforestationMap {
         });
         
         this.clearMap();
-        this.source.addFeature(feature);
         
+        // Calcular área y guardarla en la feature
         const areaHa = this.calculateArea(feature);
+        feature.set('area', areaHa);
+        
+        // Aplicar estilo con área
+        feature.setStyle(this.getPolygonStyle('finished', areaHa));
+        
+        this.source.addFeature(feature);
         this.updateAreaDisplay(areaHa);
         
         this.map.getView().fit(
@@ -964,7 +1008,6 @@ class DeforestationMap {
             'success'
         );
     }
-
     /**
      * Muestra alertas al usuario
      */
@@ -987,6 +1030,34 @@ class DeforestationMap {
             alert(message);
         }
     }
+
+    /**
+     * Maneja eventos de teclado para funcionalidades globales
+     * @param {KeyboardEvent} event - Evento de teclado
+     */
+    handleKeyDown(event) {
+        // Cancelar dibujo con Escape
+        if (event.key === 'Escape' && this.draw && this.drawingFeature) {
+            this.cancelDrawing();
+            event.preventDefault(); // Prevenir comportamiento por defecto
+        }
+    }
+
+    /**
+     * Cancela el proceso de dibujo actual de forma limpia
+     */
+    cancelDrawing() {
+        if (this.draw) {
+            this.map.removeInteraction(this.draw);
+            this.draw = null;
+        }
+        
+        this.drawingFeature = null;
+        this.updateAreaDisplay(0);
+    }
+
+
+
 }
 
 // Inicializar el mapa cuando el documento esté listo

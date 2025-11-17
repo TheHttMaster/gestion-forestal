@@ -1319,4 +1319,15 @@ function calculatePolygonArea(feature) {
 .via-white\/30 {
     --tw-gradient-stops: var(--tw-gradient-from), rgba(255, 255, 255, 0.3), var(--tw-gradient-to, rgba(255, 255, 255, 0.3));
 }
+
+/* Mejorar la legibilidad del texto en polígonos */
+.ol-layer canvas {
+    font-smooth: always;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Asegurar que el texto se renderice correctamente */
+.ol-viewport {
+    text-rendering: geometricPrecision;
+}
 </style>
