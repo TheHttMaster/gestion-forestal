@@ -179,24 +179,7 @@
 
                                 {{-- ///////////////////////////////////////////////////// --}}
                                 
-                            <div class="flex space-x-2">
-                                <!-- Display del área en hectáreas -->
-                                <div id="area-display" class="hidden bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-lg shadow-lg">
-                                    <div class="flex items-center space-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ruler">
-                                            <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/>
-                                            <path d="m14.5 12.5 2-2"/>
-                                            <path d="m11.5 9.5 2-2"/>
-                                            <path d="m8.5 6.5 2-2"/>
-                                            <path d="m17.5 15.5 2-2"/>
-                                        </svg>
-                                        <span class="text-sm font-medium">Área:</span>
-                                        <span id="area-value" class="text-sm font-bold">0.00</span>
-                                        <span class="text-sm">ha</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            
                     </div>
 
                 <!-- Modal moderno para coordenadas UTM universal -->
@@ -1229,17 +1212,7 @@ function calculateAreaHectares(coordinates) {
 }
 
 // Función para actualizar el display del área
-function updateAreaDisplay(areaHa) {
-    const areaDisplay = document.getElementById('area-display');
-    const areaValue = document.getElementById('area-value');
-    
-    if (areaHa > 0) {
-        areaValue.textContent = areaHa.toFixed(2);
-        areaDisplay.classList.remove('hidden');
-    } else {
-        areaDisplay.classList.add('hidden');
-    }
-}
+
 
 // Función para calcular área desde un polígono OpenLayers
 function calculatePolygonArea(feature) {

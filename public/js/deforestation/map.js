@@ -134,7 +134,7 @@ class DeforestationMap {
 
         this.map = new ol.Map({
             target: 'map',
-            layers: [baseLayerGroup, this.vectorLayer, this.gfwLossLayer],
+            layers: [baseLayerGroup, this.gfwLossLayer, this.vectorLayer],
             view: new ol.View({
                 center: initialCenter,
                 zoom: this.INITIAL_ZOOM
@@ -467,7 +467,7 @@ class DeforestationMap {
         this.updateAreaDisplay(areaHa);
         this.convertToGeoJSON(feature);
         
-        this.showAlert(`Polígono completado. Área: ${areaHa.toFixed(2)} hectáreas`, 'success');
+        this.showAlert(`Polígono completado.`, 'success');
         this.drawingFeature = null;
         
         this.map.removeInteraction(this.draw);
