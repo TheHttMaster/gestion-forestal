@@ -25,9 +25,9 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div class="bg-blue-100 dark:bg-blue-900/40 p-4 rounded-lg shadow-md border-l-4 border-blue-500">
-                        <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Año de Análisis</p>
+                        <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Rango de Análisis</p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                            {{ $dataToPass['analysis_year'] }}
+                            {{ $dataToPass['start_year'] }} - {{ $dataToPass['end_year'] }}
                         </p>
                     </div>
 
@@ -39,48 +39,58 @@
                     </div>
 
                     <div class="bg-red-100 dark:bg-red-900/60 p-4 rounded-lg shadow-md border-l-4 border-red-500">
-                        <p class="text-sm font-medium text-red-600 dark:text-red-400">Área Deforestada</p>
+                        <p class="text-sm font-medium text-red-600 dark:text-red-400">Área Deforestada {{ $dataToPass['end_year'] }}</p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                            {{ number_format($dataToPass['area__ha'], 4, ',', '.') }} ha
+                            {{ number_format($dataToPass['area__ha'], 6, ',', '.') }} ha
+                        </p>
+                        @php
+                            $currentYearPercentage = $dataToPass['polygon_area_ha'] > 0 
+                                ? ($dataToPass['area__ha'] / $dataToPass['polygon_area_ha']) * 100 
+                                : 0;
+                        @endphp
+                        <p class="text-xs text-red-700 dark:text-red-300 mt-1">
+                            {{ number_format($currentYearPercentage, 2, ',', '.') }}% del área total
                         </p>
                     </div>
 
                     <div class="bg-yellow-100 dark:bg-yellow-800/60 p-4 rounded-lg shadow-md border-l-4 border-yellow-500">
-                    <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Porcentaje Total de Pérdida (2020-2024)</p>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                        @php
-                            $yearlyResults = $dataToPass['yearly_results'] ?? [];
-                            $polygonAreaHa = $dataToPass['polygon_area_ha'] ?? 0;
-                            
-                            $totalDeforestedArea = 0;
-                            $validYears = 0;
-                            
-                            // Sumar todas las áreas deforestadas de todos los años
-                            foreach ($yearlyResults as $year => $yearData) {
-                                if (isset($yearData['area__ha']) && $yearData['status'] === 'success') {
-                                    $totalDeforestedArea += $yearData['area__ha'];
-                                    $validYears++;
+                        <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Pérdida Total ({{ $dataToPass['start_year'] }}-{{ $dataToPass['end_year'] }})</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                            @php
+                                $yearlyResults = $dataToPass['yearly_results'] ?? [];
+                                $polygonAreaHa = $dataToPass['polygon_area_ha'] ?? 0;
+                                $startYear = $dataToPass['start_year'] ?? 2020;
+                                $endYear = $dataToPass['end_year'] ?? 2024;
+                                
+                                $totalDeforestedArea = 0;
+                                $validYears = 0;
+                                
+                                foreach ($yearlyResults as $year => $yearData) {
+                                    if (isset($yearData['area__ha']) && $yearData['status'] === 'success') {
+                                        $totalDeforestedArea += $yearData['area__ha'];
+                                        $validYears++;
+                                    }
                                 }
-                            }
-                            
-                            // Calcular porcentaje total
-                            $totalPercentage = $polygonAreaHa > 0 ? ($totalDeforestedArea / $polygonAreaHa) * 100 : 0;
-                        @endphp
-                        {{ number_format($totalPercentage, 2, ',', '.') }}%
-                    </p>
-                    
-                    @if($validYears > 0)
-                    <div class="text-xs text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
-                        <div>Total acumulado: {{ number_format($totalDeforestedArea, 4, ',', '.') }} ha</div>
-                        <div>Basado en {{ $validYears }}/5 años</div>
+                                
+                                $totalPercentage = $polygonAreaHa > 0 ? ($totalDeforestedArea / $polygonAreaHa) * 100 : 0;
+                                $totalYearsInRange = $endYear - $startYear + 1;
+                            @endphp
+                            {{ number_format($totalPercentage, 2, ',', '.') }}%
+                        </p>
+                        
+                        @if($validYears > 0)
+                        <div class="text-xs text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
+                            <div>{{ number_format($totalDeforestedArea, 6, ',', '.') }} ha acumuladas</div>
+                            <div>{{ $validYears }}/{{ $totalYearsInRange }} años analizados</div>
+                        </div>
+                        @else
+                        <p class="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                            Sin datos suficientes
+                        </p>
+                        @endif
                     </div>
-                    @else
-                    <p class="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                        No hay datos suficientes para calcular el total
-                    </p>
-                    @endif
                 </div>
-                </div>
+                
 
                 <!-- Resumen Estadístico -->
                 <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -214,6 +224,15 @@
                         <div class="bg-gray-100 dark:bg-gray-800/40 p-4 rounded-lg shadow-inner" style="height: 430px;">
                             <canvas id="area-distribution-chart"></canvas>
                         </div>
+                        <!-- Gráfica de Evolución -->
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="font-semibold text-xl text-gray-900 dark:text-gray-100 mb-3">
+                            Evolución de la Deforestación ({{ $dataToPass['start_year'] }}-{{ $dataToPass['end_year'] }})
+                        </h3>
+                        <div class="bg-gray-100 dark:bg-gray-800/40 p-4 rounded-lg shadow-inner" style="height: 400px;">
+                            <canvas id="deforestation-evolution-chart"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -223,27 +242,30 @@
                         Datos Técnicos del Análisis
                     </h3>
                     <div class="bg-gray-100 dark:bg-gray-800/40 p-4 rounded-lg shadow-inner">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">Información del Polígono</h4>
-                            <pre class="whitespace-pre-wrap font-mono text-xs text-gray-600 dark:text-gray-400">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div>
+            <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">Información del Polígono</h4>
+            <pre class="whitespace-pre-wrap font-mono text-xs text-gray-600 dark:text-gray-400">
 Nombre: {{ $dataToPass['polygon_name'] }}
 Área total: {{ number_format($dataToPass['polygon_area_ha'], 2, ',', '.') }} ha
 Tipo: {{ $dataToPass['type'] }}
 Vértices: {{ count($dataToPass['geometry']) }}
-                            </pre>
-                        </div>
-                        <div>
-                            <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">Resultados GFW</h4>
-                            <pre class="whitespace-pre-wrap font-mono text-xs text-gray-600 dark:text-gray-400">
+            </pre>
+        </div>
+        <div>
+            <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">Resultados GFW</h4>
+            <pre class="whitespace-pre-wrap font-mono text-xs text-gray-600 dark:text-gray-400">
+Rango analizado: {{ $dataToPass['start_year'] }} - {{ $dataToPass['end_year'] }}
 Año análisis: {{ $dataToPass['analysis_year'] }}
-Área deforestada: {{ number_format($dataToPass['area__ha'], 4, ',', '.') }} ha
-Pérdida total (2020-2024): {{ number_format($totalDeforestedArea, 4, ',', '.') }} ha
+Área deforestada: {{ number_format($dataToPass['area__ha'], 6, ',', '.') }} ha
+Porcentaje año actual: {{ number_format($currentYearPercentage, 2, ',', '.') }}%
+Pérdida total: {{ number_format($totalDeforestedArea, 6, ',', '.') }} ha
 Porcentaje total: {{ number_format($totalPercentage, 2, ',', '.') }}%
 Estado: {{ $dataToPass['status'] }}
-                            </pre>
-                        </div>
-                    </div>
+            </pre>
+        </div>
+    </div>
+</div>
                 </div>
                 </div>
 
@@ -263,16 +285,7 @@ Estado: {{ $dataToPass['status'] }}
 <script>
     // Mostrar datos de debug en consola
 console.log('Yearly Data from PHP:', @json($dataToPass['yearly_results'] ?? []));
-console.log('Debug Info:', @json($dataToPass['debug_info'] ?? []));
 
-// Mostrar en pantalla (opcional)
-document.addEventListener('DOMContentLoaded', function() {
-    const debugInfo = @json($dataToPass['debug_info'] ?? []);
-    if (debugInfo.years_count > 0) {
-        document.getElementById('debug-data').textContent = JSON.stringify(debugInfo, null, 2);
-        document.getElementById('debug-info').classList.remove('hidden');
-    }
-});
 // Datos para el gráfico de distribución
 const polygonArea = {{ $dataToPass['polygon_area_ha'] ?? 0 }};
 const deforestedArea = {{ $totalDeforestedArea ?? 0 }};
@@ -283,7 +296,7 @@ const ctx = document.getElementById('area-distribution-chart').getContext('2d');
 new Chart(ctx, {
     type: 'doughnut',
     data: {
-        labels: ['Área Conservada', 'Deforestacion Total'],
+        labels: ['Área Conservada', 'Área Deforestada'],
         datasets: [{
             data: [conservedArea, deforestedArea],
             backgroundColor: [
@@ -299,7 +312,7 @@ new Chart(ctx, {
     },
     options: {
         responsive: true,
-        maintainAspectRatio: false,  // ← ESTA LÍNEA ES LA CLAVE
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: 'bottom',
@@ -506,19 +519,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 
-// Gráfica de evolución de la deforestación - VERSIÓN CORREGIDA
+/// Gráfica de evolución de la deforestación - VERSIÓN CON RANGO DINÁMICO
 let evolutionChart = null;
 let yearlyData = @json($dataToPass['yearly_results'] ?? []);
-let completedYears = 0;
-const totalYears = 5; // 2020-2024
+let startYear = {{ $dataToPass['start_year'] ?? 2020 }};
+let endYear = {{ $dataToPass['end_year'] ?? 2024 }};
+const totalYears = endYear - startYear + 1;
 
 function initEvolutionChart() {
     const ctx = document.getElementById('deforestation-evolution-chart').getContext('2d');
     
-    // Preparar datos CORREGIDOS
     const chartData = getChartData();
-    
-    console.log('Datos para gráfico:', chartData); // Debug
     
     evolutionChart = new Chart(ctx, {
         type: 'line',
@@ -528,7 +539,7 @@ function initEvolutionChart() {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Evolución de la Deforestación por Año'
+                    text: 'Evolución de la Deforestación por Año ({{ $dataToPass['start_year'] }}-{{ $dataToPass['end_year'] }})'
                 },
                 tooltip: {
                     callbacks: {
@@ -561,7 +572,6 @@ function initEvolutionChart() {
                     ticks: {
                         callback: function(value) {
                             if (value === 0) return '0 ha';
-                            // Mostrar más decimales para valores pequeños
                             if (value < 0.01) return value.toFixed(6) + ' ha';
                             if (value < 1) return value.toFixed(4) + ' ha';
                             return value.toFixed(2) + ' ha';
@@ -581,6 +591,7 @@ function initEvolutionChart() {
             }
         }
     });
+
     
     // Actualizar barra de progreso
     updateProgress(Object.keys(yearlyData).length);
@@ -588,45 +599,41 @@ function initEvolutionChart() {
 
 // FUNCIÓN CORREGIDA - Maneja correctamente la estructura de datos
 function getChartData() {
-    const allYears = [2020, 2021, 2022, 2023, 2024];
+    const allYears = [];
+    for (let year = startYear; year <= endYear; year++) {
+        allYears.push(year);
+    }
+    
     const labels = [];
     const data = [];
     const backgroundColors = [];
     const borderColors = [];
     
-    console.log('Yearly Data recibido:', yearlyData); // Debug
-    
     allYears.forEach(year => {
         labels.push(year.toString());
         
-        // VERIFICAR SI EXISTEN DATOS PARA ESTE AÑO
         if (yearlyData[year] && yearlyData[year].area__ha !== undefined) {
             const areaValue = parseFloat(yearlyData[year].area__ha) || 0;
             data.push(areaValue);
             
-            // Color según el estado
             if (yearlyData[year].status === 'success') {
-                backgroundColors.push('rgba(34, 197, 94, 0.8)'); // Verde
+                backgroundColors.push('rgba(34, 197, 94, 0.8)');
                 borderColors.push('rgba(34, 197, 94, 1)');
             } else {
-                backgroundColors.push('rgba(239, 68, 68, 0.8)'); // Rojo
+                backgroundColors.push('rgba(239, 68, 68, 0.8)');
                 borderColors.push('rgba(239, 68, 68, 1)');
             }
         } else {
-            // No hay datos para este año
             data.push(0);
-            backgroundColors.push('rgba(156, 163, 175, 0.5)'); // Gris
+            backgroundColors.push('rgba(156, 163, 175, 0.5)');
             borderColors.push('rgba(156, 163, 175, 0.5)');
         }
     });
-    
-    console.log('Labels generados:', labels); // Debug
-    console.log('Data generado:', data); // Debug
-    
-    return {
+
+return {
         labels: labels,
         datasets: [{
-            label: 'Área Deforestada Acumulada',
+            label: 'Área Deforestada',
             data: data,
             borderColor: 'rgb(239, 68, 68)',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',

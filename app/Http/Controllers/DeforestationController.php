@@ -38,14 +38,21 @@ class DeforestationController extends Controller
 public function analyze(Request $request)
 {
     // 1. Obtener los datos del Request y asignarlos a variables
-    $year = (int) $request->input('end_year'); 
+    $startYear = (int) $request->input('start_year');
+    $endYear = (int) $request->input('end_year');
     $geometryString = $request->input('geometry');
     $areaHa = (float) $request->input('area_ha');
+    $polygonName = $request->input('name', 'Área de Estudio'); // Obtener nombre aquí para consistencia
+
+    // Validar que el rango de años sea válido
+    if ($startYear > $endYear) {
+        return back()->withErrors(['error' => 'El año de inicio no puede ser mayor al año de fin.']);
+    }
 
     // 2. Decodificación y Estructuración del GeoJSON
     try {
-        $geometryGeoJson = json_decode($geometryString, true); 
-        
+        $geometryGeoJson = json_decode($geometryString, true);
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             return back()->withErrors(['geometry' => 'Formato GeoJSON inválido']);
         }
@@ -54,56 +61,50 @@ public function analyze(Request $request)
         return back()->withErrors(['error' => 'Error procesando la geometría: ' . $e->getMessage()]);
     }
 
-    // 3. Consulta principal (año seleccionado por el usuario) - PRIORITARIA
-    $mainStats = $this->gfwService->getZonalStats($geometryGeoJson, $year);
+    // 3. (Eliminado: Consulta principal separada)
 
-    // 4. CONSULTAS PARALELAS PARA TODOS LOS AÑOS 2020-2024 (AJUSTADO)
-    // Siempre consultamos todos los años del 2020 al 2024, sin excepciones
-    $yearsToAnalyze = [2020, 2021, 2022, 2023, 2024];
-    
-    $yearlyResults = [];
-    
-    // Incluir el año principal en los resultados inmediatamente
-    $yearlyResults[$year] = [
-        'area__ha' => $mainStats['data'][0]['area__ha'] ?? 0,
-        'status' => $mainStats['status'] ?? 'error',
-        'year' => $year
-    ];
+    // 4. CONSULTAS PARALELAS PARA EL RANGO DE AÑOS ESPECIFICADO (Incluyendo el año final)
+    $yearsToAnalyze = range($startYear, $endYear);
 
-    // Realizar consultas paralelas para TODOS los años 2020-2024
-    // Incluyendo el año principal para consistencia en el formato de respuesta
-    $parallelResults = $this->getParallelYearlyStats($geometryGeoJson, $yearsToAnalyze);
-    
-    // Combinar resultados, dando prioridad a la consulta principal para el año seleccionado
-    $yearlyResults = array_merge($parallelResults, $yearlyResults);
+    // Realizar consultas paralelas para TODOS los años en el rango, incluyendo $endYear
+    // Asumimos que getParallelYearlyStats devuelve un array asociativo con el año como clave.
+    $yearlyResults = $this->getParallelYearlyStats($geometryGeoJson, $yearsToAnalyze);
+
+    // Obtener las estadísticas del año final del array de resultados paralelos
+    $mainStatsForEndYear = $yearlyResults[$endYear] ?? ['area__ha' => 0, 'status' => 'error', 'year' => $endYear];
+    $mainStatsAreaHa = $mainStatsForEndYear['area__ha'] ?? 0;
+    $mainStatsStatus = $mainStatsForEndYear['status'] ?? 'error';
     
     // Ordenar por año
     ksort($yearlyResults);
 
     // 5. Preparar datos para la vista
     $dataToPass = [
-        'analysis_year' => $year,
+        'analysis_year' => $endYear, // Sigue siendo el punto focal del análisis
+        'start_year' => $startYear,
+        'end_year' => $endYear,
         'original_geojson' => $geometryString,
         'type' => $geometryGeoJson['type'],
         'geometry' => $geometryGeoJson['coordinates'][0],
-        'area__ha' => $mainStats['data'][0]['area__ha'] ?? 0,
+        'area__ha' => $mainStatsAreaHa, // Usamos el dato del array paralelo
         'polygon_area_ha' => $areaHa,
-        'status' => $mainStats['status'] ?? 'error',
-        'polygon_name' => $request->input('name', 'Área de Estudio'),
+        'status' => $mainStatsStatus, // Usamos el status del array paralelo
+        'polygon_name' => $polygonName,
         'description' => $request->input('description', ''),
         'yearly_results' => $yearlyResults,
     ];
 
     // Log para debugging
     Log::info('Datos enviados a la vista:', [
+        'start_year' => $startYear,
+        'end_year' => $endYear,
+        'years_analyzed' => $yearsToAnalyze,
         'yearly_results_count' => count($yearlyResults),
-        'years_analyzed' => array_keys($yearlyResults),
-        'main_stats_status' => $mainStats['status'] ?? 'unknown'
+        'main_stats_status' => $mainStatsStatus
     ]);
 
     return view('deforestation.results', compact('dataToPass'));
-
-} /*################## fin de la funcion analyze #################*/
+}
 
 /**
  * Realiza consultas paralelas para múltiples años usando Guzzle
