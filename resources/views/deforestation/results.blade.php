@@ -41,21 +41,45 @@
                     <div class="bg-red-100 dark:bg-red-900/60 p-4 rounded-lg shadow-md border-l-4 border-red-500">
                         <p class="text-sm font-medium text-red-600 dark:text-red-400">Área Deforestada</p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                            {{ number_format($dataToPass['area__ha'], 6, ',', '.') }} ha
+                            {{ number_format($dataToPass['area__ha'], 4, ',', '.') }} ha
                         </p>
                     </div>
 
                     <div class="bg-yellow-100 dark:bg-yellow-800/60 p-4 rounded-lg shadow-md border-l-4 border-yellow-500">
-                        <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Porcentaje Deforestado</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                            @php
-                                $percentage = $dataToPass['polygon_area_ha'] > 0 
-                                    ? ($dataToPass['area__ha'] / $dataToPass['polygon_area_ha']) * 100 
-                                    : 0;
-                            @endphp
-                            {{ number_format($percentage, 2, ',', '.') }}%
-                        </p>
+                    <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Porcentaje Total de Pérdida (2020-2024)</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                        @php
+                            $yearlyResults = $dataToPass['yearly_results'] ?? [];
+                            $polygonAreaHa = $dataToPass['polygon_area_ha'] ?? 0;
+                            
+                            $totalDeforestedArea = 0;
+                            $validYears = 0;
+                            
+                            // Sumar todas las áreas deforestadas de todos los años
+                            foreach ($yearlyResults as $year => $yearData) {
+                                if (isset($yearData['area__ha']) && $yearData['status'] === 'success') {
+                                    $totalDeforestedArea += $yearData['area__ha'];
+                                    $validYears++;
+                                }
+                            }
+                            
+                            // Calcular porcentaje total
+                            $totalPercentage = $polygonAreaHa > 0 ? ($totalDeforestedArea / $polygonAreaHa) * 100 : 0;
+                        @endphp
+                        {{ number_format($totalPercentage, 2, ',', '.') }}%
+                    </p>
+                    
+                    @if($validYears > 0)
+                    <div class="text-xs text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
+                        <div>Total acumulado: {{ number_format($totalDeforestedArea, 4, ',', '.') }} ha</div>
+                        <div>Basado en {{ $validYears }}/5 años</div>
                     </div>
+                    @else
+                    <p class="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                        No hay datos suficientes para calcular el total
+                    </p>
+                    @endif
+                </div>
                 </div>
 
                 <!-- Resumen Estadístico -->
@@ -69,14 +93,14 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600 dark:text-gray-300">Pérdida de cobertura:</span>
-                                <span class="font-medium text-red-600 dark:text-red-400">{{ number_format($dataToPass['area__ha'], 6, ',', '.') }} ha</span>
+                                <span class="font-medium text-red-600 dark:text-red-400">{{ number_format($dataToPass['area__ha'], 4, ',', '.') }} ha</span>
                             </div>
                             <div class="flex justify-between border-t pt-2">
                                 <span class="text-gray-600 dark:text-gray-300">Área conservada:</span>
                                 @php
                                     $conservedArea = $dataToPass['polygon_area_ha'] - $dataToPass['area__ha'];
                                 @endphp
-                                <span class="font-medium text-green-600 dark:text-green-400">{{ number_format($conservedArea, 6, ',', '.') }} ha</span>
+                                <span class="font-medium text-green-600 dark:text-green-400">{{ number_format($conservedArea, 4, ',', '.') }} ha</span>
                             </div>
                         </div>
                     </div>
@@ -199,27 +223,28 @@
                         Datos Técnicos del Análisis
                     </h3>
                     <div class="bg-gray-100 dark:bg-gray-800/40 p-4 rounded-lg shadow-inner">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">Información del Polígono</h4>
-                                <pre class="whitespace-pre-wrap font-mono text-xs text-gray-600 dark:text-gray-400">
-    Nombre: {{ $dataToPass['polygon_name'] }}
-    Área total: {{ number_format($dataToPass['polygon_area_ha'], 2, ',', '.') }} ha
-    Tipo: {{ $dataToPass['type'] }}
-    Vértices: {{ count($dataToPass['geometry']) }}
-                                </pre>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">Resultados GFW</h4>
-                                <pre class="whitespace-pre-wrap font-mono text-xs text-gray-600 dark:text-gray-400">
-    Año análisis: {{ $dataToPass['analysis_year'] }}
-    Área deforestada: {{ number_format($dataToPass['area__ha'], 6, ',', '.') }} ha
-    Estado: {{ $dataToPass['status'] }}
-    Porcentaje: {{ number_format($percentage, 2, ',', '.') }}%
-                                </pre>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">Información del Polígono</h4>
+                            <pre class="whitespace-pre-wrap font-mono text-xs text-gray-600 dark:text-gray-400">
+Nombre: {{ $dataToPass['polygon_name'] }}
+Área total: {{ number_format($dataToPass['polygon_area_ha'], 2, ',', '.') }} ha
+Tipo: {{ $dataToPass['type'] }}
+Vértices: {{ count($dataToPass['geometry']) }}
+                            </pre>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-2">Resultados GFW</h4>
+                            <pre class="whitespace-pre-wrap font-mono text-xs text-gray-600 dark:text-gray-400">
+Año análisis: {{ $dataToPass['analysis_year'] }}
+Área deforestada: {{ number_format($dataToPass['area__ha'], 4, ',', '.') }} ha
+Pérdida total (2020-2024): {{ number_format($totalDeforestedArea, 4, ',', '.') }} ha
+Porcentaje total: {{ number_format($totalPercentage, 2, ',', '.') }}%
+Estado: {{ $dataToPass['status'] }}
+                            </pre>
                         </div>
                     </div>
+                </div>
                 </div>
 
                 <div class="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -250,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // Datos para el gráfico de distribución
 const polygonArea = {{ $dataToPass['polygon_area_ha'] ?? 0 }};
-const deforestedArea = {{ $dataToPass['area__ha'] ?? 0 }};
+const deforestedArea = {{ $totalDeforestedArea ?? 0 }};
 const conservedArea = polygonArea - deforestedArea;
 
 // Gráfico de distribución del área
@@ -258,7 +283,7 @@ const ctx = document.getElementById('area-distribution-chart').getContext('2d');
 new Chart(ctx, {
     type: 'doughnut',
     data: {
-        labels: ['Área Conservada', 'Área Deforestada'],
+        labels: ['Área Conservada', 'Deforestacion Total'],
         datasets: [{
             data: [conservedArea, deforestedArea],
             backgroundColor: [
