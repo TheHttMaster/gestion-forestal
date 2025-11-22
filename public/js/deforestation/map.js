@@ -354,20 +354,7 @@ class DeforestationMap {
         
         this.coordinateDisplay = document.createElement('div');
         this.coordinateDisplay.className = 'coordinate-display';
-        this.coordinateDisplay.style.cssText = `
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            border: 1px solid #ccc;
-            z-index: 1000;
-            display: none;
-        `;
-        
+       
         const mapContainer = this.map.getTargetElement();
         mapContainer.style.position = 'relative';
         mapContainer.appendChild(this.coordinateDisplay);
