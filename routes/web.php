@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProviderController;
+use App\Http\Controllers\ProducerController; 
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AuditLogController;
@@ -83,6 +84,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('providers.restore');
         Route::delete('{provider}/force-delete', [ProviderController::class, 'forceDelete'])
             ->name('providers.force-delete');
+    });
+
+
+    // RUTAS DE PRODUCTORES 
+    Route::resource('producers', ProducerController::class)->names([
+        'index' => 'producers.index',
+        'create' => 'producers.create', 
+        'edit' => 'producers.edit',
+        'update' => 'producers.update',
+    ]);
+
+    // Rutas adicionales para funcionalidades extra de productores
+    Route::prefix('producers')->group(function () {
+        Route::post('{producer}/toggle-status', [ProducerController::class, 'toggleStatus'])
+            ->name('producers.toggle-status');
+        Route::post('{id}/restore', [ProducerController::class, 'restore'])
+            ->name('producers.restore');
+        Route::delete('{id}/force-delete', [ProducerController::class, 'forceDelete'])
+            ->name('producers.force-delete');
     });
 
     

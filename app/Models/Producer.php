@@ -10,7 +10,7 @@ use App\Traits\StandardizesEmails;
 use App\Traits\StandardizesCities;
 use App\Traits\StandardizesCountries;
 
-class Provider extends Model
+class Producer extends Model
 {
     use HasFactory, SoftDeletes, StandardizesEmails, StandardizesCities, StandardizesCountries;
 

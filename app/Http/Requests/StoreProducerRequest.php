@@ -4,9 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProviderRequest extends FormRequest
+class StoreProducerRequest extends FormRequest
 {
-    public function authorize()
+  public function authorize()
     {
         return true;
     }
@@ -14,10 +14,10 @@ class StoreProviderRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255|unique:providers,name',
+            'name' => 'required|string|max:255|unique:producers,name',
             'contact_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|unique:providers,email',
-            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|unique:producers,email',
+            
             'address' => 'nullable|string|max:500',
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',

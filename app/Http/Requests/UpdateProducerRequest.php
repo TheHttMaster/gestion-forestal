@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProviderRequest extends FormRequest
+class UpdateProducerRequest extends FormRequest
 {
     public function authorize()
     {
@@ -13,13 +13,13 @@ class UpdateProviderRequest extends FormRequest
 
     public function rules()
     {
-        $providerId = $this->route('provider')->id;
+        $producerId = $this->route('producer')->id ?? $this->route('producer');
 
         return [
-            'name' => 'required|string|max:255|unique:providers,name,' . $providerId,
+            'name' => 'required|string|max:255|unique:producers,name,' . $producerId,
             'contact_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|unique:providers,email,' . $providerId,
-            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|unique:producers,email,' . $producerId,
+            
             'address' => 'nullable|string|max:500',
             'city' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
@@ -38,3 +38,5 @@ class UpdateProviderRequest extends FormRequest
         ];
     }
 }
+
+

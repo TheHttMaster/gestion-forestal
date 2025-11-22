@@ -2,12 +2,15 @@
 
 namespace App\Livewire;
 
-use App\Models\Provider;
+use App\Models\Producer;
 use Livewire\Component;
 use Illuminate\Validation\Rule;
 
-class CreateProvider extends Component
+class EditProducer extends Component
 {
+    // Propiedad para el productor que se va a editar
+    public Producer $producer;
+
     // Propiedades para los campos del formulario
     public $name = '';
     public $contact_name = '';
@@ -16,20 +19,32 @@ class CreateProvider extends Component
     public $city = '';
     public $country = '';
     public $notes = '';
-    public $is_active = true;
+    public $is_active = false;
 
+    // Método de inicialización
+    public function mount(Producer $producer)
+    {
+        $this->producer = $producer;
+        $this->name = $producer->name;
+        $this->contact_name = $producer->contact_name;
+        $this->email = $producer->email;
+        $this->address = $producer->address;
+        $this->city = $producer->city;
+        $this->country = $producer->country;
+        $this->notes = $producer->notes;
+        $this->is_active = $producer->is_active;
+    }
+    
     // Reglas de validación
     protected function rules()
     {
         return [
-            'name' => ['required', 'string', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\']+$/', 'min:3', Rule::unique('providers', 'name')],
+            'name' => ['required', 'string', 'min:3', Rule::unique('producers', 'name')->ignore($this->producer->id)],
             'contact_name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email'],
-
-            'address' => ['nullable', 'string', 'max:500', 'regex:/^[a-zA-Z0-9\s.,-]+$/'],
-            'city' => ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
-            'country' => ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z\s]+$/'],
-            
+            'email' => ['nullable', 'email', Rule::unique('producers', 'email')->ignore($this->producer->id)],
+            'address' => ['nullable', 'string'],
+            'city' => ['nullable', 'string'],
+            'country' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['boolean'],
         ];
@@ -56,23 +71,23 @@ class CreateProvider extends Component
         $this->validateOnly($propertyName);
     }
 
-    // Método para guardar el nuevo productor
-    public function store()
+    // Método para actualizar el productor
+    public function update()
     {
         $validatedData = $this->validate();
 
-        Provider::create($validatedData);
-        
+        $this->producer->update($validatedData);
+
         // Redireccionar con un mensaje de éxito
-        return redirect()->route('providers.index')->with('swal', [
+        return redirect()->route('producers.index')->with('swal', [
             'icon' => 'success',
             'title' => 'Éxito',
-            'text' => 'productor creado exitosamente.'
+            'text' => 'productor actualizado exitosamente.'
         ]);
     }
 
     public function render()
     {
-        return view('livewire.create-provider');
+        return view('livewire.edit-producer');
     }
 }

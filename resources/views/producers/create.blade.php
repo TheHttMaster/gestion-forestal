@@ -6,7 +6,7 @@
                     <h2 class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight md:mb-6">
                         {{ __('Crear productor') }}
                     </h2>
-                    @livewire('create-provider')
+                    @livewire('create-producer')
                 </div>
             </div>
         </div>

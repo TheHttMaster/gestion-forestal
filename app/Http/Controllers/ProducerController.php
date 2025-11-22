@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Provider;
+use App\Models\Producer;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreProviderRequest;
-use App\Http\Requests\UpdateProviderRequest;
+use App\Http\Requests\StoreProducerRequest;
+use App\Http\Requests\UpdateProducerRequest;
 
-class ProviderController extends Controller
+class ProducerController extends Controller
 {
     /**
      * Muestra la lista de productores con filtros.
@@ -17,7 +17,7 @@ class ProviderController extends Controller
         $search = $request->input('search');
         $status = $request->input('status', 'all');
 
-        $query = Provider::query()
+        $query = Producer::query()
             ->when($search, function ($query, $search) {
                 return $query->search($search);
             });
@@ -30,12 +30,12 @@ class ProviderController extends Controller
             default    => $query,
         };
 
-        $providers = $query
+        $producers = $query
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
 
-        return view('providers.index', compact('providers', 'search', 'status'));
+        return view('producers.index', compact('producers', 'search', 'status'));
     }
 
     /**
@@ -43,19 +43,19 @@ class ProviderController extends Controller
      */
     public function create()
     {
-        return view('providers.create');
+        return view('producers.create');
     }
 
     /**
      * Guarda un nuevo productor en la base de datos.
      */
-    public function store(StoreProviderRequest $request)
+    public function store(StoreProducerRequest $request)
     {
         try {
-            Provider::create($request->validated());
+            Producer::create($request->validated());
 
             // Alerta de éxito con SweetAlert2
-            return redirect()->route('providers.index')
+            return redirect()->route('producers.index')
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
@@ -76,29 +76,29 @@ class ProviderController extends Controller
     /**
      * Muestra los detalles de un productor.
      */
-    public function show(Provider $provider)
+    public function show(Producer $producer)
     {
-        return view('providers.show', compact('provider'));
+        return view('producers.show', compact('producer'));
     }
 
     /**
      * Muestra el formulario para editar un productor.
      */
-    public function edit(Provider $provider)
+    public function edit(Producer $producer)
     {
-        return view('providers.edit', compact('provider'));
+        return view('producers.edit', compact('producer'));
     }
 
     /**
      * Actualiza un productor existente.
      */
-    public function update(UpdateProviderRequest $request, Provider $provider)
+    public function update(UpdateProducerRequest $request, Producer $producer)
     {
         try {
-            $provider->update($request->validated());
+            $producer->update($request->validated());
 
             // Alerta de éxito con SweetAlert2
-            return redirect()->route('providers.index')
+            return redirect()->route('producers.index')
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
@@ -119,13 +119,13 @@ class ProviderController extends Controller
     /**
      * Elimina (soft delete) un productor.
      */
-    public function destroy(Provider $provider)
+    public function destroy(Producer $producer)
     {
         try {
-            $provider->delete();
+            $producer->delete();
 
             // Alerta de éxito con SweetAlert2
-            return redirect()->route('providers.index')
+            return redirect()->route('producers.index')
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
@@ -148,11 +148,11 @@ class ProviderController extends Controller
     public function restore($id)
     {
         try {
-            $provider = Provider::withTrashed()->findOrFail($id);
-            $provider->restore();
+            $producer = Producer::withTrashed()->findOrFail($id);
+            $producer->restore();
 
             // Alerta de éxito con SweetAlert2
-            return redirect()->route('providers.index')
+            return redirect()->route('producers.index')
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
@@ -175,11 +175,11 @@ class ProviderController extends Controller
     public function forceDelete($id)
     {
         try {
-            $provider = Provider::withTrashed()->findOrFail($id);
-            $provider->forceDelete();
+            $producer = Producer::withTrashed()->findOrFail($id);
+            $producer->forceDelete();
 
             // Alerta de éxito con SweetAlert2
-            return redirect()->route('providers.index')
+            return redirect()->route('producers.index')
                 ->with('swal', [
                     'icon' => 'success',
                     'title' => 'Éxito',
@@ -199,12 +199,12 @@ class ProviderController extends Controller
     /**
      * Cambia el estado (activo/inactivo) de un productor.
      */
-    public function toggleStatus(Provider $provider)
+    public function toggleStatus(Producer $producer)
     {
         try {
-            $provider->update(['is_active' => !$provider->is_active]);
+            $producer->update(['is_active' => !$producer->is_active]);
 
-            $status = $provider->is_active ? 'activado' : 'desactivado';
+            $status = $producer->is_active ? 'activado' : 'desactivado';
 
             // Alerta de éxito con SweetAlert2
             return redirect()->back()

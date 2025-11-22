@@ -54,16 +54,7 @@
                                 </a>
                             </div>
                         </li>
-                        <li>
-                            <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
-                                <a href="{{ route('providers.index') }}" class="nav-item {{ request()->routeIs('providers.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
-                                        <path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>
-                                    </svg>
-                                    <span class="sidebar-text">Productores</span>
-                                </a>
-                            </div>
-                        </li>
+
                       <!--   <li>
                             <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
                                 <a href="#" class="nav-item {{ request()->routeIs('areas.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
@@ -74,6 +65,17 @@
                                 </a>
                             </div>
                         </li> -->
+
+                        <li>
+                            <div class="transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 mb-2">
+                                <a href="{{ route('producers.index') }}" class="nav-item {{ request()->routeIs('producers.index') ? 'active' : '' }} transition-all duration-300 ease-in-out hover:font-bold hover:shadow-md group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sprout transition-all duration-500 group-hover:scale-[1.15] group-hover-ml-2">
+                                        <path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>
+                                    </svg>
+                                    <span class="sidebar-text">Productores</span>
+                                </a>
+                            </div>
+                        </li>
 
                         {{-- Este enlace solo se mostrará para los administradores --}}
                         @if (auth()->check() && auth()->user()->role === 'administrador')
@@ -169,7 +171,7 @@
                             <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
                         </svg>
                          <label class="toggle-switch">
-                            <!-- 🔥 SOLUCIÓN: Renderizar con checked basado en el tema -->
+                            <!--  SOLUCIÓN: Renderizar con checked basado en el tema -->
                             <input type="checkbox" id="darkModeToggle" 
                                 {{ (isset($theme) && $theme === 'dark') ? 'checked' : '' }}>
                             <span class="toggle-slider"></span>

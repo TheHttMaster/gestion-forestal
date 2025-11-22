@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-900 dark:text-gray-100 leading-tight mb-6">
                 Editar productor
             </h2>
-            @livewire('edit-provider', ['provider' => $provider])
+            @livewire('edit-producer', ['producer' => $producer])
         </div>
     </div>
 </x-app-layout>
