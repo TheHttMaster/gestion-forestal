@@ -299,7 +299,7 @@
 }
 
 .dark .bg-gray-200{
-    background-color: #1b2027;
+    background-color: #242a31;
 }
 
 .progress-fill {
@@ -839,3 +839,5 @@ li .h23 a:hover{
 #map:active {
     cursor: grabbing;
 }
+
+

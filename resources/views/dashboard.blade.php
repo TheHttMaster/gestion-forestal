@@ -92,7 +92,42 @@
      
 </x-app-layout>
 
-   
+<!-- prueva rapida que funciona para adactar el tamaño del buscador de datatable -->
+
+   <style>
+/* Estilos específicos para el input de búsqueda */
+input.dt-input[type="search"] {
+    width: 250px !important;
+    min-width: 200px !important;
+    max-width: 300px !important;
+}
+
+/* Para cuando DataTables regenera el DOM */
+.dt-container .dt-search input {
+    width: 250px !important;
+    min-width: 200px !important;
+    max-width: 300px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    input.dt-input[type="search"],
+    .dt-container .dt-search input {
+        width: 80px !important;
+        min-width: 150px !important;
+        max-width: 250px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    input.dt-input[type="search"],
+    .dt-container .dt-search input {
+        width: 90px !important;
+        min-width: 40px !important;
+        max-width: 200px !important;
+    }
+}
+</style>
        
   <!-- Main Content Area -->
 

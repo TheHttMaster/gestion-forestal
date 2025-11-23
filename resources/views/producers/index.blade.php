@@ -14,8 +14,8 @@
                 <!-- Filtros -->
                 <form method="GET" action="{{ route('producers.index') }}" class="mb-6">
                     <div class="flex flex-wrap gap-4">
-                        <input type="text" name="search" class="form-input rounded-md border-gray-300" placeholder="Buscar productores..." value="{{ $search ?? '' }}">
-                        <select name="status" class="form-select rounded-md border-gray-300">
+                        <input type="text" name="search" class="form-input rounded-md bg-gray-200 border-gray-300" placeholder="Buscar productores..." value="{{ $search ?? '' }}">
+                        <select name="status" class="form-select rounded-md bg-gray-200 border-gray-300 ">
                             <option value="all" {{ ($status ?? '') == 'all' ? 'selected' : '' }}>Todos</option>
                             <option value="active" {{ ($status ?? '') == 'active' ? 'selected' : '' }}>Activos</option>
                             <option value="inactive" {{ ($status ?? '') == 'inactive' ? 'selected' : '' }}>Inactivos</option>

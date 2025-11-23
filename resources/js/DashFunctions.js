@@ -150,7 +150,7 @@ function initializeDataTables() {
                 "url": "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
             },
             "dom": "<'flex justify-between items-center mb-4'<'flex-1'l><'flex-none'f>>" +
-                   "<'bg-white dark:bg-gray-800 rounded-lg overflow-hidden't>" +
+                   "<'bg-white dark:bg-gray-100 rounded-lg overflow-hidden't>" +
                    "<'flex justify-between items-center mt-4'<'flex-1'i><'flex-none'p>>",
             "drawCallback": function() {
                 // Re-aplicar estilos después de cada redibujado
@@ -196,7 +196,7 @@ function initializeDataTables() {
  */
 function applyCustomDataTableStyles() {
     // Estilos para inputs de búsqueda y selects
-    $('.dt-input').addClass('px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200');
+    $('.dt-input').addClass('px-3 py-2 border border-gray-900 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200');
     
     // Estilos específicos para selects
     $('.dt-length select, .dt-search input').addClass('px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500');
@@ -231,16 +231,18 @@ function applyCustomDataTableStyles() {
         'background-position': 'right 0.5rem center',
         'background-repeat': 'no-repeat',
         'background-size': '1.5em 1.5em',
-        'padding-right': '2.5rem',
+        'padding-right': '2rem',
         'appearance': 'none'
     });
 
     // Aplicar estilos para modo oscuro
     if (htmlElement.classList.contains('dark')) {
-        $('.dt-input, .dt-length select, .dt-search input').addClass('dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100');
+        $('.dt-input, .dt-length select, .dt-search input').addClass('dark:bg-gray-100 dark:border-gray-600 dark:text-gray-100');
         $('.dataTables_paginate .paginate_button').addClass('dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600');
     }
 }
+
+
 
 /**
  * Re-aplica estilos cuando cambia el modo oscuro/claro
